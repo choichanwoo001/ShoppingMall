@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>마이페이지 - BookStore</title>
-  <link rel="stylesheet" href="common.css">
-  <link rel="stylesheet" href="mypage.css">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/mypage.css">
 </head>
 <body>
 <header class="header">
@@ -16,10 +16,18 @@
       <button class="search-btn">검색</button>
     </div>
     <div class="user-menu">
-      <a href="login.html">로그인</a>
-      <a href="signup.html">회원가입</a>
-      <a href="cart.html">장바구니</a>
-      <a href="mypage.html">마이페이지</a>
+      <!--      <div th:if="${session.loginId == null}">-->
+      <a th:href="@{/login}">로그인</a>
+      <!--      </div>      -->
+      <!--      <div th:if="${session.loginId == null}">-->
+      <a th:href="@{/signup}">회원가입</a>
+      <!--      </div>      -->
+      <!--      <div th:if="${session.loginId == null}">-->
+      <a th:href="@{/cart}">장바구니</a>
+      <!--      </div>      -->
+      <!--      <div th:if="${session.loginId == null}">-->
+      <a th:href="@{/mypage}">마이페이지</a>
+      <!--      </div>      -->
     </div>
   </div>
 </header>
@@ -55,8 +63,6 @@
   <div class="tab-menu">
     <button class="tab-btn active" onclick="showTab('orders')">주문내역</button>
     <button class="tab-btn" onclick="showTab('reviews')">리뷰관리</button>
-    <button class="tab-btn" onclick="showTab('wishlist')">찜한상품</button>
-    <button class="tab-btn" onclick="showTab('points')">적립금</button>
   </div>
 
   <!-- 주문내역 탭 -->
@@ -169,73 +175,9 @@
       </div>
     </div>
   </div>
-
-  <!-- 찜한상품 탭 -->
-  <div class="tab-content" id="wishlist">
-    <div class="wishlist-grid">
-      <div class="book-card">
-        <div class="book-image">책 이미지</div>
-        <div class="book-info">
-          <div class="book-title">코스모스</div>
-          <div class="book-author">칼 세이건</div>
-          <div class="book-price">16,200원</div>
-        </div>
-        <div class="book-actions">
-          <button class="btn btn-small btn-primary">장바구니</button>
-          <button class="btn btn-small btn-secondary">찜 해제</button>
-        </div>
-      </div>
-      <div class="book-card">
-        <div class="book-image">책 이미지</div>
-        <div class="book-info">
-          <div class="book-title">데미안</div>
-          <div class="book-author">헤르만 헤세</div>
-          <div class="book-price">9,900원</div>
-        </div>
-        <div class="book-actions">
-          <button class="btn btn-small btn-primary">장바구니</button>
-          <button class="btn btn-small btn-secondary">찜 해제</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 적립금 탭 -->
-  <div class="tab-content" id="points">
-    <div class="points-summary">
-      <div class="current-points">
-        <span class="label">보유 적립금</span>
-        <span class="amount">15,500원</span>
-      </div>
-    </div>
-    <div class="points-history">
-      <h4>적립금 내역</h4>
-      <div class="points-item">
-        <div class="points-info">
-          <span class="points-type">도서 구매 적립</span>
-          <span class="points-date">2024.12.20</span>
-        </div>
-        <span class="points-amount plus">+675원</span>
-      </div>
-      <div class="points-item">
-        <div class="points-info">
-          <span class="points-type">리뷰 작성 적립</span>
-          <span class="points-date">2024.12.20</span>
-        </div>
-        <span class="points-amount plus">+500원</span>
-      </div>
-      <div class="points-item">
-        <div class="points-info">
-          <span class="points-type">적립금 사용</span>
-          <span class="points-date">2024.12.15</span>
-        </div>
-        <span class="points-amount minus">-1,000원</span>
-      </div>
-    </div>
-  </div>
 </div>
 
-<script src="mypage.js"></script>
+<script src="/js/mypage.js"></script>
 
 </body>
 </html>
