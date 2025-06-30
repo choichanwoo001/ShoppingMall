@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookStore - 온라인 서점</title>
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+<header class="header">
+    <div class="header-container">
+        <div class="logo">BookStore</div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="책제목, 저자, 출판사를 검색하세요">
+            <button class="search-btn">검색</button>
+        </div>
+        <div class="user-menu">
+            <a href="login.html">로그인</a>
+            <a href="signup.html">회원가입</a>
+            <a href="cart.html">장바구니</a>
+            <a href="mypage.html">마이페이지</a>
+        </div>
+    </div>
+</header>
+
+<nav class="category-nav">
+    <div class="category-list">
+        <a href="#" class="category-item">소설/에세이</a>
+        <a href="#" class="category-item">인문/사회</a>
+        <a href="#" class="category-item">경제/경영</a>
+        <a href="#" class="category-item">과학/기술</a>
+        <a href="#" class="category-item">예술/문화</a>
+        <a href="#" class="category-item">건강/취미</a>
+        <a href="#" class="category-item">어학/사전</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="main-content">
+        <div class="content-left">
+            <h2 style="margin-bottom: 20px; color: var(--primary-color);">이달의 베스트셀러</h2>
+            <div class="book-grid">
+                <div class="book-card" onclick="location.href='product.html'">
+                    <div class="book-image">책 이미지</div>
+                    <div class="book-info">
+                        <div class="book-title">채식주의자</div>
+                        <div class="book-author">한강</div>
+                        <div class="book-price">13,500원</div>
+                    </div>
+                </div>
+                <div class="book-card" onclick="location.href='product.html'">
+                    <div class="book-image">책 이미지</div>
+                    <div class="book-info">
+                        <div class="book-title">미움받을 용기</div>
+                        <div class="book-author">기시미 이치로</div>
+                        <div class="book-price">14,900원</div>
+                    </div>
+                </div>
+                <div class="book-card" onclick="location.href='product.html'">
+                    <div class="book-image">책 이미지</div>
+                    <div class="book-info">
+                        <div class="book-title">어린왕자</div>
+                        <div class="book-author">생택쥐페리</div>
+                        <div class="book-price">8,500원</div>
+                    </div>
+                </div>
+                <div class="book-card" onclick="location.href='product.html'">
+                    <div class="book-image">책 이미지</div>
+                    <div class="book-info">
+                        <div class="book-title">데미안</div>
+                        <div class="book-author">헤르만 헤세</div>
+                        <div class="book-price">9,900원</div>
+                    </div>
+                </div>
+                <div class="book-card" onclick="location.href='product.html'">
+                    <div class="book-image">책 이미지</div>
+                    <div class="book-info">
+                        <div class="book-title">1984</div>
+                        <div class="book-author">조지 오웰</div>
+                        <div class="book-price">11,700원</div>
+                    </div>
+                </div>
+                <div class="book-card" onclick="location.href='product.html'">
+                    <div class="book-image">책 이미지</div>
+                    <div class="book-info">
+                        <div class="book-title">코스모스</div>
+                        <div class="book-author">칼 세이건</div>
+                        <div class="book-price">16,200원</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">인기 검색어</div>
+                <div class="popular-item">
+                    <div class="rank-number">1</div>
+                    <div>채식주의자</div>
+                </div>
+                <div class="popular-item">
+                    <div class="rank-number">2</div>
+                    <div>미움받을 용기</div>
+                </div>
+                <div class="popular-item">
+                    <div class="rank-number">3</div>
+                    <div>어린왕자</div>
+                </div>
+                <div class="popular-item">
+                    <div class="rank-number">4</div>
+                    <div>1984</div>
+                </div>
+                <div class="popular-item">
+                    <div class="rank-number">5</div>
+                    <div>데미안</div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">최근 본 상품</div>
+                <div class="recent-book">
+                    <div class="recent-book-image">이미지</div>
+                    <div class="recent-book-info">
+                        <div class="recent-book-title">채식주의자</div>
+                        <div class="recent-book-author">한강</div>
+                    </div>
+                </div>
+                <div class="recent-book">
+                    <div class="recent-book-image">이미지</div>
+                    <div class="recent-book-info">
+                        <div class="recent-book-title">미움받을 용기</div>
+                        <div class="recent-book-author">기시미 이치로</div>
+                    </div>
+                </div>
+                <div class="recent-book">
+                    <div class="recent-book-image">이미지</div>
+                    <div class="recent-book-info">
+                        <div class="recent-book-title">어린왕자</div>
+                        <div class="recent-book-author">생택쥐페리</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>

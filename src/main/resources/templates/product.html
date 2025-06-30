@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>채식주의자 - BookStore</title>
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="product.css">
+</head>
+<body>
+<header class="header">
+  <div class="header-container">
+    <div class="logo" onclick="location.href='index.html'">BookStore</div>
+    <div class="search-bar">
+      <input type="text" class="search-input" placeholder="책제목, 저자, 출판사를 검색하세요">
+      <button class="search-btn">검색</button>
+    </div>
+    <div class="user-menu">
+      <a href="login.html">로그인</a>
+      <a href="signup.html">회원가입</a>
+      <a href="cart.html">장바구니</a>
+      <a href="mypage.html">마이페이지</a>
+    </div>
+  </div>
+</header>
+
+<nav class="category-nav">
+  <div class="category-list">
+    <a href="#" class="category-item">소설/에세이</a>
+    <a href="#" class="category-item">인문/사회</a>
+    <a href="#" class="category-item">경제/경영</a>
+    <a href="#" class="category-item">과학/기술</a>
+    <a href="#" class="category-item">예술/문화</a>
+    <a href="#" class="category-item">건강/취미</a>
+    <a href="#" class="category-item">어학/사전</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="product-detail">
+    <div class="product-image">
+      책 이미지 (400x500)
+    </div>
+    <div class="product-info">
+      <h1>채식주의자</h1>
+      <div class="product-meta">
+        <p><strong>저자:</strong> 한강</p>
+        <p><strong>출판사:</strong> 창비</p>
+        <p><strong>ISBN:</strong> 9788936434120</p>
+        <p><strong>출간일:</strong> 2007년 10월</p>
+        <p><strong>페이지:</strong> 158쪽</p>
+        <p><strong>평점:</strong> ★★★★☆ (4.2/5)</p>
+      </div>
+      <div class="product-price">13,500원</div>
+      <div class="product-actions">
+        <button class="btn btn-secondary" onclick="addToCart()">장바구니</button>
+        <button class="btn btn-primary" onclick="buyNow()">바로구매</button>
+      </div>
+      <div class="product-description">
+        <h3>상품 설명</h3>
+        <p>
+          소설가 한강의 대표작 『채식주의자』는 2016년 맨부커 국제상을 수상하며 전 세계적으로 주목받은 작품입니다.
+          한 여성의 채식 선언으로 시작되는 이 소설은 가부장제 사회에서 억압받는 여성의 내면을 섬세하게 그려냅니다.
+          강렬하면서도 서정적인 문체로 인간의 본성과 사회의 폭력성을 탐구한 수작입니다.
+        </p>
+        <div class="table-contents">
+          <h4>목차</h4>
+          <ul>
+            <li>1부: 채식주의자</li>
+            <li>2부: 몽골반점</li>
+            <li>3부: 나무 불꽃</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 리뷰 섹션 -->
+  <div class="review-section">
+    <h3>고객 리뷰</h3>
+    <div class="review-summary">
+      <div class="rating-overview">
+        <div class="average-rating">4.2</div>
+        <div class="stars">★★★★☆</div>
+        <div class="total-reviews">총 127개의 리뷰</div>
+      </div>
+      <button class="btn btn-primary" onclick="writeReview()">리뷰 작성하기</button>
+    </div>
+
+    <div class="review-list">
+      <div class="review-item">
+        <div class="review-header">
+          <div class="reviewer-name">김○○</div>
+          <div class="review-date">2024.12.15</div>
+        </div>
+        <div class="review-rating">★★★★★</div>
+        <p class="review-content">정말 인상깊은 작품이었습니다. 한강 작가의 문체가 매우 아름답고 강렬했어요. 많은 생각을 하게 만드는 소설입니다.</p>
+      </div>
+
+      <div class="review-item">
+        <div class="review-header">
+          <div class="reviewer-name">박○○</div>
+          <div class="review-date">2024.12.10</div>
+        </div>
+        <div class="review-rating">★★★★☆</div>
+        <p class="review-content">깊이 있는 내용이지만 다소 무거운 주제라 읽기가 쉽지는 않았습니다. 하지만 문학적 가치가 높은 작품인 것 같습니다.</p>
+      </div>
+
+      <div class="review-item">
+        <div class="review-header">
+          <div class="reviewer-name">이○○</div>
+          <div class="review-date">2024.12.05</div>
+        </div>
+        <div class="review-rating">★★★★★</div>
+        <p class="review-content">맨부커상 수상작다운 완성도! 번역본도 읽어보고 싶어집니다. 추천합니다.</p>
+      </div>
+    </div>
+
+    <div class="pagination">
+      <button class="page-btn">이전</button>
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <button class="page-btn">다음</button>
+    </div>
+  </div>
+</div>
+
+<script src="product.js"></script>
+
+</body>
+</html>

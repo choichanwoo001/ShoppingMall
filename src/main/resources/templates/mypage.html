@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>마이페이지 - BookStore</title>
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="mypage.css">
+</head>
+<body>
+<header class="header">
+  <div class="header-container">
+    <div class="logo" onclick="location.href='index.html'">BookStore</div>
+    <div class="search-bar">
+      <input type="text" class="search-input" placeholder="책제목, 저자, 출판사를 검색하세요">
+      <button class="search-btn">검색</button>
+    </div>
+    <div class="user-menu">
+      <a href="login.html">로그인</a>
+      <a href="signup.html">회원가입</a>
+      <a href="cart.html">장바구니</a>
+      <a href="mypage.html">마이페이지</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <h2 class="page-title">마이페이지</h2>
+
+  <!-- 회원정보 요약 -->
+  <div class="user-info-summary">
+    <h3>회원정보</h3>
+    <div class="user-details">
+      <div class="detail-item">
+        <span class="label">이름</span>
+        <span class="value">홍길동</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">이메일</span>
+        <span class="value">hong@example.com</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">연락처</span>
+        <span class="value">010-1234-5678</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">회원등급</span>
+        <span class="value grade">VIP</span>
+      </div>
+    </div>
+    <button class="btn btn-secondary" onclick="editProfile()">정보수정</button>
+  </div>
+
+  <!-- 탭 메뉴 -->
+  <div class="tab-menu">
+    <button class="tab-btn active" onclick="showTab('orders')">주문내역</button>
+    <button class="tab-btn" onclick="showTab('reviews')">리뷰관리</button>
+    <button class="tab-btn" onclick="showTab('wishlist')">찜한상품</button>
+    <button class="tab-btn" onclick="showTab('points')">적립금</button>
+  </div>
+
+  <!-- 주문내역 탭 -->
+  <div class="tab-content active" id="orders">
+    <div class="order-item">
+      <div class="order-header">
+        <div class="order-info">
+          <span class="order-date">2024.12.20</span>
+          <span class="order-number">주문번호: 202412200001</span>
+        </div>
+        <span class="order-status delivered">배송완료</span>
+      </div>
+      <div class="order-products">
+        <div class="product-row">
+          <div class="product-image">이미지</div>
+          <div class="product-info">
+            <div class="product-title">채식주의자</div>
+            <div class="product-author">한강 | 창비</div>
+            <div class="product-price">13,500원</div>
+          </div>
+          <div class="product-actions">
+            <button class="btn btn-small btn-secondary">주문취소</button>
+            <button class="btn btn-small btn-primary" onclick="writeReview()">리뷰작성</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-item">
+      <div class="order-header">
+        <div class="order-info">
+          <span class="order-date">2024.12.15</span>
+          <span class="order-number">주문번호: 202412150001</span>
+        </div>
+        <span class="order-status shipping">배송중</span>
+      </div>
+      <div class="order-products">
+        <div class="product-row">
+          <div class="product-image">이미지</div>
+          <div class="product-info">
+            <div class="product-title">미움받을 용기</div>
+            <div class="product-author">기시미 이치로 | 인플루엔셜</div>
+            <div class="product-price">14,900원</div>
+          </div>
+          <div class="product-actions">
+            <button class="btn btn-small btn-secondary">주문취소</button>
+            <button class="btn btn-small btn-primary" onclick="trackOrder()">배송추적</button>
+          </div>
+        </div>
+        <div class="product-row">
+          <div class="product-image">이미지</div>
+          <div class="product-info">
+            <div class="product-title">어린왕자</div>
+            <div class="product-author">생택쥐페리 | 문학동네</div>
+            <div class="product-price">8,500원</div>
+          </div>
+          <div class="product-actions">
+            <button class="btn btn-small btn-secondary">주문취소</button>
+            <button class="btn btn-small btn-primary" onclick="trackOrder()">배송추적</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-item">
+      <div class="order-header">
+        <div class="order-info">
+          <span class="order-date">2024.12.10</span>
+          <span class="order-number">주문번호: 202412100001</span>
+        </div>
+        <span class="order-status preparing">준비중</span>
+      </div>
+      <div class="order-products">
+        <div class="product-row">
+          <div class="product-image">이미지</div>
+          <div class="product-info">
+            <div class="product-title">1984</div>
+            <div class="product-author">조지 오웰 | 민음사</div>
+            <div class="product-price">11,700원</div>
+          </div>
+          <div class="product-actions">
+            <button class="btn btn-small btn-secondary">주문취소</button>
+            <button class="btn btn-small btn-primary disabled" disabled>준비중</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 리뷰관리 탭 -->
+  <div class="tab-content" id="reviews">
+    <div class="review-list">
+      <div class="review-item">
+        <div class="review-book">
+          <div class="book-image">이미지</div>
+          <div class="book-info">
+            <div class="book-title">채식주의자</div>
+            <div class="book-author">한강</div>
+          </div>
+        </div>
+        <div class="review-content">
+          <div class="review-rating">★★★★★</div>
+          <p class="review-text">정말 인상깊은 작품이었습니다. 한강 작가의 문체가 매우 아름답고 강렬했어요.</p>
+          <div class="review-date">2024.12.20 작성</div>
+        </div>
+        <div class="review-actions">
+          <button class="btn btn-small btn-secondary">수정</button>
+          <button class="btn btn-small btn-secondary">삭제</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 찜한상품 탭 -->
+  <div class="tab-content" id="wishlist">
+    <div class="wishlist-grid">
+      <div class="book-card">
+        <div class="book-image">책 이미지</div>
+        <div class="book-info">
+          <div class="book-title">코스모스</div>
+          <div class="book-author">칼 세이건</div>
+          <div class="book-price">16,200원</div>
+        </div>
+        <div class="book-actions">
+          <button class="btn btn-small btn-primary">장바구니</button>
+          <button class="btn btn-small btn-secondary">찜 해제</button>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="book-image">책 이미지</div>
+        <div class="book-info">
+          <div class="book-title">데미안</div>
+          <div class="book-author">헤르만 헤세</div>
+          <div class="book-price">9,900원</div>
+        </div>
+        <div class="book-actions">
+          <button class="btn btn-small btn-primary">장바구니</button>
+          <button class="btn btn-small btn-secondary">찜 해제</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 적립금 탭 -->
+  <div class="tab-content" id="points">
+    <div class="points-summary">
+      <div class="current-points">
+        <span class="label">보유 적립금</span>
+        <span class="amount">15,500원</span>
+      </div>
+    </div>
+    <div class="points-history">
+      <h4>적립금 내역</h4>
+      <div class="points-item">
+        <div class="points-info">
+          <span class="points-type">도서 구매 적립</span>
+          <span class="points-date">2024.12.20</span>
+        </div>
+        <span class="points-amount plus">+675원</span>
+      </div>
+      <div class="points-item">
+        <div class="points-info">
+          <span class="points-type">리뷰 작성 적립</span>
+          <span class="points-date">2024.12.20</span>
+        </div>
+        <span class="points-amount plus">+500원</span>
+      </div>
+      <div class="points-item">
+        <div class="points-info">
+          <span class="points-type">적립금 사용</span>
+          <span class="points-date">2024.12.15</span>
+        </div>
+        <span class="points-amount minus">-1,000원</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="mypage.js"></script>
+
+</body>
+</html>
