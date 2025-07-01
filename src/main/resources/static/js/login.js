@@ -1,5 +1,5 @@
 // 로그인 폼 처리
-document.getElementById('loginForm').addEventListener('submit', function(e) {
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
     const userId = document.getElementById('userId').value;
@@ -12,16 +12,40 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
         return;
     }
 
-    // 아이디 기억하기 처리
-    if (rememberMe) {
-        localStorage.setItem('rememberedUserId', userId);
-    } else {
-        localStorage.removeItem('rememberedUserId');
-    }
+    try {
+        // API 호출
+        const response = await fetch('/api/members/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // 세션 쿠키 포함
+            body: JSON.stringify({
+                memberId: userId,
+                password: password,
+                rememberMe: rememberMe
+            })
+        });
 
-    // 실제로는 서버에 로그인 요청을 보내야 함
-    alert('로그인이 완료되었습니다.');
-    window.location.href = 'index.html';
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            // 아이디 기억하기 처리
+            if (rememberMe) {
+                localStorage.setItem('rememberedUserId', userId);
+            } else {
+                localStorage.removeItem('rememberedUserId');
+            }
+
+            alert(data.message || '로그인이 완료되었습니다.');
+            window.location.href = '/';
+        } else {
+            alert(data.message || '로그인에 실패했습니다.');
+        }
+    } catch (error) {
+        console.error('로그인 오류:', error);
+        alert('로그인 중 오류가 발생했습니다.');
+    }
 });
 
 // 페이지 로드 시 저장된 아이디 불러오기
@@ -34,9 +58,23 @@ window.addEventListener('load', function() {
 });
 
 // 비밀번호 찾기
-function resetPassword() {
+async function resetPassword() {
     const email = prompt('가입 시 등록한 이메일을 입력하세요:');
-    if (email) {
-        alert(`${email}로 비밀번호 재설정 메일을 발송했습니다.`);
+    if (!email) return;
+
+    try {
+        const response = await fetch('/api/members/reset-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: email })
+        });
+
+        const data = await response.json();
+        alert(data.message || '이메일로 임시 비밀번호를 발송했습니다.');
+    } catch (error) {
+        console.error('비밀번호 재설정 오류:', error);
+        alert('비밀번호 재설정 중 오류가 발생했습니다.');
     }
 }

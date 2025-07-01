@@ -1,7 +1,7 @@
 let isIdChecked = false;
 
 // 아이디 중복 확인
-function checkDuplicateId() {
+async function checkDuplicateId() {
     const userId = document.getElementById('userId').value;
     const messageEl = document.getElementById('idCheckMessage');
 
@@ -20,18 +20,38 @@ function checkDuplicateId() {
         return;
     }
 
-    // 실제로는 서버에 중복 확인 요청을 보내야 함
-    // 여기서는 데모용으로 랜덤하게 결과를 반환
-    const isDuplicate = Math.random() < 0.3; // 30% 확률로 중복
+    try {
+        // API 호출
+        const response = await fetch('/api/members/check-id', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ memberId: userId })
+        });
 
-    if (isDuplicate) {
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            if (data.data.isDuplicate) {
+                messageEl.style.color = 'red';
+                messageEl.textContent = '이미 사용 중인 아이디입니다.';
+                isIdChecked = false;
+            } else {
+                messageEl.style.color = 'green';
+                messageEl.textContent = '사용 가능한 아이디입니다.';
+                isIdChecked = true;
+            }
+        } else {
+            messageEl.style.color = 'red';
+            messageEl.textContent = data.message || '아이디 확인 중 오류가 발생했습니다.';
+            isIdChecked = false;
+        }
+    } catch (error) {
+        console.error('아이디 중복 확인 오류:', error);
         messageEl.style.color = 'red';
-        messageEl.textContent = '이미 사용 중인 아이디입니다.';
+        messageEl.textContent = '아이디 확인 중 오류가 발생했습니다.';
         isIdChecked = false;
-    } else {
-        messageEl.style.color = 'green';
-        messageEl.textContent = '사용 가능한 아이디입니다.';
-        isIdChecked = true;
     }
 }
 
@@ -70,7 +90,7 @@ document.getElementById('phone').addEventListener('input', function() {
 });
 
 // 회원가입 폼 처리
-document.getElementById('signupForm').addEventListener('submit', function(e) {
+document.getElementById('signupForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
     const userId = document.getElementById('userId').value;
@@ -113,7 +133,34 @@ document.getElementById('signupForm').addEventListener('submit', function(e) {
         return;
     }
 
-    // 실제로는 서버에 회원가입 요청을 보내야 함
-    alert('회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.');
-    window.location.href = 'login.html';
+    try {
+        // API 호출
+        const response = await fetch('/api/members/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                memberId: userId,
+                password: password,
+                passwordConfirm: passwordConfirm,
+                memberName: userName,
+                email: email,
+                phone: phone,
+                address: address
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            alert(data.message || '회원가입이 완료되었습니다.');
+            window.location.href = '/login';
+        } else {
+            alert(data.message || '회원가입에 실패했습니다.');
+        }
+    } catch (error) {
+        console.error('회원가입 오류:', error);
+        alert('회원가입 중 오류가 발생했습니다.');
+    }
 });
