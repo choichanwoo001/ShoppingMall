@@ -11,9 +11,19 @@ public class PageController {
         return "index";
     }
 
+    @GetMapping("/index")
+    public String index(){
+        return "index";
+    }
+
     @GetMapping("/cart")
     public String cart(){
         return "cart";
+    }
+
+    @GetMapping("/product")
+    public String product(){
+        return "product";
     }
 
     @GetMapping("/login")
