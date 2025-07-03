@@ -208,6 +208,70 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.success(status));
     }
 
+    // 이메일 중복 확인
+    @PostMapping("/check-email")
+    public ResponseEntity<ApiResponse<Map<String, Boolean>>> checkEmailDuplicate(
+            @Valid @RequestBody EmailCheckRequest request) {
+
+        log.info("이메일 중복 확인 요청: email={}", request.getEmail());
+
+        try {
+            boolean isDuplicate = memberService.checkEmailDuplicate(request);
+
+            Map<String, Boolean> result = new HashMap<>();
+            result.put("isDuplicate", isDuplicate);
+            result.put("isAvailable", !isDuplicate);
+
+            String message = isDuplicate ? "이미 사용 중인 이메일입니다." : "사용 가능한 이메일입니다.";
+
+            return ResponseEntity.ok(ApiResponse.success(message, result));
+
+        } catch (IllegalArgumentException e) {
+            log.warn("이메일 중복 확인 실패: {}", e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(e.getMessage()));
+
+        } catch (Exception e) {
+            log.error("이메일 중복 확인 처리 중 오류 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("이메일 중복 확인 중 오류가 발생했습니다."));
+        }
+    }
+
+    // 회원 탈퇴
+    @DeleteMapping("/withdrawal")
+    public ResponseEntity<ApiResponse<String>> withdrawMember(HttpSession session) {
+
+        String memberId = (String) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("로그인이 필요합니다."));
+        }
+
+        log.info("회원 탈퇴 요청: memberId={}", memberId);
+
+        try {
+            memberService.withdrawMember(memberId);
+
+            // 세션 무효화
+            session.invalidate();
+
+            log.info("회원 탈퇴 완료: memberId={}", memberId);
+
+            return ResponseEntity.ok(ApiResponse.success("회원 탈퇴가 완료되었습니다."));
+
+        } catch (IllegalArgumentException e) {
+            log.warn("회원 탈퇴 실패: {}", e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(e.getMessage()));
+
+        } catch (Exception e) {
+            log.error("회원 탈퇴 처리 중 오류 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("회원 탈퇴 처리 중 오류가 발생했습니다."));
+        }
+    }
     // === 예외 처리 ===
 
     @ExceptionHandler(IllegalArgumentException.class)

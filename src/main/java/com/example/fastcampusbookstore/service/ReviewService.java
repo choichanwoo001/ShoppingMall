@@ -192,6 +192,19 @@ public class ReviewService {
         return statistics;
     }
 
+    public Double getAverageRating(Integer bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다"));
+        Double avg = reviewRepository.findAverageRatingByBook(book);
+        return avg != null ? avg : 0.0;
+    }
+
+    public long getReviewCount(Integer bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다"));
+        return reviewRepository.countByBook(book);
+    }
+
     // 리뷰 통계 내부 클래스
     @Setter
     @Getter

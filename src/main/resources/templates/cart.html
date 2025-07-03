@@ -18,15 +18,13 @@
     <div class="user-menu">
       <div th:if="${session.memberId == null}">
         <a th:href="@{/login}">로그인</a>
-      </div>
-      <div th:if="${session.memberId == null}">
         <a th:href="@{/signup}">회원가입</a>
       </div>
-      <div th:if="${session.memberId == null}">
+      <div th:if="${session.memberId != null}">
+        <span th:text="${'안녕하세요, ' + session.memberName + '님'}">사용자님</span>
+        <a th:href="@{/logout}">로그아웃</a>
         <a th:href="@{/cart}">장바구니</a>
-      </div>
-      <div th:if="${session.memberId == null}">
-        <a th:href="@{/mypage}">마이페이지</a>
+        <a th:href="@{/mypage}" th:if="${session.memberId != null}">마이페이지</a>
       </div>
     </div>
   </div>
@@ -62,8 +60,45 @@
       </div>
       <div class="cart-actions">
         <button class="btn btn-secondary" onclick="continueShopping()">쇼핑 계속하기</button>
-        <button class="btn btn-primary" onclick="proceedToCheckout()">주문하기</button>
+        <button class="btn btn-primary" onclick="openOrderModal()">주문하기</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- 주문서 모달 -->
+<div id="orderModal" class="modal" style="display:none;">
+  <div class="modal-content" style="max-width:480px;">
+    <div class="modal-header">
+      <h3>주문서 작성</h3>
+      <span class="close" onclick="closeOrderModal()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <form id="orderForm">
+        <div class="form-group">
+          <label>배송지 주소</label>
+          <input type="text" id="orderAddress" name="shippingAddress" required>
+        </div>
+        <div class="form-group">
+          <label>연락처</label>
+          <input type="text" id="orderPhone" name="shippingPhone" required>
+        </div>
+        <div class="form-group">
+          <label>주문 메모</label>
+          <input type="text" id="orderMemo" name="orderMemo" placeholder="요청사항이 있으면 입력하세요">
+        </div>
+        <div class="form-group">
+          <label>결제수단</label>
+          <select id="paymentMethod" name="paymentMethod" required>
+            <option value="KAKAO_PAY">카카오페이</option>
+            <!-- 추후 신용카드 등 추가 가능 -->
+          </select>
+        </div>
+        <div class="form-actions" style="margin-top:1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeOrderModal()">취소</button>
+          <button type="submit" class="btn btn-primary" id="kakaoPayBtn">카카오페이 결제</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

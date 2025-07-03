@@ -101,7 +101,45 @@ public class MemberService {
         return MemberResponse.from(updatedMember);
     }
 
+    @Transactional
+    public void withdrawMember(String memberId) {
+
+        // 회원 조회
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다"));
+
+        // 탈퇴 가능 상태 확인
+        validateWithdrawal(member);
+
+        // 회원 상태를 탈퇴로 변경 (실제 삭제 대신 상태 변경)
+        member.setMemberStatus(Member.MemberStatus.탈퇴);
+        member.setUpdatedAt(LocalDateTime.now());
+
+        memberRepository.save(member);
+
+        // TODO: 관련 데이터 정리 (주문 내역은 보관, 개인정보는 마스킹 등)
+        // cleanupMemberData(memberId);
+    }
+
+    public boolean checkEmailDuplicate(EmailCheckRequest request) {
+
+        // 이메일 형식 검증
+        validateEmail(request.getEmail());
+
+        return memberRepository.existsByEmail(request.getEmail());
+    }
     // === Private 헬퍼 메서드들 ===
+
+    private void validateWithdrawal(Member member) {
+        // 이미 탈퇴한 회원인지 확인
+        if (member.getMemberStatus() == Member.MemberStatus.탈퇴) {
+            throw new IllegalArgumentException("이미 탈퇴한 회원입니다");
+        }
+
+        // TODO: 추가 탈퇴 조건 검사
+        // - 진행 중인 주문이 있는지 확인
+        // - 미해결 문의사항이 있는지 확인 등
+    }
 
     private void validateSignupRequest(MemberSignupRequest request) {
         // 아이디 중복 확인
@@ -117,6 +155,17 @@ public class MemberService {
         // 비밀번호 확인
         if (!request.getPassword().equals(request.getPasswordConfirm())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
+        }
+    }
+
+    private void validateEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("이메일은 필수입니다");
+        }
+
+        // 간단한 이메일 형식 검증
+        if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+            throw new IllegalArgumentException("올바른 이메일 형식이 아닙니다");
         }
     }
 

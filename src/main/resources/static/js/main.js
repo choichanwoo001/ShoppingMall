@@ -1,6 +1,8 @@
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     setupSearchFunctionality();
+    loadPopularKeywords();
+    loadRecentViews();
 });
 
 // 검색 기능 설정
@@ -24,6 +26,27 @@ function setupSearchFunctionality() {
             }
         });
     }
+}
+
+function loadPopularKeywords() {
+    fetch('/api/popular-keywords/top?size=5')
+        .then(res => res.json())
+        .then(list => {
+            const ul = document.getElementById('popular-keyword-list');
+            if (!ul) return;
+            ul.innerHTML = '';
+            if (list.length === 0) {
+                ul.innerHTML = '<li style="color:#aaa; font-size:0.9rem;">아직 인기 검색어가 없습니다.</li>';
+                return;
+            }
+            list.forEach((keyword, idx) => {
+                const li = document.createElement('li');
+                li.textContent = `${idx + 1}. ${keyword}`;
+                li.style.padding = '0.25rem 0';
+                li.style.fontSize = '0.95rem';
+                ul.appendChild(li);
+            });
+        });
 }
 
 // 중분류 카테고리 표시
@@ -97,3 +120,48 @@ window.showMiddleCategories = showMiddleCategories;
 window.hideMiddleCategories = hideMiddleCategories;
 window.showBottomCategories = showBottomCategories;
 window.hideBottomCategories = hideBottomCategories;
+
+// 최근 본 상품 동적 로드
+function loadRecentViews() {
+    const recentViewSection = document.getElementById('recent-view-section');
+    const recentViewList = document.getElementById('recent-view-list');
+    if (!recentViewSection || !recentViewList) return;
+
+    fetch('/recent-views?limit=3')
+        .then(res => {
+            if (res.status === 401) {
+                // 비로그인 시 안내
+                recentViewList.innerHTML = '<div class="no-data-small">로그인하시면 최근 본 상품을 확인할 수 있습니다.</div>';
+                return null;
+            }
+            return res.json();
+        })
+        .then(data => {
+            if (!data) return;
+            if (!data.success || !Array.isArray(data.data) || data.data.length === 0) {
+                recentViewList.innerHTML = '<div class="no-data-small">최근 본 상품이 없습니다.</div>';
+                return;
+            }
+            recentViewList.innerHTML = '';
+            data.data.forEach(recent => {
+                const book = recent.book;
+                const div = document.createElement('div');
+                div.className = 'recent-book';
+                div.onclick = () => location.href = `/product/${book.bookId}`;
+                div.innerHTML = `
+                    <div class="recent-book-image">
+                        ${book.bookImage ? `<img src="${book.bookImage}" alt="${book.bookName}" style="width:100%;height:100%;object-fit:cover;">` : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#718096;font-size:0.5rem;">이미지</div>'}
+                    </div>
+                    <div class="recent-book-info">
+                        <div class="recent-book-title">${book.bookName}</div>
+                        <div class="recent-book-author">${book.author}</div>
+                        <div class="recent-book-price" style="font-size:0.625rem;color:var(--accent-color);font-weight:bold;">${Number(book.price).toLocaleString()}원</div>
+                    </div>
+                `;
+                recentViewList.appendChild(div);
+            });
+        })
+        .catch(() => {
+            recentViewList.innerHTML = '<div class="no-data-small">최근 본 상품을 불러올 수 없습니다.</div>';
+        });
+}

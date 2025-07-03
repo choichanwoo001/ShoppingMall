@@ -5,6 +5,14 @@ html, body {
     padding: 0;
 }
 
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-color, #f7fafc);
+}
+
 /* 로그인 페이지 전체 컨테이너 */
 .login-page {
     min-height: 100vh;
@@ -12,13 +20,13 @@ html, body {
     align-items: center;
     justify-content: center;
     background-color: var(--background-color, #f7fafc);
-    padding: 1rem;
+    padding: 1.25rem;
 }
 
 .form-container {
-    max-width: 25rem;
+    max-width: 40rem;
     width: 100%;
-    padding: 2rem 1.5rem;
+    padding: 2.5rem 2rem;
     background: #fff;
     border-radius: 0.75rem;
     box-shadow: 0 0.125rem 1rem rgba(0,0,0,0.08);
@@ -101,23 +109,4 @@ html, body {
 
 .form-links a:hover {
     text-decoration: underline;
-}
-
-/* 모바일 반응형 */
-@media (max-width: 480px) {
-    .form-container {
-        max-width: none;
-        margin: 1rem;
-        padding: 1.5rem 1rem;
-    }
-
-    .form-title {
-        font-size: 1.75rem;
-    }
-
-    .form-links {
-        flex-direction: column;
-        gap: 0.5rem;
-        text-align: center;
-    }
 }

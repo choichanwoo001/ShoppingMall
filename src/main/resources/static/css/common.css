@@ -10,16 +10,16 @@
     --accent-color: #9f7aea;
     --light-accent: #e9d8fd;
     --background-color: #f7fafc;
-    --background-light: #f7fafc;  /* 추가 */
+    --background-light: #f7fafc;
     --white: #ffffff;
     --text-dark: #2d3748;
     --text-light: #718096;
-    --text-muted: #a0aec0;        /* 추가 */
+    --text-muted: #a0aec0;
     --border-color: #e2e8f0;
     --success-color: #38a169;
     --warning-color: #d69e2e;
-    --error-color: #e53e3e;       /* 추가 */
-    --info-color: #3182ce;        /* 추가 */
+    --error-color: #e53e3e;
+    --info-color: #3182ce;
 }
 
 body {
@@ -305,14 +305,14 @@ body {
 }
 
 /* Forms */
-.form-container {
+/* .form-container {
     max-width: 31.25rem;
     margin: 3.125rem auto;
     background: var(--white);
     padding: 2.5rem;
     border-radius: 0.5rem;
     box-shadow: 0 0.125rem 1.25rem rgba(0,0,0,0.1);
-}
+} */
 
 .form-title {
     font-size: 1.5rem;

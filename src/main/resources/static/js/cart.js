@@ -213,5 +213,89 @@ async function proceedToCheckout() {
     alert('주문 기능은 추후 구현 예정입니다.');
 }
 
+// 주문서 모달 열기
+function openOrderModal() {
+    // 배송지/연락처 자동 입력
+    fetch('/api/members/login-status', { credentials: 'include' })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && data.data && data.data.isLoggedIn && data.data.member) {
+                document.getElementById('orderAddress').value = data.data.member.address || '';
+                document.getElementById('orderPhone').value = data.data.member.phone || '';
+            }
+        });
+    document.getElementById('orderModal').style.display = 'block';
+}
+
+function closeOrderModal() {
+    document.getElementById('orderModal').style.display = 'none';
+}
+
+// 주문서 제출(카카오페이 결제)
+document.getElementById('orderForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const address = document.getElementById('orderAddress').value.trim();
+    const phone = document.getElementById('orderPhone').value.trim();
+    const memo = document.getElementById('orderMemo').value.trim();
+    const paymentMethod = document.getElementById('paymentMethod').value;
+
+    // 주문 상품: 선택된 상품이 있으면 그것만, 없으면 전체
+    const checkedBoxes = document.querySelectorAll('.item-checkbox:checked');
+    let items = Array.from(checkedBoxes).map(cb => {
+        const cartItem = cb.closest('.cart-item');
+        const cartId = parseInt(cartItem.dataset.cartId);
+        const quantity = parseInt(cartItem.querySelector('input[type="number"]').value);
+        const bookId = cartItem.querySelector('.item-title').dataset.bookId ? parseInt(cartItem.querySelector('.item-title').dataset.bookId) : null;
+        return { cartId, quantity, bookId };
+    });
+    if (items.length === 0) {
+        // 전체 상품 주문
+        const allItems = document.querySelectorAll('.cart-item');
+        items = Array.from(allItems).map(cartItem => {
+            const cartId = parseInt(cartItem.dataset.cartId);
+            const quantity = parseInt(cartItem.querySelector('input[type="number"]').value);
+            const bookId = cartItem.querySelector('.item-title').dataset.bookId ? parseInt(cartItem.querySelector('.item-title').dataset.bookId) : null;
+            return { cartId, quantity, bookId };
+        });
+    }
+    if (items.length === 0) {
+        alert('주문할 상품이 없습니다.');
+        return;
+    }
+
+    // 주문 정보
+    const orderItems = items.map(item => ({
+        bookId: item.bookId,
+        quantity: item.quantity,
+        cartId: item.cartId
+    }));
+    const orderData = {
+        orderItems,
+        shippingAddress: address,
+        shippingPhone: phone,
+        orderMemo: memo,
+        paymentMethod
+    };
+
+    // TODO: 카카오페이 결제 준비 API 호출(다음 단계)
+    try {
+        const res = await fetch('/api/pay/kakao/ready', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(orderData)
+        });
+        const result = await res.json();
+        if (res.ok && result.success && result.data && result.data.next_redirect_pc_url) {
+            window.location.href = result.data.next_redirect_pc_url; // 카카오페이 결제창 이동
+        } else {
+            alert(result.message || '카카오페이 결제 준비 중 오류가 발생했습니다.');
+        }
+    } catch (e) {
+        alert('카카오페이 결제 준비 중 오류가 발생했습니다.');
+    }
+    closeOrderModal();
+});
+
 // 페이지 로드 시 장바구니 로드
 window.addEventListener('load', loadCart);

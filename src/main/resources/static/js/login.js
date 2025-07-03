@@ -39,6 +39,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 
             alert(data.message || '로그인이 완료되었습니다.');
             window.location.href = '/';
+            showLogoutUI(data.memberName);
         } else {
             alert(data.message || '로그인에 실패했습니다.');
         }
@@ -57,11 +58,13 @@ window.addEventListener('load', function() {
     }
 });
 
-// 비밀번호 찾기
-async function resetPassword() {
-    const email = prompt('가입 시 등록한 이메일을 입력하세요:');
-    if (!email) return;
-
+// 비밀번호 찾기 (모달용)
+async function submitResetPassword() {
+    const email = document.getElementById('resetEmail').value;
+    if (!email) {
+        alert('이메일을 입력하세요.');
+        return;
+    }
     try {
         const response = await fetch('/api/members/reset-password', {
             method: 'POST',
@@ -70,11 +73,39 @@ async function resetPassword() {
             },
             body: JSON.stringify({ email: email })
         });
-
         const data = await response.json();
         alert(data.message || '이메일로 임시 비밀번호를 발송했습니다.');
+        document.getElementById('resetEmail').value = '';
+        closeResetModal();
     } catch (error) {
         console.error('비밀번호 재설정 오류:', error);
         alert('비밀번호 재설정 중 오류가 발생했습니다.');
     }
+}
+
+// 로그아웃 기능
+async function logout() {
+    try {
+        const response = await fetch('/api/members/logout', {
+            method: 'POST',
+            credentials: 'include'
+        });
+        const data = await response.json();
+        if (data.success) {
+            alert('로그아웃되었습니다.');
+            window.location.reload();
+        } else {
+            alert(data.message || '로그아웃에 실패했습니다.');
+        }
+    } catch (error) {
+        alert('로그아웃 중 오류가 발생했습니다.');
+    }
+}
+
+// 로그인 성공 시 로그아웃 UI 표시
+function showLogoutUI(memberName) {
+    document.getElementById('loginForm').style.display = 'none';
+    const section = document.getElementById('logoutSection');
+    section.style.display = 'block';
+    document.getElementById('logoutGreeting').textContent = `${memberName ? memberName + '님, ' : ''}로그인 상태입니다.`;
 }

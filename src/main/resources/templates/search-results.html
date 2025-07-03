@@ -25,9 +25,9 @@
             <div th:if="${session.memberId != null}">
                 <span th:text="${'안녕하세요, ' + session.memberName + '님'}">사용자님</span>
                 <a th:href="@{/logout}">로그아웃</a>
+                <a th:href="@{/cart}">장바구니</a>
+                <a th:href="@{/mypage}" th:if="${session.memberId != null}">마이페이지</a>
             </div>
-            <a th:href="@{/cart}">장바구니</a>
-            <a th:href="@{/mypage}" th:if="${session.memberId != null}">마이페이지</a>
         </div>
     </div>
 </header>
