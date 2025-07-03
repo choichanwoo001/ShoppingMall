@@ -96,6 +96,11 @@ public class BookService {
         return PageResponse.of(bookResponses, books);
     }
 
+    // 5. 판매지수 기준 상위 도서 조회 (추가된 메서드)
+    public List<Book> getTopBySalesIndex(Pageable pageable) {
+        return bookRepository.findTopBySalesIndex(pageable);
+    }
+
     // === Private 헬퍼 메서드들 ===
 
     private Pageable createPageable(BookSearchRequest request) {

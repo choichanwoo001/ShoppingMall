@@ -65,6 +65,9 @@ public class MemberController {
             // 세션에 로그인 정보 저장
             session.setAttribute("loginMember", response);
             session.setAttribute("memberId", response.getMemberId());
+            session.setAttribute("memberName", response.getMemberName()); // 추가
+            session.setAttribute("memberGrade", response.getMemberGrade()); // 추가
+            session.setAttribute("isLoggedIn", true); // 추가
 
             log.info("로그인 성공: memberId={}", response.getMemberId());
 

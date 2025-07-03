@@ -1,43 +1,171 @@
 package com.example.fastcampusbookstore.controller;
 
+import com.example.fastcampusbookstore.service.CategoryService;
+import com.example.fastcampusbookstore.service.BookService;
+import com.example.fastcampusbookstore.dto.response.CategoryTreeResponse;
+import com.example.fastcampusbookstore.dto.request.BookSearchRequest;
+import com.example.fastcampusbookstore.dto.common.PageResponse;
+import com.example.fastcampusbookstore.dto.response.BookListResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
+@RequiredArgsConstructor
+@Slf4j
 public class PageController {
 
-    @GetMapping("/")
-    public String home(){
-        return "index";
-    }
+    private final CategoryService categoryService;
+    private final BookService bookService;
 
-    @GetMapping("/index")
-    public String index(){
-        return "index";
-    }
-
+    // 기본 페이지들 - 단순 라우팅만
     @GetMapping("/cart")
-    public String cart(){
+    public String cart(Model model) {
+        addCategoryData(model); // 네비게이션용 카테고리 추가
         return "cart";
     }
 
-    @GetMapping("/product")
-    public String product(){
-        return "product";
-    }
+    // BookController에서 /product/{bookId} 를 처리하므로 여기서는 제거
+    // @GetMapping("/product/{bookId}") - 이 부분 삭제!
 
     @GetMapping("/login")
-    public String login(){
+    public String login() {
         return "login";
     }
 
     @GetMapping("/signup")
-    public String signup(){
+    public String signup() {
         return "signup";
     }
 
     @GetMapping("/mypage")
-    public String mypage(){
+    public String mypage(Model model) {
+        addCategoryData(model); // 네비게이션용 카테고리 추가
         return "mypage";
+    }
+
+    // 상품 상세 페이지 - BookController의 중복을 피해 여기에 추가
+    @GetMapping("/product/{bookId}")
+    public String productDetail(@PathVariable Integer bookId, Model model) {
+        addCategoryData(model); // 네비게이션용 카테고리 추가
+        model.addAttribute("bookId", bookId);
+        return "product";
+    }
+
+    // 카테고리별 상품 목록 페이지
+    @GetMapping("/category/{categoryId}")
+    public String categoryBooks(
+            @PathVariable Integer categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size,
+            @RequestParam(defaultValue = "registration_date") String sort,
+            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(required = false) String keyword,
+            Model model) {
+
+        log.info("카테고리 페이지 요청 - categoryId: {}, page: {}, keyword: {}", categoryId, page, keyword);
+
+        try {
+            // 전체 카테고리 트리 조회 (네비게이션용)
+            CategoryTreeResponse categoryTree = categoryService.getAllCategoriesTree();
+            model.addAttribute("categories", categoryTree.getCategories());
+
+            // 해당 카테고리의 상품 조회
+            BookSearchRequest request = new BookSearchRequest(page, size);
+            request.setCategoryId(categoryId);
+            request.setSort(sort);
+            request.setDirection(direction);
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                request.setKeyword(keyword);
+            }
+
+            PageResponse<BookListResponse> booksResponse = bookService.getBooksByCategory(request);
+
+            model.addAttribute("books", booksResponse.getContent());
+            model.addAttribute("currentPage", booksResponse.getCurrentPage());
+            model.addAttribute("totalPages", booksResponse.getTotalPages());
+            model.addAttribute("totalElements", booksResponse.getTotalElements());
+            model.addAttribute("size", booksResponse.getSize());
+            model.addAttribute("hasNext", booksResponse.isHasNext());
+            model.addAttribute("hasPrevious", booksResponse.isHasPrevious());
+
+            // 현재 카테고리 정보
+            model.addAttribute("currentCategoryId", categoryId);
+            model.addAttribute("currentSort", sort);
+            model.addAttribute("currentDirection", direction);
+            model.addAttribute("currentKeyword", keyword);
+
+            log.info("카테고리 페이지 데이터 로드 완료 - 총 {}개 상품", booksResponse.getTotalElements());
+
+            return "category";
+
+        } catch (Exception e) {
+            log.error("카테고리 페이지 로드 실패 - categoryId: {}", categoryId, e);
+            model.addAttribute("error", "카테고리 정보를 불러오는 중 오류가 발생했습니다.");
+            return "error";
+        }
+    }
+
+    // 검색 결과 페이지
+    @GetMapping("/search")
+    public String searchResults(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size,
+            @RequestParam(defaultValue = "registration_date") String sort,
+            @RequestParam(defaultValue = "desc") String direction,
+            Model model) {
+
+        log.info("검색 페이지 요청 - keyword: {}, page: {}", keyword, page);
+
+        try {
+            // 카테고리 네비게이션 추가
+            addCategoryData(model);
+
+            // 검색 수행
+            BookSearchRequest request = new BookSearchRequest(page, size);
+            request.setKeyword(keyword);
+            request.setSort(sort);
+            request.setDirection(direction);
+
+            PageResponse<BookListResponse> searchResults = bookService.searchBooks(request);
+
+            model.addAttribute("books", searchResults.getContent());
+            model.addAttribute("currentPage", searchResults.getCurrentPage());
+            model.addAttribute("totalPages", searchResults.getTotalPages());
+            model.addAttribute("totalElements", searchResults.getTotalElements());
+            model.addAttribute("size", searchResults.getSize());
+            model.addAttribute("hasNext", searchResults.isHasNext());
+            model.addAttribute("hasPrevious", searchResults.isHasPrevious());
+
+            // 검색 정보
+            model.addAttribute("searchKeyword", keyword);
+            model.addAttribute("currentSort", sort);
+            model.addAttribute("currentDirection", direction);
+
+            log.info("검색 완료 - 키워드: {}, 결과: {}개", keyword, searchResults.getTotalElements());
+
+            return "search-results";
+
+        } catch (Exception e) {
+            log.error("검색 실패 - keyword: {}", keyword, e);
+            model.addAttribute("error", "검색 중 오류가 발생했습니다.");
+            return "error";
+        }
+    }
+
+    // 공통 메서드: 카테고리 데이터 추가
+    private void addCategoryData(Model model) {
+        try {
+            CategoryTreeResponse categoryTree = categoryService.getAllCategoriesTree();
+            model.addAttribute("categories", categoryTree.getCategories());
+        } catch (Exception e) {
+            log.warn("카테고리 데이터 로드 실패", e);
+            // 카테고리 로드 실패해도 페이지는 표시
+        }
     }
 }
