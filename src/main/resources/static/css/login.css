@@ -1,34 +1,52 @@
+/* 전체 페이지 높이 설정 */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* 로그인 페이지 전체 컨테이너 */
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-color, #f7fafc);
+    padding: 1rem;
+}
+
 .form-container {
-    max-width: 400px;
-    margin: 40px auto;
-    padding: 32px 24px;
+    max-width: 25rem;
+    width: 100%;
+    padding: 2rem 1.5rem;
     background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    border-radius: 0.75rem;
+    box-shadow: 0 0.125rem 1rem rgba(0,0,0,0.08);
+    margin: 0;
 }
 
 .form-title {
     font-size: 2rem;
     font-weight: 700;
-    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
     text-align: center;
 }
 
 .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 1.125rem;
 }
 
 .form-label {
     display: block;
     font-weight: 600;
-    margin-bottom: 7px;
+    margin-bottom: 0.4375rem;
 }
 
 .form-input {
     width: 100%;
-    padding: 10px 12px;
+    padding: 0.625rem 0.75rem;
     border: 1px solid #d1d5db;
-    border-radius: 6px;
+    border-radius: 0.375rem;
     font-size: 1rem;
     transition: border 0.2s;
 }
@@ -39,13 +57,13 @@
 }
 
 .remember-group {
-    margin-bottom: 18px;
+    margin-bottom: 1.125rem;
 }
 
 .remember-label {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
     font-size: 0.98rem;
     font-weight: 500;
     cursor: pointer;
@@ -53,15 +71,15 @@
 
 .form-btn {
     width: 100%;
-    padding: 12px 0;
+    padding: 0.75rem 0;
     background: #3b82f6;
     color: #fff;
     border: none;
-    border-radius: 6px;
+    border-radius: 0.375rem;
     font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 0.625rem;
     transition: background 0.2s;
 }
 
@@ -72,7 +90,7 @@
 .form-links {
     display: flex;
     justify-content: space-between;
-    margin-top: 16px;
+    margin-top: 1rem;
 }
 
 .form-links a {
@@ -83,4 +101,23 @@
 
 .form-links a:hover {
     text-decoration: underline;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 480px) {
+    .form-container {
+        max-width: none;
+        margin: 1rem;
+        padding: 1.5rem 1rem;
+    }
+
+    .form-title {
+        font-size: 1.75rem;
+    }
+
+    .form-links {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
 }

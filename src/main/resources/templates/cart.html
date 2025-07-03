@@ -10,24 +10,24 @@
 <body>
 <header class="header">
   <div class="header-container">
-    <div class="logo" onclick="location.href='index.html'">BookStore</div>
+    <div class="logo" onclick="location.href='index'">BookStore</div>
     <div class="search-bar">
       <input type="text" class="search-input" placeholder="책제목, 저자, 출판사를 검색하세요">
       <button class="search-btn">검색</button>
     </div>
     <div class="user-menu">
-<!--      <div th:if="${session.loginId == null}">-->
+      <div th:if="${session.memberId == null}">
         <a th:href="@{/login}">로그인</a>
-<!--      </div>      -->
-      <!--      <div th:if="${session.loginId == null}">-->
-      <a th:href="@{/signup}">회원가입</a>
-      <!--      </div>      -->
-      <!--      <div th:if="${session.loginId == null}">-->
-      <a th:href="@{/cart}">장바구니</a>
-      <!--      </div>      -->
-      <!--      <div th:if="${session.loginId == null}">-->
-      <a th:href="@{/mypage}">마이페이지</a>
-      <!--      </div>      -->
+      </div>
+      <div th:if="${session.memberId == null}">
+        <a th:href="@{/signup}">회원가입</a>
+      </div>
+      <div th:if="${session.memberId == null}">
+        <a th:href="@{/cart}">장바구니</a>
+      </div>
+      <div th:if="${session.memberId == null}">
+        <a th:href="@{/mypage}">마이페이지</a>
+      </div>
     </div>
   </div>
 </header>

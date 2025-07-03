@@ -3,7 +3,7 @@ const API_BASE_URL = '/api';
 
 // 현재 상품 정보
 let currentBook = null;
-let currentBookId = null;
+let currentBookId = window.currentBookId; // HTML에서 전달받은 책 ID
 
 // 세션 기반 인증 확인
 async function checkLoginStatus() {
@@ -55,193 +55,49 @@ async function apiRequest(url, options = {}) {
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', async function() {
-    // URL에서 bookId 파라미터 추출
-    const urlParams = new URLSearchParams(window.location.search);
-    currentBookId = urlParams.get('bookId');
-
     if (!currentBookId) {
-        alert('상품 정보를 찾을 수 없습니다.');
-        window.location.href = '/';
+        console.error('상품 ID가 없습니다.');
         return;
     }
 
-    await loadBookDetail();
-    await loadBookReviews();
+    await loadBookDetailFromAPI();
+    await addToRecentViews();
     setupEventListeners();
 });
 
-// 상품 상세 정보 로드
-async function loadBookDetail() {
+// API에서 상품 상세 정보 로드
+async function loadBookDetailFromAPI() {
     try {
         const bookDetail = await apiRequest(`/books/${currentBookId}`);
         currentBook = bookDetail;
-        displayBookDetail(bookDetail);
+        updatePageWithBookData(bookDetail);
 
-        // 최근 본 상품에 추가 (로그인한 경우)
-        const loginStatus = await checkLoginStatus();
-        if (loginStatus.isLoggedIn) {
-            await addToRecentViews(currentBookId);
-        }
+        console.log('상품 정보 로드 완료:', bookDetail.bookName);
     } catch (error) {
         console.error('상품 정보 로드 실패:', error);
         showError('상품 정보를 불러올 수 없습니다.');
     }
 }
 
-// 상품 상세 정보 표시
-function displayBookDetail(book) {
-    // 상품 이미지
-    const bookImage = document.querySelector('.book-image img');
-    if (bookImage) {
-        bookImage.src = book.bookImage || '/images/default-book.jpg';
-        bookImage.alt = book.bookName;
+// 페이지를 API에서 받은 데이터로 업데이트
+function updatePageWithBookData(book) {
+    // 페이지 제목 업데이트
+    document.title = `${book.bookName} - BookStore`;
+
+    // 상품 이미지 업데이트
+    const productImage = document.querySelector('.product-image');
+    if (productImage && book.bookImage) {
+        productImage.innerHTML = `<img src="${book.bookImage}" alt="${book.bookName}" style="width: 100%; height: 100%; object-fit: cover;">`;
     }
 
-    // 상품 기본 정보
-    const bookTitle = document.querySelector('.book-title');
-    if (bookTitle) bookTitle.textContent = book.bookName;
-
-    const bookAuthor = document.querySelector('.book-author');
-    if (bookAuthor) bookAuthor.textContent = `저자: ${book.author}`;
-
-    const bookPublisher = document.querySelector('.book-publisher');
-    if (bookPublisher) bookPublisher.textContent = `출판사: ${book.publisher}`;
-
-    const bookPrice = document.querySelector('.book-price');
-    if (bookPrice) bookPrice.textContent = `${book.price?.toLocaleString()}원`;
-
-    // 평점 표시
-    const bookRating = document.querySelector('.book-rating');
-    if (bookRating && book.rating) {
-        const rating = parseFloat(book.rating);
-        bookRating.innerHTML = `
-            <div class="rating-stars">
-                ${'★'.repeat(Math.floor(rating))}${'☆'.repeat(5 - Math.floor(rating))}
-                <span class="rating-text">(${rating.toFixed(1)}/5)</span>
-            </div>
-        `;
-    }
-
-    // 판매 상태
-    const salesStatus = document.querySelector('.sales-status');
-    if (salesStatus) {
-        salesStatus.textContent = book.salesStatus;
-        salesStatus.className = `sales-status status-${book.salesStatus}`;
-    }
-
-    // 재고 정보
-    const stockInfo = document.querySelector('.stock-info');
-    if (stockInfo && book.stockQuantity !== undefined) {
-        if (book.stockQuantity > 0) {
-            stockInfo.textContent = `재고: ${book.stockQuantity}권`;
-            stockInfo.className = 'stock-info in-stock';
-        } else {
-            stockInfo.textContent = '재고 없음';
-            stockInfo.className = 'stock-info out-of-stock';
-        }
-    }
-
-    // 상품 설명
-    const bookDescription = document.querySelector('.book-description');
-    if (bookDescription && book.description) {
-        bookDescription.innerHTML = book.description.replace(/\n/g, '<br>');
-    }
-
-    // 상품 상세 정보
-    const bookDetails = document.querySelector('.book-details');
-    if (bookDetails) {
-        bookDetails.innerHTML = `
-            <div class="detail-item">
-                <span class="label">ISBN:</span>
-                <span class="value">${book.isbn || '정보 없음'}</span>
-            </div>
-            <div class="detail-item">
-                <span class="label">크기:</span>
-                <span class="value">${book.bookSize || '정보 없음'}</span>
-            </div>
-            <div class="detail-item">
-                <span class="label">등록일:</span>
-                <span class="value">${formatDate(book.registrationDate)}</span>
-            </div>
-            ${book.category ? `
-                <div class="detail-item">
-                    <span class="label">카테고리:</span>
-                    <span class="value">${getCategoryPath(book.category)}</span>
-                </div>
-            ` : ''}
-        `;
-    }
-
-    // 구매 버튼 상태 업데이트
+    // 재고 정보에 따른 버튼 상태 업데이트
     updatePurchaseButtons(book);
-}
 
-// 상품 리뷰 로드
-async function loadBookReviews(page = 0, size = 5) {
-    try {
-        const reviewsData = await apiRequest(`/books/${currentBookId}/reviews?page=${page}&size=${size}`);
-        displayBookReviews(reviewsData);
-    } catch (error) {
-        console.error('리뷰 로드 실패:', error);
-        // 리뷰 로드 실패는 상품 정보 표시에 영향을 주지 않도록 함
+    // 수량 선택기 최대값 설정
+    const quantityInput = document.querySelector('.quantity-input');
+    if (quantityInput && book.stockQuantity) {
+        quantityInput.max = book.stockQuantity;
     }
-}
-
-// 리뷰 표시
-function displayBookReviews(reviewsData) {
-    const reviewsSection = document.querySelector('.reviews-section');
-    if (!reviewsSection) return;
-
-    let reviewsHtml = '<h3>상품 리뷰</h3>';
-
-    if (reviewsData.content && reviewsData.content.length > 0) {
-        // 리뷰 요약
-        if (reviewsData.totalElements > 0) {
-            reviewsHtml += `
-                <div class="reviews-summary">
-                    <p>총 ${reviewsData.totalElements}개의 리뷰</p>
-                </div>
-            `;
-        }
-
-        // 리뷰 목록
-        reviewsHtml += '<div class="reviews-list">';
-        reviewsData.content.forEach(review => {
-            reviewsHtml += `
-                <div class="review-item">
-                    <div class="review-header">
-                        <div class="reviewer-info">
-                            <span class="reviewer-name">${review.reviewer?.memberName || '익명'}</span>
-                            <span class="reviewer-grade">${review.reviewer?.memberGrade || ''}</span>
-                        </div>
-                        <div class="review-rating">
-                            ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}
-                        </div>
-                        <div class="review-date">${formatDate(review.createdAt)}</div>
-                    </div>
-                    <div class="review-content">
-                        <h5 class="review-title">${review.reviewTitle}</h5>
-                        <p class="review-text">${review.reviewContent}</p>
-                        ${review.isRecommended ? '<span class="recommended-badge">추천</span>' : ''}
-                    </div>
-                </div>
-            `;
-        });
-        reviewsHtml += '</div>';
-
-        // 더 보기 버튼
-        if (reviewsData.hasNext) {
-            reviewsHtml += `
-                <div class="reviews-actions">
-                    <button onclick="loadMoreReviews()" class="btn btn-secondary">리뷰 더보기</button>
-                </div>
-            `;
-        }
-    } else {
-        reviewsHtml += '<p class="no-reviews">아직 리뷰가 없습니다. 첫 번째 리뷰를 작성해보세요!</p>';
-    }
-
-    reviewsSection.innerHTML = reviewsHtml;
 }
 
 // 장바구니에 추가
@@ -259,19 +115,7 @@ async function addToCart() {
         return;
     }
 
-    // 판매 상태 확인
-    if (currentBook.salesStatus !== '판매중') {
-        alert('현재 판매하지 않는 상품입니다.');
-        return;
-    }
-
-    // 재고 확인
-    if (currentBook.stockQuantity !== undefined && currentBook.stockQuantity <= 0) {
-        alert('재고가 부족합니다.');
-        return;
-    }
-
-    // 수량 입력 (기본 1개)
+    // 수량 확인
     const quantity = parseInt(document.querySelector('.quantity-input')?.value || '1');
 
     if (quantity <= 0) {
@@ -279,7 +123,7 @@ async function addToCart() {
         return;
     }
 
-    if (currentBook.stockQuantity !== undefined && quantity > currentBook.stockQuantity) {
+    if (currentBook.stockQuantity && quantity > currentBook.stockQuantity) {
         alert(`재고가 부족합니다. (현재 재고: ${currentBook.stockQuantity}개)`);
         return;
     }
@@ -317,18 +161,6 @@ async function buyNow() {
         return;
     }
 
-    // 판매 상태 확인
-    if (currentBook.salesStatus !== '판매중') {
-        alert('현재 판매하지 않는 상품입니다.');
-        return;
-    }
-
-    // 재고 확인
-    if (currentBook.stockQuantity !== undefined && currentBook.stockQuantity <= 0) {
-        alert('재고가 부족합니다.');
-        return;
-    }
-
     // 수량 확인
     const quantity = parseInt(document.querySelector('.quantity-input')?.value || '1');
 
@@ -337,12 +169,12 @@ async function buyNow() {
         return;
     }
 
-    if (currentBook.stockQuantity !== undefined && quantity > currentBook.stockQuantity) {
+    if (currentBook.stockQuantity && quantity > currentBook.stockQuantity) {
         alert(`재고가 부족합니다. (현재 재고: ${currentBook.stockQuantity}개)`);
         return;
     }
 
-    // 주문 페이지로 이동 (상품 정보를 URL 파라미터로 전달)
+    // 주문 페이지로 이동 (상품 정보를 세션 스토리지에 저장)
     const orderData = {
         items: [{
             bookId: currentBookId,
@@ -353,7 +185,6 @@ async function buyNow() {
         }]
     };
 
-    // 세션 스토리지에 임시 저장 후 주문 페이지로 이동
     sessionStorage.setItem('orderData', JSON.stringify(orderData));
     window.location.href = '/order';
 }
@@ -368,25 +199,22 @@ async function writeReview() {
         return;
     }
 
-    // 구매 이력 확인 API 호출 (실제로는 구현되어야 함)
-    try {
-        // 이 부분은 실제로는 해당 사용자가 이 상품을 구매했는지 확인하는 API를 호출해야 함
-        // const hasPurchased = await apiRequest(`/orders/check-purchase/${currentBookId}`);
-
-        // 임시로 리뷰 작성 페이지로 이동
-        window.location.href = `/review/write?bookId=${currentBookId}`;
-    } catch (error) {
-        console.error('구매 이력 확인 실패:', error);
-        alert('리뷰 작성을 위해서는 해당 상품을 구매하셔야 합니다.');
-    }
+    // 리뷰 작성 페이지로 이동
+    window.location.href = `/review/write?bookId=${currentBookId}`;
 }
 
 // 최근 본 상품에 추가
-async function addToRecentViews(bookId) {
+async function addToRecentViews() {
+    const loginStatus = await checkLoginStatus();
+
+    if (!loginStatus.isLoggedIn) {
+        return; // 로그인하지 않은 경우 무시
+    }
+
     try {
         await apiRequest('/recent-views', {
             method: 'POST',
-            body: JSON.stringify({ bookId: bookId })
+            body: JSON.stringify({ bookId: currentBookId })
         });
     } catch (error) {
         // 최근 본 상품 추가 실패는 무시 (핵심 기능이 아니므로)
@@ -394,51 +222,16 @@ async function addToRecentViews(bookId) {
     }
 }
 
-// 더 많은 리뷰 로드
-let currentReviewPage = 0;
-async function loadMoreReviews() {
-    currentReviewPage++;
+// 리뷰 페이지네이션
+async function loadBookReviews(page = 0) {
     try {
-        const reviewsData = await apiRequest(`/books/${currentBookId}/reviews?page=${currentReviewPage}&size=5`);
-        appendMoreReviews(reviewsData);
+        // 현재 페이지를 새로고침하여 리뷰 페이지를 변경
+        const url = new URL(window.location);
+        url.searchParams.set('reviewPage', page);
+        window.location.href = url.toString();
     } catch (error) {
-        console.error('추가 리뷰 로드 실패:', error);
-        showError('리뷰를 더 불러올 수 없습니다.');
-    }
-}
-
-// 추가 리뷰 표시
-function appendMoreReviews(reviewsData) {
-    const reviewsList = document.querySelector('.reviews-list');
-    if (!reviewsList || !reviewsData.content) return;
-
-    reviewsData.content.forEach(review => {
-        const reviewHtml = `
-            <div class="review-item">
-                <div class="review-header">
-                    <div class="reviewer-info">
-                        <span class="reviewer-name">${review.reviewer?.memberName || '익명'}</span>
-                        <span class="reviewer-grade">${review.reviewer?.memberGrade || ''}</span>
-                    </div>
-                    <div class="review-rating">
-                        ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}
-                    </div>
-                    <div class="review-date">${formatDate(review.createdAt)}</div>
-                </div>
-                <div class="review-content">
-                    <h5 class="review-title">${review.reviewTitle}</h5>
-                    <p class="review-text">${review.reviewContent}</p>
-                    ${review.isRecommended ? '<span class="recommended-badge">추천</span>' : ''}
-                </div>
-            </div>
-        `;
-        reviewsList.insertAdjacentHTML('beforeend', reviewHtml);
-    });
-
-    // 더보기 버튼 업데이트
-    const moreButton = document.querySelector('.reviews-actions button');
-    if (!reviewsData.hasNext && moreButton) {
-        moreButton.style.display = 'none';
+        console.error('리뷰 페이지 로드 실패:', error);
+        showError('리뷰를 불러올 수 없습니다.');
     }
 }
 
@@ -452,38 +245,21 @@ function updatePurchaseButtons(book) {
 
     if (addToCartBtn) {
         addToCartBtn.disabled = !isAvailable;
-        addToCartBtn.textContent = isAvailable ? '장바구니 담기' : '구매 불가';
+        addToCartBtn.textContent = isAvailable ? '장바구니' : '구매 불가';
+        if (!isAvailable) {
+            addToCartBtn.style.opacity = '0.5';
+            addToCartBtn.style.cursor = 'not-allowed';
+        }
     }
 
     if (buyNowBtn) {
         buyNowBtn.disabled = !isAvailable;
-        buyNowBtn.textContent = isAvailable ? '바로 구매' : '구매 불가';
+        buyNowBtn.textContent = isAvailable ? '바로구매' : '구매 불가';
+        if (!isAvailable) {
+            buyNowBtn.style.opacity = '0.5';
+            buyNowBtn.style.cursor = 'not-allowed';
+        }
     }
-}
-
-// 카테고리 경로 생성
-function getCategoryPath(category) {
-    let path = category.categoryName;
-
-    if (category.middleCategoryName) {
-        path = category.middleCategoryName + ' > ' + path;
-    }
-
-    if (category.topCategoryName) {
-        path = category.topCategoryName + ' > ' + path;
-    }
-
-    return path;
-}
-
-// 날짜 포맷팅
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-    });
 }
 
 // 에러 메시지 표시
@@ -512,6 +288,14 @@ function setupEventListeners() {
     }
 
     // 수량 조절 버튼
+    setupQuantityControls();
+
+    // 검색 기능
+    setupSearchFunctionality();
+}
+
+// 수량 조절 기능 설정
+function setupQuantityControls() {
     const quantityInput = document.querySelector('.quantity-input');
     const increaseBtn = document.querySelector('.quantity-increase');
     const decreaseBtn = document.querySelector('.quantity-decrease');
@@ -522,6 +306,8 @@ function setupEventListeners() {
             const maxQuantity = currentBook?.stockQuantity || 999;
             if (currentValue < maxQuantity) {
                 quantityInput.value = currentValue + 1;
+            } else {
+                alert(`최대 ${maxQuantity}개까지 구매 가능합니다.`);
             }
         });
 
@@ -544,8 +330,10 @@ function setupEventListeners() {
             }
         });
     }
+}
 
-    // 검색 기능
+// 검색 기능 설정
+function setupSearchFunctionality() {
     const searchBtn = document.querySelector('.search-btn');
     const searchInput = document.querySelector('.search-input');
 
@@ -566,3 +354,9 @@ function setupEventListeners() {
         });
     }
 }
+
+// 전역 함수로 노출 (HTML에서 호출할 수 있도록)
+window.addToCart = addToCart;
+window.buyNow = buyNow;
+window.writeReview = writeReview;
+window.loadBookReviews = loadBookReviews;

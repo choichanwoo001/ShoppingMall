@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,143 +10,165 @@
 <body>
 <header class="header">
     <div class="header-container">
-        <div class="logo">BookStore</div>
+        <div class="logo" onclick="location.href='/'" style="cursor: pointer;">BookStore</div>
         <div class="search-bar">
             <input type="text" class="search-input" placeholder="책제목, 저자, 출판사를 검색하세요">
             <button class="search-btn">검색</button>
         </div>
         <div class="user-menu">
-            <!--      <div th:if="${session.loginId == null}">-->
-            <a th:href="@{/login}">로그인</a>
-            <!--      </div>      -->
-            <!--      <div th:if="${session.loginId == null}">-->
-            <a th:href="@{/signup}">회원가입</a>
-            <!--      </div>      -->
-            <!--      <div th:if="${session.loginId == null}">-->
+            <!-- 로그인 상태에 따른 메뉴 표시 -->
+            <div th:if="${session.memberId == null}">
+                <a th:href="@{/login}">로그인</a>
+                <a th:href="@{/signup}">회원가입</a>
+            </div>
+            <div th:if="${session.memberId != null}">
+                <span th:text="${'안녕하세요, ' + session.memberName + '님'}">사용자님</span>
+                <a th:href="@{/logout}">로그아웃</a>
+            </div>
             <a th:href="@{/cart}">장바구니</a>
-            <!--      </div>      -->
-            <!--      <div th:if="${session.loginId == null}">-->
-            <a th:href="@{/mypage}">마이페이지</a>
-            <!--      </div>      -->
+            <a th:href="@{/mypage}" th:if="${session.memberId != null}">마이페이지</a>
         </div>
     </div>
 </header>
 
 <nav class="category-nav">
     <div class="category-list">
-        <a href="#" class="category-item">소설/에세이</a>
-        <a href="#" class="category-item">인문/사회</a>
-        <a href="#" class="category-item">경제/경영</a>
-        <a href="#" class="category-item">과학/기술</a>
-        <a href="#" class="category-item">예술/문화</a>
-        <a href="#" class="category-item">건강/취미</a>
-        <a href="#" class="category-item">어학/사전</a>
+        <!-- 동적 카테고리 목록 with 드롭다운 -->
+        <th:block th:each="topCategory : ${categories}">
+            <div class="category-dropdown"
+                 th:onmouseover="'showMiddleCategories(' + ${topCategory.categoryId} + ')'"
+                 th:onmouseleave="'hideMiddleCategories(' + ${topCategory.categoryId} + ')'">
+
+                <a th:href="@{'/category/' + ${topCategory.categoryId}}"
+                   th:text="${topCategory.categoryName}"
+                   class="category-item">대분류</a>
+
+                <!-- 중분류 드롭다운 -->
+                <div th:id="'middle-' + ${topCategory.categoryId}"
+                     class="middle-dropdown"
+                     style="display: none;">
+
+                    <th:block th:each="middleCategory : ${topCategory.subCategories}" th:if="${topCategory.subCategories != null}">
+                        <div class="middle-item"
+                             th:onmouseover="'showBottomCategories(' + ${middleCategory.categoryId} + ')'"
+                             th:onmouseleave="'hideBottomCategories(' + ${middleCategory.categoryId} + ')'">
+
+                            <a th:href="@{'/category/' + ${middleCategory.categoryId}}"
+                               th:text="${middleCategory.categoryName}"
+                               class="middle-link">중분류</a>
+
+                            <!-- 소분류 드롭다운 -->
+                            <div th:id="'bottom-' + ${middleCategory.categoryId}"
+                                 class="bottom-dropdown"
+                                 style="display: none;">
+
+                                <th:block th:each="bottomCategory : ${middleCategory.subCategories}" th:if="${middleCategory.subCategories != null}">
+                                    <a th:href="@{'/category/' + ${bottomCategory.categoryId}}"
+                                       th:text="${bottomCategory.categoryName}"
+                                       class="bottom-link">소분류</a>
+                                </th:block>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
+            </div>
+        </th:block>
     </div>
 </nav>
 
 <div class="container">
     <div class="main-content">
         <div class="content-left">
-            <h2 style="margin-bottom: 20px; color: var(--primary-color);">이달의 베스트셀러</h2>
-            <div class="book-grid">
-                <div class="book-card" onclick="location.href='product.html'">
-                    <div class="book-image">책 이미지</div>
-                    <div class="book-info">
-                        <div class="book-title">채식주의자</div>
-                        <div class="book-author">한강</div>
-                        <div class="book-price">13,500원</div>
+            <h2 style="margin-bottom: 1.25rem; color: var(--primary-color);">이달의 베스트셀러</h2>
+
+            <!-- 베스트셀러가 없는 경우 -->
+            <div th:if="${#lists.isEmpty(bestsellers)}" class="no-data">
+                <p>이달의 베스트셀러 정보가 준비 중입니다.</p>
+            </div>
+
+            <!-- 베스트셀러 목록 -->
+            <div th:unless="${#lists.isEmpty(bestsellers)}" class="book-grid">
+                <th:block th:each="bestseller : ${bestsellers}">
+                    <div class="book-card" th:onclick="'location.href=\'/product/' + ${bestseller.bookId} + '\''">
+                        <div class="book-image">
+                            <img th:if="${bestseller.bookImage != null and bestseller.bookImage != ''}"
+                                 th:src="${bestseller.bookImage}"
+                                 th:alt="${bestseller.bookName}"
+                                 style="width: 100%; height: 100%; object-fit: cover;">
+                            <div th:unless="${bestseller.bookImage != null and bestseller.bookImage != ''}"
+                                 style="display: flex; align-items: center; justify-content: center; height: 100%; color: #718096;">
+                                <span th:text="${bestseller.ranking + '위'}">순위</span>
+                            </div>
+                        </div>
+                        <div class="book-info">
+                            <div class="book-title" th:text="${bestseller.bookName}">책 제목</div>
+                            <div class="book-author" th:text="${bestseller.author}">저자</div>
+                            <div class="book-price" th:text="${#numbers.formatInteger(bestseller.price, 0, 'COMMA') + '원'}">가격</div>
+                            <!-- 베스트셀러 순위 표시 -->
+                            <div class="bestseller-rank" th:text="'베스트셀러 ' + ${bestseller.ranking} + '위'">순위</div>
+                        </div>
                     </div>
-                </div>
-                <div class="book-card" onclick="location.href='product.html'">
-                    <div class="book-image">책 이미지</div>
-                    <div class="book-info">
-                        <div class="book-title">미움받을 용기</div>
-                        <div class="book-author">기시미 이치로</div>
-                        <div class="book-price">14,900원</div>
-                    </div>
-                </div>
-                <div class="book-card" onclick="location.href='product.html'">
-                    <div class="book-image">책 이미지</div>
-                    <div class="book-info">
-                        <div class="book-title">어린왕자</div>
-                        <div class="book-author">생택쥐페리</div>
-                        <div class="book-price">8,500원</div>
-                    </div>
-                </div>
-                <div class="book-card" onclick="location.href='product.html'">
-                    <div class="book-image">책 이미지</div>
-                    <div class="book-info">
-                        <div class="book-title">데미안</div>
-                        <div class="book-author">헤르만 헤세</div>
-                        <div class="book-price">9,900원</div>
-                    </div>
-                </div>
-                <div class="book-card" onclick="location.href='product.html'">
-                    <div class="book-image">책 이미지</div>
-                    <div class="book-info">
-                        <div class="book-title">1984</div>
-                        <div class="book-author">조지 오웰</div>
-                        <div class="book-price">11,700원</div>
-                    </div>
-                </div>
-                <div class="book-card" onclick="location.href='product.html'">
-                    <div class="book-image">책 이미지</div>
-                    <div class="book-info">
-                        <div class="book-title">코스모스</div>
-                        <div class="book-author">칼 세이건</div>
-                        <div class="book-price">16,200원</div>
-                    </div>
-                </div>
+                </th:block>
             </div>
         </div>
 
         <div class="sidebar">
+            <!-- 인기 검색어 (실제로는 베스트셀러 기반) -->
             <div class="sidebar-section">
-                <div class="sidebar-title">인기 검색어</div>
-                <div class="popular-item">
-                    <div class="rank-number">1</div>
-                    <div>채식주의자</div>
+                <div class="sidebar-title">인기 도서</div>
+
+                <!-- 인기 도서가 없는 경우 -->
+                <div th:if="${#lists.isEmpty(popularBooks)}" class="no-data-small">
+                    <p>인기 도서 정보가 준비 중입니다.</p>
                 </div>
-                <div class="popular-item">
-                    <div class="rank-number">2</div>
-                    <div>미움받을 용기</div>
-                </div>
-                <div class="popular-item">
-                    <div class="rank-number">3</div>
-                    <div>어린왕자</div>
-                </div>
-                <div class="popular-item">
-                    <div class="rank-number">4</div>
-                    <div>1984</div>
-                </div>
-                <div class="popular-item">
-                    <div class="rank-number">5</div>
-                    <div>데미안</div>
-                </div>
+
+                <!-- 인기 도서 목록 (상위 5개) -->
+                <th:block th:each="book, iterStat : ${popularBooks}" th:if="${iterStat.index < 5}">
+                    <div class="popular-item" th:onclick="'location.href=\'/product/' + ${book.bookId} + '\''">
+                        <div class="rank-number" th:text="${iterStat.index + 1}">순위</div>
+                        <div th:text="${book.bookName}">도서명</div>
+                    </div>
+                </th:block>
             </div>
 
-            <div class="sidebar-section">
+            <!-- 최근 본 상품 (로그인한 경우만) -->
+            <div class="sidebar-section" th:if="${session.memberId != null}">
                 <div class="sidebar-title">최근 본 상품</div>
-                <div class="recent-book">
-                    <div class="recent-book-image">이미지</div>
-                    <div class="recent-book-info">
-                        <div class="recent-book-title">채식주의자</div>
-                        <div class="recent-book-author">한강</div>
-                    </div>
+
+                <!-- 최근 본 상품이 없는 경우 -->
+                <div th:if="${#lists.isEmpty(recentViews)}" class="no-data-small">
+                    <p>최근 본 상품이 없습니다.</p>
                 </div>
-                <div class="recent-book">
-                    <div class="recent-book-image">이미지</div>
-                    <div class="recent-book-info">
-                        <div class="recent-book-title">미움받을 용기</div>
-                        <div class="recent-book-author">기시미 이치로</div>
+
+                <!-- 최근 본 상품 목록 -->
+                <th:block th:each="recent : ${recentViews}">
+                    <div class="recent-book" th:onclick="'location.href=\'/product/' + ${recent.book.bookId} + '\''">
+                        <div class="recent-book-image">
+                            <img th:if="${recent.book.bookImage != null and recent.book.bookImage != ''}"
+                                 th:src="${recent.book.bookImage}"
+                                 th:alt="${recent.book.bookName}"
+                                 style="width: 100%; height: 100%; object-fit: cover;">
+                            <div th:unless="${recent.book.bookImage != null and recent.book.bookImage != ''}"
+                                 style="display: flex; align-items: center; justify-content: center; height: 100%; color: #718096; font-size: 0.5rem;">
+                                이미지
+                            </div>
+                        </div>
+                        <div class="recent-book-info">
+                            <div class="recent-book-title" th:text="${recent.book.bookName}">책 제목</div>
+                            <div class="recent-book-author" th:text="${recent.book.author}">저자</div>
+                            <div class="recent-book-price" th:text="${#numbers.formatInteger(recent.book.price, 0, 'COMMA') + '원'}"
+                                 style="font-size: 0.625rem; color: var(--accent-color); font-weight: bold;">가격</div>
+                        </div>
                     </div>
-                </div>
-                <div class="recent-book">
-                    <div class="recent-book-image">이미지</div>
-                    <div class="recent-book-info">
-                        <div class="recent-book-title">어린왕자</div>
-                        <div class="recent-book-author">생택쥐페리</div>
-                    </div>
+                </th:block>
+            </div>
+
+            <!-- 비로그인 시 로그인 안내 -->
+            <div class="sidebar-section" th:if="${session.memberId == null}">
+                <div class="sidebar-title">최근 본 상품</div>
+                <div class="login-notice" style="text-align: center; padding: 1rem; color: #718096;">
+                    <p style="margin-bottom: 0.5rem;">로그인하시면<br>최근 본 상품을 확인할 수 있습니다.</p>
+                    <a th:href="@{/login}" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.375rem 0.75rem;">로그인</a>
                 </div>
             </div>
         </div>
@@ -154,5 +176,132 @@
 </div>
 
 <script src="/js/main.js"></script>
+
+<style>
+    /* 카테고리 드롭다운 스타일 */
+    .category-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .middle-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 0.25rem;
+        box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
+        z-index: 1000;
+        min-width: 12rem;
+        padding: 0.5rem 0;
+    }
+
+    .middle-item {
+        position: relative;
+    }
+
+    .middle-link {
+        display: block;
+        padding: 0.5rem 1rem;
+        color: var(--text-dark);
+        text-decoration: none;
+        transition: background-color 0.2s;
+    }
+
+    .middle-link:hover {
+        background-color: var(--light-accent);
+        color: var(--accent-color);
+    }
+
+    .bottom-dropdown {
+        position: absolute;
+        top: 0;
+        left: 100%;
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 0.25rem;
+        box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
+        z-index: 1001;
+        min-width: 10rem;
+        padding: 0.5rem 0;
+    }
+
+    .bottom-link {
+        display: block;
+        padding: 0.375rem 1rem;
+        color: var(--text-dark);
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: background-color 0.2s;
+    }
+
+    .bottom-link:hover {
+        background-color: var(--light-accent);
+        color: var(--accent-color);
+    }
+
+    /* 베스트셀러 순위 스타일 */
+    .bestseller-rank {
+        font-size: 0.625rem;
+        color: var(--accent-color);
+        font-weight: bold;
+        background: var(--light-accent);
+        padding: 0.125rem 0.375rem;
+        border-radius: 0.75rem;
+        margin-top: 0.25rem;
+        text-align: center;
+    }
+
+    /* 클릭 가능한 요소 스타일 */
+    .popular-item {
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .popular-item:hover {
+        background-color: var(--light-accent);
+        border-radius: 0.25rem;
+    }
+
+    .recent-book {
+        cursor: pointer;
+        transition: background-color 0.2s;
+        border-radius: 0.25rem;
+    }
+
+    .recent-book:hover {
+        background-color: var(--light-accent);
+    }
+
+    /* 데이터 없음 스타일 */
+    .no-data, .no-data-small {
+        text-align: center;
+        color: var(--text-light);
+        padding: 2rem 1rem;
+    }
+
+    .no-data-small {
+        padding: 1rem;
+        font-size: 0.875rem;
+    }
+
+    /* 반응형 */
+    @media (max-width: 768px) {
+        .category-dropdown {
+            position: static;
+        }
+
+        .middle-dropdown, .bottom-dropdown {
+            position: static;
+            display: block !important;
+            box-shadow: none;
+            border: none;
+            padding: 0;
+            margin-left: 1rem;
+        }
+    }
+</style>
+
 </body>
 </html>

@@ -1,0 +1,408 @@
+/* 카테고리 페이지 전용 스타일 */
+
+/* 브레드크럼 */
+.breadcrumb {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+
+.breadcrumb a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb .separator {
+    margin: 0 0.5rem;
+    color: var(--text-light);
+}
+
+/* 필터 섹션 */
+.filter-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: var(--background-light);
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.filter-left h2 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-dark);
+    font-size: 1.5rem;
+}
+
+.result-count {
+    color: var(--text-light);
+    font-size: 0.875rem;
+}
+
+.filter-right {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.sort-options, .view-options {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sort-options label, .view-options label {
+    font-size: 0.875rem;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.sort-select, .size-select {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    background: white;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.sort-select:focus, .size-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* 도서 목록 섹션 */
+.books-section {
+    min-height: 50vh;
+}
+
+.no-books {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-light);
+    font-size: 1.125rem;
+}
+
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.book-card {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.book-card:hover {
+    transform: translateY(-0.25rem);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+
+.book-image {
+    height: 250px;
+    overflow: hidden;
+    position: relative;
+}
+
+.book-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: var(--background-light);
+    color: var(--text-light);
+    font-size: 0.875rem;
+}
+
+.book-info {
+    padding: 1rem;
+}
+
+.book-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+    height: 2.8rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.book-author {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    margin-bottom: 0.25rem;
+}
+
+.book-publisher {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+}
+
+.book-price {
+    font-size: 1.125rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+
+.book-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.rating-stars {
+    color: #fbbf24;
+    font-size: 0.875rem;
+}
+
+.rating-text {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+.book-status {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-available {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-unavailable {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+/* 페이징 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 2rem 0;
+}
+
+.page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    background: white;
+    color: var(--text-dark);
+    text-decoration: none;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    min-width: 2.5rem;
+}
+
+.page-btn:hover {
+    background: var(--light-accent);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.page-btn.current {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.page-btn.prev, .page-btn.next {
+    font-weight: 500;
+}
+
+/* 카테고리 네비게이션 활성 상태 */
+.category-item.active,
+.middle-link.active,
+.bottom-link.active {
+    background: var(--primary-color);
+    color: white;
+    font-weight: 600;
+}
+
+/* 카테고리 드롭다운 스타일 */
+.category-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.middle-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
+    z-index: 1000;
+    min-width: 12rem;
+    padding: 0.5rem 0;
+}
+
+.middle-item {
+    position: relative;
+}
+
+.middle-link {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: var(--text-dark);
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.middle-link:hover {
+    background-color: var(--light-accent);
+    color: var(--accent-color);
+}
+
+.bottom-dropdown {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
+    z-index: 1001;
+    min-width: 10rem;
+    padding: 0.5rem 0;
+}
+
+.bottom-link {
+    display: block;
+    padding: 0.375rem 1rem;
+    color: var(--text-dark);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: background-color 0.2s;
+}
+
+.bottom-link:hover {
+    background-color: var(--light-accent);
+    color: var(--accent-color);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+    .book-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+
+    .filter-section {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .filter-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 768px) {
+    .book-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .book-image {
+        height: 200px;
+    }
+
+    .book-info {
+        padding: 0.75rem;
+    }
+
+    .book-title {
+        font-size: 0.875rem;
+        height: 2.4rem;
+    }
+
+    .filter-right {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .page-btn {
+        padding: 0.375rem 0.5rem;
+        font-size: 0.75rem;
+        min-width: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .book-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+
+    .book-image {
+        height: 150px;
+    }
+
+    .book-info {
+        padding: 0.5rem;
+    }
+
+    .book-title {
+        font-size: 0.75rem;
+        height: 2rem;
+        -webkit-line-clamp: 2;
+    }
+
+    .book-author, .book-publisher {
+        font-size: 0.625rem;
+    }
+
+    .book-price {
+        font-size: 0.875rem;
+    }
+
+    .filter-section {
+        padding: 0.75rem;
+    }
+
+    .filter-left h2 {
+        font-size: 1.25rem;
+    }
+}
