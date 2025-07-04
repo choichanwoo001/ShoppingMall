@@ -67,8 +67,8 @@
 </div>
 
 <!-- 주문서 모달 -->
-<div id="orderModal" class="modal" style="display:none;">
-  <div class="modal-content" style="max-width:480px;">
+<div id="orderModal" class="modal">
+  <div class="modal-content order-modal-content">
     <div class="modal-header">
       <h3>주문서 작성</h3>
       <span class="close" onclick="closeOrderModal()">&times;</span>
@@ -94,7 +94,7 @@
             <!-- 추후 신용카드 등 추가 가능 -->
           </select>
         </div>
-        <div class="form-actions" style="margin-top:1.5rem;">
+        <div class="form-actions">
           <button type="button" class="btn btn-secondary" onclick="closeOrderModal()">취소</button>
           <button type="submit" class="btn btn-primary" id="kakaoPayBtn">카카오페이 결제</button>
         </div>

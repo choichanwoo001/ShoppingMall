@@ -10,7 +10,7 @@
 <body>
 <header class="header">
     <div class="header-container">
-        <div class="logo" onclick="location.href='/'" style="cursor: pointer;">BookStore</div>
+        <div class="logo logo-clickable" onclick="location.href='/'" style="cursor: pointer;">BookStore</div>
         <div class="search-bar">
             <input type="text" class="search-input" placeholder="책제목, 저자, 출판사를 검색하세요"
                    th:value="${searchKeyword}">
@@ -46,8 +46,7 @@
 
                 <!-- 중분류 드롭다운 -->
                 <div th:id="'middle-' + ${topCategory.categoryId}"
-                     class="middle-dropdown"
-                     style="display: none;">
+                     class="middle-dropdown">
 
                     <th:block th:each="middleCategory : ${topCategory.subCategories}" th:if="${topCategory.subCategories != null}">
                         <div class="middle-item"
@@ -60,8 +59,7 @@
 
                             <!-- 소분류 드롭다운 -->
                             <div th:id="'bottom-' + ${middleCategory.categoryId}"
-                                 class="bottom-dropdown"
-                                 style="display: none;">
+                                 class="bottom-dropdown">
 
                                 <th:block th:each="bottomCategory : ${middleCategory.subCategories}" th:if="${middleCategory.subCategories != null}">
                                     <a th:href="@{'/category/' + ${bottomCategory.categoryId}}"
@@ -162,7 +160,7 @@
                             <img th:if="${book.bookImage != null and book.bookImage != ''}"
                                  th:src="${book.bookImage}"
                                  th:alt="${book.bookName}"
-                                 style="width: 100%; height: 100%; object-fit: cover;">
+                                 class="book-image-img">
                             <div th:unless="${book.bookImage != null and book.bookImage != ''}"
                                  class="no-image">
                                 <span>이미지 없음</span>
@@ -218,49 +216,6 @@
 </div>
 
 <script src="/js/search.js"></script>
-
-<style>
-    /* 검색 결과 페이지 전용 스타일 */
-    .no-results {
-        text-align: center;
-        padding: 3rem 2rem;
-    }
-
-    .no-results h3 {
-        color: var(--text-dark);
-        margin-bottom: 1rem;
-        font-size: 1.25rem;
-    }
-
-    .no-results p {
-        color: var(--text-light);
-        margin-bottom: 2rem;
-    }
-
-    .search-suggestions {
-        text-align: left;
-        max-width: 500px;
-        margin: 0 auto;
-        padding: 1.5rem;
-        background: var(--background-light);
-        border-radius: 0.5rem;
-    }
-
-    .search-suggestions h4 {
-        color: var(--primary-color);
-        margin-bottom: 1rem;
-    }
-
-    .search-suggestions ul {
-        color: var(--text-dark);
-        margin: 0;
-        padding-left: 1.5rem;
-    }
-
-    .search-suggestions li {
-        margin-bottom: 0.5rem;
-    }
-</style>
 
 </body>
 </html>

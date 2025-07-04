@@ -211,3 +211,14 @@
         flex-direction: column;
     }
 }
+
+/* 인라인 스타일 분리 및 클래스화 */
+#orderModal {
+  display: none;
+}
+.order-modal-content {
+  max-width: 480px;
+}
+.form-actions {
+  margin-top: 1.5rem;
+}

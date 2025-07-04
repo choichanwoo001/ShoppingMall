@@ -9,5 +9,4 @@ public class FastCampusBookStoreApplication {
     public static void main(String[] args) {
         SpringApplication.run(FastCampusBookStoreApplication.class, args);
     }
-
 }

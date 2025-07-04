@@ -8,7 +8,6 @@ import com.example.fastcampusbookstore.dto.request.BookSearchRequest;
 import com.example.fastcampusbookstore.dto.common.PageResponse;
 import com.example.fastcampusbookstore.dto.response.BookListResponse;
 import com.example.fastcampusbookstore.dto.response.BookDetailResponse;
-import com.example.fastcampusbookstore.dto.response.ReviewResponse;
 import com.example.fastcampusbookstore.service.ReviewService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -80,6 +79,19 @@ public class PageController {
         }
         model.addAttribute("book", book);
 
+        // 별점(★, ☆) 문자열 생성 (book.rating)
+        String bookRatingStars = "";
+        if (book != null && book.getRating() != null) {
+            int fullStars = book.getRating().intValue();
+            int emptyStars = 5 - fullStars;
+            bookRatingStars = "★".repeat(fullStars) + "☆".repeat(emptyStars) + " (" + book.getRating() + "/5)";
+        }
+        model.addAttribute("bookRatingStars", bookRatingStars);
+
+        // 상품 설명 개행 처리
+        String bookDescriptionHtml = (book != null && book.getDescription() != null) ? book.getDescription().replace("\n", "<br>") : "";
+        model.addAttribute("bookDescriptionHtml", bookDescriptionHtml);
+
         // 리뷰 목록 (최신순 1페이지, 5개)
         Pageable pageable = PageRequest.of(0, 5);
         var reviewPage = reviewService.getBookReviews(bookId, pageable);
@@ -99,6 +111,26 @@ public class PageController {
             "averageRating", averageRating != null ? String.format("%.1f", averageRating) : "0.0",
             "totalReviews", totalReviews
         ));
+
+        // 리뷰 별점(★, ☆) 문자열 생성 (reviewSummary.averageRating)
+        String reviewSummaryStars = "";
+        if (averageRating != null) {
+            int fullStars = averageRating.intValue();
+            int emptyStars = 5 - fullStars;
+            reviewSummaryStars = "★".repeat(fullStars) + "☆".repeat(emptyStars);
+        }
+        model.addAttribute("reviewSummaryStars", reviewSummaryStars);
+
+        // 페이지네이션 범위 계산 (최대 5개 버튼)
+        int currentPage = reviewPage.getNumber();
+        int totalPages = reviewPage.getTotalPages();
+        int startPage = Math.max(0, currentPage - 2);
+        int endPage = Math.min(totalPages - 1, currentPage + 2);
+        java.util.List<Integer> pageNumbers = new java.util.ArrayList<>();
+        for (int i = startPage; i <= endPage; i++) {
+            pageNumbers.add(i);
+        }
+        model.addAttribute("pageNumbers", pageNumbers);
 
         return "product";
     }

@@ -10,7 +10,7 @@
 <body>
 <header class="header">
   <div class="header-container">
-    <div class="logo" onclick="location.href='/'" style="cursor: pointer;">BookStore</div>
+    <div class="logo logo-clickable" onclick="location.href='/'" style="cursor: pointer;">BookStore</div>
     <div class="search-bar">
       <input type="text" class="search-input" placeholder="책제목, 저자, 출판사를 검색하세요">
       <button class="search-btn">검색</button>
@@ -56,9 +56,9 @@
       <img th:if="${book.bookImage != null and book.bookImage != ''}"
            th:src="${book.bookImage}"
            th:alt="${book.bookName}"
-           style="width: 100%; height: 100%; object-fit: cover;">
+           class="product-image-img">
       <div th:unless="${book.bookImage != null and book.bookImage != ''}"
-           style="display: flex; align-items: center; justify-content: center; height: 100%; color: #718096;">
+           class="no-image">
         이미지 준비중
       </div>
     </div>
@@ -81,7 +81,7 @@
         </p>
         <p th:if="${book.rating != null}">
           <strong>평점:</strong>
-          <span th:text="${'★'.repeat(T(java.lang.Math).floor(book.rating)) + '☆'.repeat(5 - T(java.lang.Math).floor(book.rating)) + ' (' + book.rating + '/5)'}">★★★★☆ (4.5/5)</span>
+          <span th:text="${bookRatingStars}">★★★★☆ (4.5/5)</span>
         </p>
         <!-- 카테고리 정보 -->
         <p th:if="${book.category != null}">
@@ -104,8 +104,8 @@
       <div class="product-price" th:text="${#numbers.formatInteger(book.price, 0, 'COMMA') + '원'}">가격</div>
 
       <!-- 수량 선택 -->
-      <div class="quantity-selector" style="margin-bottom: 1rem;">
-        <label for="quantity" style="margin-right: 0.5rem;">수량:</label>
+      <div class="quantity-selector">
+        <label for="quantity" class="quantity-label">수량:</label>
         <div class="quantity-control">
           <button type="button" class="quantity-decrease">-</button>
           <input type="number" id="quantity" class="quantity-input" value="1" min="1"
@@ -127,15 +127,12 @@
 
       <div class="product-description" th:if="${book.description != null and book.description != ''}">
         <h3>상품 설명</h3>
-        <div th:utext="${#strings.replace(book.description, T(System).lineSeparator(), '<br>')}"
-             style="line-height: 1.8;">
-          상품 설명
-        </div>
+        <div th:utext="${bookDescriptionHtml}" class="product-description-content">상품 설명</div>
       </div>
 
       <!-- PDF 미리보기 링크 -->
       <div th:if="${book.previewPdf != null and book.previewPdf != ''}"
-           style="margin-top: 1rem;">
+           class="pdf-preview-link">
         <a th:href="${book.previewPdf}" target="_blank" class="btn btn-secondary">
           미리보기 (PDF)
         </a>
@@ -150,7 +147,7 @@
       <div class="rating-overview">
         <div class="average-rating" th:text="${reviewSummary != null ? reviewSummary.averageRating : '0.0'}">0.0</div>
         <div class="stars" th:if="${reviewSummary != null and reviewSummary.averageRating != null}">
-          <span th:text="${'★'.repeat(T(java.lang.Math).floor(reviewSummary.averageRating)) + '☆'.repeat(5 - T(java.lang.Math).floor(reviewSummary.averageRating))}">☆☆☆☆☆</span>
+          <span th:text="${reviewSummaryStars}">☆☆☆☆☆</span>
         </div>
         <div class="total-reviews" th:text="${'총 ' + (reviewSummary != null ? reviewSummary.totalReviews : 0) + '개의 리뷰'}">총 0개의 리뷰</div>
       </div>
@@ -160,8 +157,7 @@
     <!-- 리뷰 목록 -->
     <div class="review-list">
       <!-- 리뷰가 없는 경우 -->
-      <div th:if="${#lists.isEmpty(reviews)}" class="no-reviews"
-           style="text-align: center; padding: 2rem; color: #718096;">
+      <div th:if="${#lists.isEmpty(reviews)}" class="no-reviews">
         <p>아직 작성된 리뷰가 없습니다.</p>
         <p>첫 번째 리뷰를 작성해보세요!</p>
       </div>
@@ -173,8 +169,7 @@
             <span class="reviewer-name" th:text="${review.reviewer != null ? review.reviewer.memberName : '익명'}">작성자</span>
             <span th:if="${review.reviewer != null and review.reviewer.memberGrade != null}"
                   class="reviewer-grade"
-                  th:text="${'[' + review.reviewer.memberGrade + ']'}"
-                  style="font-size: 0.75rem; color: #9f7aea; margin-left: 0.25rem;">[등급]</span>
+                  th:text="${'[' + review.reviewer.memberGrade + ']'}">[등급]</span>
           </div>
           <div class="review-date"
                th:text="${#temporals.format(review.createdAt, 'yyyy.MM.dd')}">작성일</div>
@@ -183,22 +178,19 @@
         <div class="review-rating" th:if="${review.rating != null}">
           <span th:text="${'★'.repeat(review.rating) + '☆'.repeat(5 - review.rating)}">★★★★★</span>
           <span th:if="${review.isRecommended != null and review.isRecommended}"
-                class="recommended-badge"
-                style="background: #38a169; color: white; padding: 0.125rem 0.375rem; border-radius: 0.75rem; font-size: 0.625rem; margin-left: 0.5rem;">
+                class="recommended-badge">
             추천
           </span>
         </div>
 
         <h5 th:if="${review.reviewTitle != null and review.reviewTitle != ''}"
             class="review-title"
-            th:text="${review.reviewTitle}"
-            style="margin: 0.5rem 0; font-weight: bold;">리뷰 제목</h5>
+            th:text="${review.reviewTitle}">리뷰 제목</h5>
 
         <p class="review-content" th:text="${review.reviewContent}">리뷰 내용</p>
 
         <div th:if="${review.updatedAt != null and !#temporals.format(review.createdAt, 'yyyy-MM-dd').equals(#temporals.format(review.updatedAt, 'yyyy-MM-dd'))}"
-             class="review-updated"
-             style="font-size: 0.75rem; color: #718096; margin-top: 0.5rem;">
+             class="review-updated">
           (수정일: <span th:text="${#temporals.format(review.updatedAt, 'yyyy.MM.dd')}"></span>)
         </div>
       </div>
@@ -212,7 +204,7 @@
               th:onclick="'loadBookReviews(' + ${reviewPage.number - 1} + ')'">이전</button>
 
       <!-- 페이지 번호 -->
-      <th:block th:each="pageNum : ${#numbers.sequence(T(java.lang.Math).max(0, reviewPage.number - 2), T(java.lang.Math).min(reviewPage.totalPages - 1, reviewPage.number + 2))}">
+      <th:block th:each="pageNum : ${pageNumbers}">
         <button class="page-btn"
                 th:classappend="${pageNum == reviewPage.number ? 'active' : ''}"
                 th:onclick="'loadBookReviews(' + ${pageNum} + ')'"
@@ -233,69 +225,6 @@
 </script>
 
 <script src="/js/product.js"></script>
-
-<style>
-  /* 추가 스타일 */
-  .status-available {
-    color: #38a169;
-    font-weight: bold;
-  }
-
-  .status-unavailable {
-    color: #e53e3e;
-    font-weight: bold;
-  }
-
-  .stock-available {
-    color: #38a169;
-    font-weight: bold;
-  }
-
-  .stock-out {
-    color: #e53e3e;
-    font-weight: bold;
-  }
-
-  .quantity-control {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-  }
-
-  .quantity-control button {
-    width: 1.875rem;
-    height: 1.875rem;
-    border: 1px solid #e2e8f0;
-    background: white;
-    cursor: pointer;
-    border-radius: 0.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .quantity-control input {
-    width: 3.125rem;
-    height: 1.875rem;
-    text-align: center;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.25rem;
-  }
-
-  .error-message {
-    text-align: center;
-    padding: 3rem;
-    background: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 0.125rem 0.625rem rgba(0,0,0,0.05);
-  }
-
-  .no-reviews {
-    background: #f7fafc;
-    border-radius: 0.5rem;
-    margin: 1rem 0;
-  }
-</style>
 
 </body>
 </html>

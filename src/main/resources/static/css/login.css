@@ -110,3 +110,19 @@ body {
 .form-links a:hover {
     text-decoration: underline;
 }
+
+/* 인라인 스타일 분리 및 클래스화 */
+#logoutSection {
+  display: none;
+  margin-top: 2rem;
+  text-align: center;
+}
+.logout-btn {
+  margin-top: 1rem;
+}
+#resetPasswordModal {
+  display: none;
+}
+.modal-content {
+  /* 기존 스타일 유지, 필요시 추가 */
+}

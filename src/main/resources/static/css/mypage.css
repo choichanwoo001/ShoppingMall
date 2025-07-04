@@ -621,3 +621,8 @@
     font-size: 1rem;
     color: var(--text-dark);
 }
+
+/* 인라인 스타일 분리 및 클래스화 */
+.recent-view-clear-btn {
+  font-size: 0.85rem;
+}

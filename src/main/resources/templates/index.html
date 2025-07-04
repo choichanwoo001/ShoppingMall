@@ -10,7 +10,7 @@
 <body>
 <header class="header">
     <div class="header-container">
-        <div class="logo" onclick="location.href='/'" style="cursor: pointer;">BookStore</div>
+        <div class="logo logo-clickable" onclick="location.href='/'" style="cursor: pointer;">BookStore</div>
         <div class="search-bar">
             <input type="text" class="search-input" placeholder="책제목, 저자, 출판사를 검색하세요">
             <button class="search-btn">검색</button>
@@ -79,7 +79,7 @@
 <div class="container">
     <div class="main-content">
         <div class="content-left">
-            <h2 style="margin-bottom: 1.25rem; color: var(--primary-color);">이달의 베스트셀러</h2>
+            <h2 class="bestseller-title">이달의 베스트셀러</h2>
 
             <!-- 베스트셀러가 없는 경우 -->
             <div th:if="${#lists.isEmpty(bestsellers)}" class="no-data">
@@ -94,9 +94,9 @@
                             <img th:if="${bestseller.bookImage != null and bestseller.bookImage != ''}"
                                  th:src="${bestseller.bookImage}"
                                  th:alt="${bestseller.bookName}"
-                                 style="width: 100%; height: 100%; object-fit: cover;">
+                                 class="book-image-img">
                             <div th:unless="${bestseller.bookImage != null and bestseller.bookImage != ''}"
-                                 style="display: flex; align-items: center; justify-content: center; height: 100%; color: #718096;">
+                                 class="no-image">
                                 <span th:text="${bestseller.ranking + '위'}">순위</span>
                             </div>
                         </div>
@@ -116,7 +116,7 @@
             <!-- 인기 검색어 순위 Top 5 -->
             <div class="sidebar-section">
                 <div class="sidebar-title">인기 검색어</div>
-                <ul id="popular-keyword-list" style="list-style:none; padding:0; margin:0;"></ul>
+                <ul id="popular-keyword-list"></ul>
             </div>
 
             <!-- 인기 검색어 (실제로는 베스트셀러 기반) -->
@@ -149,132 +149,6 @@
 </div>
 
 <script src="/js/main.js"></script>
-
-<style>
-    /* 카테고리 드롭다운 스타일 */
-    .category-dropdown {
-        position: relative;
-        display: inline-block;
-    }
-
-    .middle-dropdown {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        background: white;
-        border: 1px solid var(--border-color);
-        border-radius: 0.25rem;
-        box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
-        z-index: 1000;
-        min-width: 12rem;
-        padding: 0.5rem 0;
-    }
-
-    .middle-item {
-        position: relative;
-    }
-
-    .middle-link {
-        display: block;
-        padding: 0.5rem 1rem;
-        color: var(--text-dark);
-        text-decoration: none;
-        transition: background-color 0.2s;
-    }
-
-    .middle-link:hover {
-        background-color: var(--light-accent);
-        color: var(--accent-color);
-    }
-
-    .bottom-dropdown {
-        position: absolute;
-        top: 0;
-        left: 100%;
-        background: white;
-        border: 1px solid var(--border-color);
-        border-radius: 0.25rem;
-        box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
-        z-index: 1001;
-        min-width: 10rem;
-        padding: 0.5rem 0;
-    }
-
-    .bottom-link {
-        display: block;
-        padding: 0.375rem 1rem;
-        color: var(--text-dark);
-        text-decoration: none;
-        font-size: 0.875rem;
-        transition: background-color 0.2s;
-    }
-
-    .bottom-link:hover {
-        background-color: var(--light-accent);
-        color: var(--accent-color);
-    }
-
-    /* 베스트셀러 순위 스타일 */
-    .bestseller-rank {
-        font-size: 0.625rem;
-        color: var(--accent-color);
-        font-weight: bold;
-        background: var(--light-accent);
-        padding: 0.125rem 0.375rem;
-        border-radius: 0.75rem;
-        margin-top: 0.25rem;
-        text-align: center;
-    }
-
-    /* 클릭 가능한 요소 스타일 */
-    .popular-item {
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-
-    .popular-item:hover {
-        background-color: var(--light-accent);
-        border-radius: 0.25rem;
-    }
-
-    .recent-book {
-        cursor: pointer;
-        transition: background-color 0.2s;
-        border-radius: 0.25rem;
-    }
-
-    .recent-book:hover {
-        background-color: var(--light-accent);
-    }
-
-    /* 데이터 없음 스타일 */
-    .no-data, .no-data-small {
-        text-align: center;
-        color: var(--text-light);
-        padding: 2rem 1rem;
-    }
-
-    .no-data-small {
-        padding: 1rem;
-        font-size: 0.875rem;
-    }
-
-    /* 반응형 */
-    @media (max-width: 768px) {
-        .category-dropdown {
-            position: static;
-        }
-
-        .middle-dropdown, .bottom-dropdown {
-            position: static;
-            display: block !important;
-            box-shadow: none;
-            border: none;
-            padding: 0;
-            margin-left: 1rem;
-        }
-    }
-</style>
 
 </body>
 </html>

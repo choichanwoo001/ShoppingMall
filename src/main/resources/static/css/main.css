@@ -104,3 +104,33 @@
         order: -1;
     }
 }
+
+/* 인라인 스타일 분리 및 클래스화 */
+.logo-clickable {
+  cursor: pointer;
+}
+.category-dropdown .middle-dropdown,
+.category-dropdown .bottom-dropdown {
+  display: none;
+}
+.bestseller-title {
+  margin-bottom: 1.25rem;
+  color: var(--primary-color);
+}
+#popular-keyword-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.book-image-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #718096;
+}
