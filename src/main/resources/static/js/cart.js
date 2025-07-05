@@ -65,7 +65,7 @@ async function changeQuantity(cartId, newQuantity) {
                 'Content-Type': 'application/json',
             },
             credentials: 'include',
-            body: JSON.stringify({ quantity: newQuantity })
+            body: JSON.stringify({ cartId: cartId, quantity: newQuantity })
         });
 
         const data = await response.json();
@@ -173,16 +173,28 @@ document.addEventListener('change', function(e) {
 
 // 금액 요약 표시 업데이트
 function updateSummaryDisplay(cartData = null) {
+    let subtotal = 0;
+    let shippingCost = 0;
+    let totalAmount = 0;
     if (cartData) {
         // API에서 받은 데이터 사용
         document.getElementById('subtotal').textContent = cartData.subtotalAmount.toLocaleString() + '원';
         document.getElementById('shippingCost').textContent = cartData.shippingCost.toLocaleString() + '원';
         document.getElementById('totalAmount').textContent = cartData.totalAmount.toLocaleString() + '원';
     } else {
-        // 체크박스 상태에 따른 계산 (간단 구현)
-        // 실제로는 서버에 다시 요청해서 계산하는 것이 정확함
+        // 체크된 아이템만 계산
         const checkedBoxes = document.querySelectorAll('.item-checkbox:checked');
-        // 여기서는 간단히 처리하고 실제로는 API 재호출 권장
+        checkedBoxes.forEach(cb => {
+            const cartItem = cb.closest('.cart-item');
+            const quantity = parseInt(cartItem.querySelector('input[type="number"]').value);
+            const priceText = cartItem.querySelector('.item-price').textContent.replace(/[^\d]/g, '');
+            const price = parseInt(priceText) || 0;
+            subtotal += price * quantity;
+        });
+        totalAmount = subtotal + shippingCost;
+        document.getElementById('subtotal').textContent = subtotal.toLocaleString() + '원';
+        document.getElementById('shippingCost').textContent = shippingCost.toLocaleString() + '원';
+        document.getElementById('totalAmount').textContent = totalAmount.toLocaleString() + '원';
     }
 }
 
@@ -215,16 +227,7 @@ async function proceedToCheckout() {
 
 // 주문서 모달 열기
 function openOrderModal() {
-    // 배송지/연락처 자동 입력
-    fetch('/api/members/login-status', { credentials: 'include' })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success && data.data && data.data.isLoggedIn && data.data.member) {
-                document.getElementById('orderAddress').value = data.data.member.address || '';
-                document.getElementById('orderPhone').value = data.data.member.phone || '';
-            }
-        });
-    document.getElementById('orderModal').style.display = 'block';
+    window.location.href = '/order';
 }
 
 function closeOrderModal() {

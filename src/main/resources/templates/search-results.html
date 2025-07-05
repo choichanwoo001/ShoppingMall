@@ -157,29 +157,29 @@
                 <th:block th:each="book : ${books}">
                     <div class="book-card" th:onclick="'location.href=\'/product/' + ${book.bookId} + '\''">
                         <div class="book-image">
-                            <img th:if="${book.bookImage != null and book.bookImage != ''}"
-                                 th:src="${book.bookImage}"
-                                 th:alt="${book.bookName}"
+                            <img th:if="${book.bookImage != null and !#strings.isEmpty(book.bookImage)}"
+                                 th:src="${book.bookImage ?: ''}"
+                                 th:alt="${book.bookName ?: '제목 없음'}"
                                  class="book-image-img">
-                            <div th:unless="${book.bookImage != null and book.bookImage != ''}"
+                            <div th:unless="${book.bookImage != null and !#strings.isEmpty(book.bookImage)}"
                                  class="no-image">
                                 <span>이미지 없음</span>
                             </div>
                         </div>
                         <div class="book-info">
-                            <div class="book-title" th:text="${book.bookName}">책 제목</div>
-                            <div class="book-author" th:text="${book.author}">저자</div>
-                            <div class="book-publisher" th:text="${book.publisher}">출판사</div>
-                            <div class="book-price" th:text="${#numbers.formatInteger(book.price, 0, 'COMMA') + '원'}">가격</div>
+                            <div class="book-title" th:text="${book.bookName ?: '제목 없음'}">책 제목</div>
+                            <div class="book-author" th:text="${book.author ?: '저자 미상'}">저자</div>
+                            <div class="book-publisher" th:text="${book.publisher ?: '출판사 미상'}">출판사</div>
+                            <div class="book-price" th:text="${#numbers.formatInteger(book.price ?: 0, 0, 'COMMA') + '원'}">가격</div>
 
                             <!-- 평점 표시 -->
                             <div class="book-rating" th:if="${book.rating != null}">
-                                <span class="rating-stars" th:text="${'★'.repeat(book.rating.intValue())}">★★★★★</span>
-                                <span class="rating-text" th:text="${book.rating}">평점</span>
+                                <span class="rating-stars" th:text="${'★'.repeat(book.rating != null ? book.rating.intValue() : 0)}">★★★★★</span>
+                                <span class="rating-text" th:text="${book.rating ?: 0}">평점</span>
                             </div>
 
                             <!-- 판매 상태 -->
-                            <div class="book-status" th:text="${book.salesStatus}"
+                            <div class="book-status" th:text="${book.salesStatus ?: '정보 없음'}"
                                  th:classappend="${book.salesStatus == '판매중' ? 'status-available' : 'status-unavailable'}">
                                 판매상태
                             </div>

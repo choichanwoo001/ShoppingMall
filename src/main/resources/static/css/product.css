@@ -293,3 +293,67 @@
   border-radius: 0.5rem;
   margin: 1rem 0;
 }
+
+/* 주문서 모달 스타일 */
+#orderModal {
+    display: none;
+}
+
+.order-modal-content {
+    max-width: 480px;
+}
+
+.form-actions {
+    margin-top: 1.5rem;
+}
+
+/* 주문서 모달 상품 정보/총 결제금액 UX 개선 */
+.order-items-summary {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+}
+
+.order-item-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.order-item-img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 0.25rem;
+    border: 1px solid #e2e8f0;
+}
+
+.order-item-info {
+    flex: 1;
+}
+
+.order-item-title {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.order-item-qty {
+    font-size: 0.95rem;
+    color: #4a5568;
+}
+
+.order-item-price {
+    font-size: 0.95rem;
+    color: #2b6cb0;
+}
+
+.order-total-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}

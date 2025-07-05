@@ -22,4 +22,7 @@ public interface BestsellerRepository extends JpaRepository<Bestseller, Integer>
 
     // 특정 월의 베스트셀러 개수
     long countByTargetMonth(String targetMonth);
+
+    // 모든 베스트셀러 목록 (순위별 정렬)
+    List<Bestseller> findAllByOrderByRanking();
 }

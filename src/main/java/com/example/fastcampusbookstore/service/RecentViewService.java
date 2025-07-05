@@ -12,6 +12,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,6 +28,7 @@ public class RecentViewService {
     private final RecentViewRepository recentViewRepository;
     private final MemberRepository memberRepository;
     private final BookRepository bookRepository;
+    private static final Logger log = LoggerFactory.getLogger(RecentViewService.class);
 
     /**
      * 최근 본 상품 목록 조회
@@ -48,7 +51,7 @@ public class RecentViewService {
      */
     @Transactional
     public void addRecentView(String memberId, Integer bookId) {
-
+        log.info("[RecentViewService] addRecentView 호출 - memberId={}, bookId={}", memberId, bookId);
         Member member = memberRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다"));
 
@@ -63,6 +66,7 @@ public class RecentViewService {
             RecentView recentView = existingView.get();
             recentView.setViewDate(LocalDateTime.now());
             recentViewRepository.save(recentView);
+            log.info("[RecentViewService] 기존 기록 업데이트 - viewId={}, memberId={}, bookId={}", recentView.getViewId(), memberId, bookId);
         } else {
             // 새로운 조회 기록 추가
             RecentView recentView = new RecentView();
@@ -70,6 +74,7 @@ public class RecentViewService {
             recentView.setBook(book);
             recentView.setViewDate(LocalDateTime.now());
             recentViewRepository.save(recentView);
+            log.info("[RecentViewService] 새 기록 추가 - memberId={}, bookId={}", memberId, bookId);
 
             // 최근 본 상품이 10개를 초과하면 가장 오래된 것 삭제
             cleanupOldRecentViews(member);

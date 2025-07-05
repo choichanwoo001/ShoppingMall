@@ -50,7 +50,7 @@ public class PageController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "redirect:/login";
+        return "redirect:/";
     }
 
     @GetMapping("/signup")
@@ -59,8 +59,12 @@ public class PageController {
     }
 
     @GetMapping("/mypage")
-    public String mypage(Model model) {
+    public String mypage(Model model, HttpSession session) {
         addCategoryData(model); // 네비게이션용 카테고리 추가
+        Object loginMember = session.getAttribute("loginMember");
+        if (loginMember != null) {
+            model.addAttribute("member", loginMember);
+        }
         return "mypage";
     }
 
@@ -264,5 +268,12 @@ public class PageController {
             log.warn("카테고리 데이터 로드 실패", e);
             // 카테고리 로드 실패해도 페이지는 표시
         }
+    }
+
+    @GetMapping("/order")
+    public String orderPage(Model model, HttpSession session) {
+        addCategoryData(model);
+        // 필요시 세션에서 회원정보 등 추가
+        return "order";
     }
 }

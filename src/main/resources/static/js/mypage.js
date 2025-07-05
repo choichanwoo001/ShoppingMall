@@ -15,24 +15,29 @@ document.addEventListener('DOMContentLoaded', function() {
     initializePage();
     setupEventHandlers();
     checkLoginAndLoadData();
-    loadRecentViewsForMypage(); // 최근 본 상품 배너 로드
 });
 
 // 페이지 초기화
 function initializePage() {
     // 오늘 날짜를 종료일로 설정
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
     const endDateInput = document.getElementById('endDate');
     if (endDateInput) {
-        endDateInput.value = today;
+        endDateInput.value = todayStr;
+        endDateInput.max = todayStr;
     }
 
     // 3개월 전을 시작일로 설정
     const threeMonthsAgo = new Date();
     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    // 만약 3개월 전이 오늘보다 미래면 오늘로 고정
+    if (threeMonthsAgo > today) threeMonthsAgo.setTime(today.getTime());
     const startDateInput = document.getElementById('startDate');
     if (startDateInput) {
-        startDateInput.value = threeMonthsAgo.toISOString().split('T')[0];
+        const startStr = threeMonthsAgo.toISOString().split('T')[0];
+        startDateInput.value = startStr;
+        startDateInput.max = todayStr;
     }
 }
 
@@ -153,7 +158,8 @@ function setupStarRating() {
     });
 
     document.addEventListener('mouseleave', function(e) {
-        if (e.target.closest('.star-rating')) {
+        // closest 오류 방지: e.target이 Element인지 체크
+        if (e.target && e.target.nodeType === 1 && e.target.closest && e.target.closest('.star-rating')) {
             updateStarRating(currentRating);
         }
     });
@@ -199,27 +205,27 @@ function showTab(tabName, buttonElement) {
         content.classList.remove('active');
     });
 
-    // 선택된 탭 버튼에 active 클래스 추가
+    // 클릭된 버튼에 active 클래스 추가
     if (buttonElement) {
         buttonElement.classList.add('active');
     }
 
-    // 선택된 탭 컨텐츠 보이기
-    const tabContent = document.getElementById(tabName);
-    if (tabContent) {
-        tabContent.classList.add('active');
+    // 해당 탭 컨텐츠 보이기
+    const targetContent = document.getElementById(tabName);
+    if (targetContent) {
+        targetContent.classList.add('active');
     }
 
-    // 탭별 데이터 로드
-    switch(tabName) {
+    // 탭에 따른 데이터 로드
+    switch (tabName) {
         case 'orders':
-            loadOrderHistory();
+            loadOrderHistory(currentPage.orders);
             break;
         case 'reviews':
-            loadMyReviews();
+            loadMyReviews(currentPage.reviews);
             break;
         case 'wishlist':
-            loadWishlist();
+            loadWishlist(currentPage.wishlist);
             break;
     }
 }
@@ -235,7 +241,7 @@ async function loadOrderHistory(page = 0) {
         const startDate = document.getElementById('startDate')?.value || '';
         const endDate = document.getElementById('endDate')?.value || '';
 
-        let url = `/orders/my?page=${page}&size=${PAGE_SIZE}`;
+        let url = `/orders?page=${page}&size=${PAGE_SIZE}`;
         if (status) url += `&status=${encodeURIComponent(status)}`;
         if (startDate) url += `&startDate=${startDate}`;
         if (endDate) url += `&endDate=${endDate}`;
@@ -267,13 +273,22 @@ function displayOrderHistory(ordersData) {
 
     let ordersHtml = '';
     ordersData.content.forEach(order => {
+        // 총 결제금액을 orderItems의 합으로 직접 계산
+        let calcTotal = 0;
+        if (order.orderItems && Array.isArray(order.orderItems)) {
+            calcTotal = order.orderItems.reduce((sum, item) => {
+                return sum + (item.price * item.quantity);
+            }, 0);
+        } else {
+            calcTotal = order.totalAmount; // fallback
+        }
         ordersHtml += `
             <div class="order-item">
                 <div class="order-header">
                     <div class="order-info">
                         <span class="order-date">${formatDate(order.orderDate)}</span>
                         <span class="order-number">주문번호: ${order.orderNumber || order.orderId}</span>
-                        <span class="order-total">총 결제금액: ${formatPrice(order.totalAmount)}원</span>
+                        <span class="order-total">총 결제금액: ${formatPrice(calcTotal)}원</span>
                     </div>
                     <div class="order-status-area">
                         <span class="order-status ${getOrderStatusClass(order.orderStatus)}">${order.orderStatus}</span>
@@ -960,79 +975,4 @@ function formatDate(dateString) {
         month: '2-digit',
         day: '2-digit'
     });
-}
-
-// 마이페이지 최근 본 상품 배너 동적 로드
-function loadRecentViewsForMypage() {
-    const section = document.getElementById('recent-view-mypage-section');
-    const list = document.getElementById('recent-view-mypage-list');
-    const clearBtn = document.getElementById('recent-view-mypage-clear-btn');
-    if (!section || !list || !clearBtn) return;
-
-    fetch('/recent-views?limit=10', { credentials: 'include' })
-        .then(res => {
-            if (res.status === 401) {
-                list.innerHTML = '<div class="no-data-small">로그인하시면 최근 본 상품을 확인할 수 있습니다.</div>';
-                clearBtn.style.display = 'none';
-                return null;
-            }
-            return res.json();
-        })
-        .then(data => {
-            if (!data) return;
-            if (!data.success || !Array.isArray(data.data) || data.data.length === 0) {
-                list.innerHTML = '<div class="no-data-small">최근 본 상품이 없습니다.</div>';
-                clearBtn.style.display = 'none';
-                return;
-            }
-            list.innerHTML = '';
-            clearBtn.style.display = '';
-            data.data.forEach(recent => {
-                const book = recent.book;
-                const div = document.createElement('div');
-                div.className = 'recent-book';
-                div.style.display = 'flex';
-                div.style.alignItems = 'center';
-                div.style.marginBottom = '0.5rem';
-                div.innerHTML = `
-                    <div class="recent-book-image" style="width:2.5rem;height:3.125rem;margin-right:0.75rem;">
-                        ${book.bookImage ? `<img src="${book.bookImage}" alt="${book.bookName}" style="width:100%;height:100%;object-fit:cover;">` : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#718096;font-size:0.5rem;">이미지</div>'}
-                    </div>
-                    <div class="recent-book-info" style="flex:1;min-width:0;">
-                        <div class="recent-book-title" style="font-size:0.95rem;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${book.bookName}</div>
-                        <div class="recent-book-author" style="font-size:0.8rem;color:#888;margin-bottom:0.15rem;">${book.author}</div>
-                        <div class="recent-book-price" style="font-size:0.8rem;color:var(--accent-color);font-weight:bold;">${Number(book.price).toLocaleString()}원</div>
-                    </div>
-                    <button class="btn btn-xs btn-danger recent-view-delete-btn" data-book-id="${book.bookId}" style="margin-left:0.5rem;">삭제</button>
-                `;
-                div.onclick = (e) => {
-                    if (e.target.classList.contains('recent-view-delete-btn')) return;
-                    location.href = `/product/${book.bookId}`;
-                };
-                list.appendChild(div);
-            });
-            // 삭제 버튼 이벤트
-            list.querySelectorAll('.recent-view-delete-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const bookId = this.getAttribute('data-book-id');
-                    if (confirm('이 상품을 최근 본 목록에서 삭제하시겠습니까?')) {
-                        fetch(`/recent-views/${bookId}`, { method: 'DELETE', credentials: 'include' })
-                            .then(() => loadRecentViewsForMypage());
-                    }
-                });
-            });
-        })
-        .catch(() => {
-            list.innerHTML = '<div class="no-data-small">최근 본 상품을 불러올 수 없습니다.</div>';
-            clearBtn.style.display = 'none';
-        });
-
-    // 전체삭제 버튼 이벤트
-    clearBtn.onclick = function() {
-        if (confirm('최근 본 상품을 모두 삭제하시겠습니까?')) {
-            fetch('/recent-views/clear', { method: 'DELETE', credentials: 'include' })
-                .then(() => loadRecentViewsForMypage());
-        }
-    };
 }

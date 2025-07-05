@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/recent-views")
+@RequestMapping("/api/recent-views")
 public class RecentViewController {
     private final RecentViewService recentViewService;
 
@@ -26,10 +26,17 @@ public class RecentViewController {
                                                           HttpSession session) {
         String memberId = (String) session.getAttribute("memberId");
         if (memberId == null) {
+            log.warn("[RecentView] 로그인 필요 - 최근 본 상품 추가 실패 (bookId={})", request.getBookId());
             return ResponseEntity.status(401).body(ApiResponse.error("로그인이 필요합니다."));
         }
-        recentViewService.addRecentView(memberId, request.getBookId());
-        return ResponseEntity.ok(ApiResponse.success(null));
+        try {
+            recentViewService.addRecentView(memberId, request.getBookId());
+            log.info("[RecentView] 저장 성공 - memberId={}, bookId={}", memberId, request.getBookId());
+            return ResponseEntity.ok(ApiResponse.success(null));
+        } catch (Exception e) {
+            log.error("[RecentView] 저장 실패 - memberId={}, bookId={}, error={}", memberId, request.getBookId(), e.getMessage(), e);
+            return ResponseEntity.internalServerError().body(ApiResponse.error("최근 본 상품 저장에 실패했습니다."));
+        }
     }
 
     // 최근 본 상품 목록 조회 (최신순, 최대 10개)

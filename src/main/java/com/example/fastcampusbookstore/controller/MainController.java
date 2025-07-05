@@ -47,7 +47,7 @@ public class MainController {
 
             // 2. 이달의 베스트셀러 조회 (상위 12개)
             String currentMonth = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
-            List<BestsellerResponse> bestsellers = bookService.getBestsellers(currentMonth);
+            List<BestsellerResponse> bestsellers = bookService.getAllBestsellers();
 
             // 베스트셀러가 12개보다 적으면 12개로 제한
             if (bestsellers.size() > 12) {

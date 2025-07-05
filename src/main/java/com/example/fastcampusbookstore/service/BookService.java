@@ -72,6 +72,16 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
+    // 3-1. 모든 베스트셀러 목록 조회 (월 구분 없이)
+    public List<BestsellerResponse> getAllBestsellers() {
+
+        List<Bestseller> bestsellers = bestsellerRepository.findAllByOrderByRanking();
+
+        return bestsellers.stream()
+                .map(BestsellerResponse::from)
+                .collect(Collectors.toList());
+    }
+
     // 4. 카테고리별 상품 조회
     public PageResponse<BookListResponse> getBooksByCategory(BookSearchRequest request) {
 

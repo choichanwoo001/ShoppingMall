@@ -3,6 +3,9 @@ document.addEventListener('DOMContentLoaded', function() {
     setupSearchFunctionality();
     loadPopularKeywords();
     loadRecentViews();
+    
+    // 주기적으로 최근 본 상품 새로고침 (30초마다)
+    setInterval(loadRecentViews, 30000);
 });
 
 // 검색 기능 설정
@@ -14,7 +17,7 @@ function setupSearchFunctionality() {
         searchBtn.addEventListener('click', function() {
             const searchTerm = searchInput?.value.trim();
             if (searchTerm) {
-                window.location.href = `/?search=${encodeURIComponent(searchTerm)}`;
+                window.location.href = `/search?keyword=${encodeURIComponent(searchTerm)}`;
             }
         });
     }
@@ -44,6 +47,10 @@ function loadPopularKeywords() {
                 li.textContent = `${idx + 1}. ${keyword}`;
                 li.style.padding = '0.25rem 0';
                 li.style.fontSize = '0.95rem';
+                li.style.cursor = 'pointer';
+                li.onclick = () => {
+                    window.location.href = `/search?keyword=${encodeURIComponent(keyword)}`;
+                };
                 ul.appendChild(li);
             });
         });
@@ -127,7 +134,7 @@ function loadRecentViews() {
     const recentViewList = document.getElementById('recent-view-list');
     if (!recentViewSection || !recentViewList) return;
 
-    fetch('/recent-views?limit=3')
+    fetch('/api/recent-views?limit=5')
         .then(res => {
             if (res.status === 401) {
                 // 비로그인 시 안내

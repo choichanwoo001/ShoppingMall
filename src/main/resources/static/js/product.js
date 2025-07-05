@@ -174,19 +174,15 @@ async function buyNow() {
         return;
     }
 
-    // 주문 페이지로 이동 (상품 정보를 세션 스토리지에 저장)
-    const orderData = {
-        items: [{
-            bookId: currentBookId,
-            quantity: quantity,
-            bookName: currentBook.bookName,
-            price: currentBook.price,
-            bookImage: currentBook.bookImage
-        }]
-    };
+    // 주문서 모달에 상품 정보 채우기 (장바구니와 동일 UX)
+    const orderModal = document.getElementById('orderModal');
+    if (!orderModal) {
+        alert('주문서 모달을 찾을 수 없습니다.');
+        return;
+    }
 
-    sessionStorage.setItem('orderData', JSON.stringify(orderData));
-    window.location.href = '/order';
+    updateOrderModalSummary();
+    orderModal.style.display = 'flex';
 }
 
 // 리뷰 작성
@@ -212,7 +208,7 @@ async function addToRecentViews() {
     }
 
     try {
-        await apiRequest('/recent-views', {
+        await apiRequest('/api/recent-views', {
             method: 'POST',
             body: JSON.stringify({ bookId: currentBookId })
         });
@@ -306,6 +302,7 @@ function setupQuantityControls() {
             const maxQuantity = currentBook?.stockQuantity || 999;
             if (currentValue < maxQuantity) {
                 quantityInput.value = currentValue + 1;
+                updateOrderModalSummary();
             } else {
                 alert(`최대 ${maxQuantity}개까지 구매 가능합니다.`);
             }
@@ -315,6 +312,7 @@ function setupQuantityControls() {
             const currentValue = parseInt(quantityInput.value || '1');
             if (currentValue > 1) {
                 quantityInput.value = currentValue - 1;
+                updateOrderModalSummary();
             }
         });
 
@@ -328,6 +326,7 @@ function setupQuantityControls() {
                 this.value = maxQuantity;
                 alert(`최대 ${maxQuantity}개까지 구매 가능합니다.`);
             }
+            updateOrderModalSummary();
         });
     }
 }
@@ -360,3 +359,27 @@ window.addToCart = addToCart;
 window.buyNow = buyNow;
 window.writeReview = writeReview;
 window.loadBookReviews = loadBookReviews;
+
+function updateOrderModalSummary() {
+    const quantity = parseInt(document.querySelector('.quantity-input')?.value || '1');
+    if (!currentBook) return;
+    // 상품 정보
+    const orderItemsDiv = document.getElementById('orderItems');
+    if (orderItemsDiv) {
+        orderItemsDiv.innerHTML = `
+            <div class="order-item-row">
+                <img src="${currentBook.bookImage || ''}" alt="${currentBook.bookName}" class="order-item-img">
+                <div class="order-item-info">
+                    <div class="order-item-title">${currentBook.bookName}</div>
+                    <div class="order-item-qty">수량: ${quantity}개</div>
+                    <div class="order-item-price">${formatPrice(currentBook.price)}원</div>
+                </div>
+            </div>
+        `;
+    }
+    // 총 결제금액
+    const orderTotalDiv = document.getElementById('orderTotal');
+    if (orderTotalDiv) {
+        orderTotalDiv.textContent = formatPrice(currentBook.price * quantity) + '원';
+    }
+}
