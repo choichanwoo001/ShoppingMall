@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 - BookStore</title>
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/login.css"> <!-- 로그인 전용 CSS 분리 -->
+</head>
+<body>
+<div class="login-page">
+  <div class="form-container">
+    <h2 class="form-title">로그인</h2>
+    <form id="loginForm">
+      <div class="form-group">
+        <label class="form-label">아이디</label>
+        <input type="text" id="userId" class="form-input" placeholder="아이디를 입력하세요" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">비밀번호</label>
+        <input type="password" id="password" class="form-input" placeholder="비밀번호를 입력하세요" required>
+      </div>
+      <div class="form-group remember-group">
+        <label class="remember-label">
+          <input type="checkbox" id="rememberMe"> 아이디 기억하기
+        </label>
+      </div>
+      <button type="submit" class="form-btn">로그인</button>
+      <div class="form-links">
+        <a th:href="@{/signup}">회원가입</a>
+        <a href="#" onclick="resetPassword()">비밀번호 찾기</a>
+      </div>
+    </form>
+    <div id="logoutSection">
+      <span id="logoutGreeting"></span>
+      <button class="form-btn logout-btn" onclick="logout()">로그아웃</button>
+    </div>
+  </div>
+</div>
+<!-- 비밀번호 찾기 안내 모달 -->
+<div id="resetPasswordModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>비밀번호 찾기</h3>
+      <span class="close" onclick="closeResetModal()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <label for="resetEmail">가입 시 등록한 이메일</label>
+      <input type="email" id="resetEmail" class="form-input" placeholder="이메일 입력">
+      <button class="form-btn" onclick="submitResetPassword()">임시 비밀번호 발송</button>
+    </div>
+  </div>
+</div>
+<script src="/js/login.js"></script>
+<script>
+function openResetModal() {
+  document.getElementById('resetPasswordModal').style.display = 'flex';
+}
+function closeResetModal() {
+  document.getElementById('resetPasswordModal').style.display = 'none';
+}
+// 기존 resetPassword()를 openResetModal()로 연결
+const resetLink = document.querySelector('.form-links a[href="#"]');
+if (resetLink) resetLink.onclick = openResetModal;
+</script>
+</body>
+</html>

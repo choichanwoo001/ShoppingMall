@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 관리 - FastCampus BookStore</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-book"></i> 관리자</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="/admin"><i class="fas fa-home"></i> 대시보드</a></li>
+                    <li><a href="/admin/books" class="active"><i class="fas fa-book"></i> 상품 관리</a></li>
+                    <li><a href="/admin/orders"><i class="fas fa-shopping-cart"></i> 주문 관리</a></li>
+                    <li><a href="/admin/members"><i class="fas fa-users"></i> 회원 관리</a></li>
+                    <li><a href="/admin/inventory"><i class="fas fa-boxes"></i> 재고 관리</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1>상품 관리</h1>
+                <div class="admin-info">
+                    <a href="/admin/books/new" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> 새 상품 등록
+                    </a>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <!-- 검색 필터 -->
+                <div class="search-filter">
+                    <form id="searchForm" method="get">
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label for="title">책 이름</label>
+                                <input type="text" id="title" name="title" th:value="${searchRequest?.title}" placeholder="책 이름을 입력하세요">
+                            </div>
+                            <div class="filter-group">
+                                <label for="publisher">출판사</label>
+                                <input type="text" id="publisher" name="publisher" th:value="${searchRequest?.publisher}" placeholder="출판사를 입력하세요">
+                            </div>
+                            <div class="filter-group">
+                                <label for="author">저자</label>
+                                <input type="text" id="author" name="author" th:value="${searchRequest?.author}" placeholder="저자를 입력하세요">
+                            </div>
+                        </div>
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label for="salesStatus">판매 상태</label>
+                                <select id="salesStatus" name="salesStatus">
+                                    <option value="">전체</option>
+                                    <option value="판매중" th:selected="${searchRequest?.salesStatus == '판매중'}">판매중</option>
+                                    <option value="절판" th:selected="${searchRequest?.salesStatus == '절판'}">절판</option>
+                                    <option value="일시품절" th:selected="${searchRequest?.salesStatus == '일시품절'}">일시품절</option>
+                                    <option value="입고예정" th:selected="${searchRequest?.salesStatus == '입고예정'}">입고예정</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="startDate">등록일 시작</label>
+                                <input type="date" id="startDate" name="startDate" th:value="${searchRequest?.startDate}">
+                            </div>
+                            <div class="filter-group">
+                                <label for="endDate">등록일 종료</label>
+                                <input type="date" id="endDate" name="endDate" th:value="${searchRequest?.endDate}">
+                            </div>
+                        </div>
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label for="sortBy">정렬 기준</label>
+                                <select id="sortBy" name="sortBy">
+                                    <option value="registerDate" th:selected="${searchRequest?.sortBy == 'registerDate'}">등록일</option>
+                                    <option value="title" th:selected="${searchRequest?.sortBy == 'title'}">책 이름</option>
+                                    <option value="price" th:selected="${searchRequest?.sortBy == 'price'}">가격</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="sortOrder">정렬 순서</label>
+                                <select id="sortOrder" name="sortOrder">
+                                    <option value="desc" th:selected="${searchRequest?.sortOrder == 'desc'}">내림차순</option>
+                                    <option value="asc" th:selected="${searchRequest?.sortOrder == 'asc'}">오름차순</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="pageSize">페이지 크기</label>
+                                <select id="pageSize" name="pageSize">
+                                    <option value="30" th:selected="${pageInfo?.size == 30}">30개</option>
+                                    <option value="50" th:selected="${pageInfo?.size == 50}">50개</option>
+                                    <option value="100" th:selected="${pageInfo?.size == 100}">100개</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> 검색
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                <i class="fas fa-undo"></i> 초기화
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 상품 목록 테이블 -->
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>상품 ID</th>
+                                <th>이미지</th>
+                                <th>책 이름</th>
+                                <th>저자</th>
+                                <th>출판사</th>
+                                <th>가격</th>
+                                <th>판매 상태</th>
+                                <th>등록일</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="book : ${books}">
+                                <td th:text="${book.bookId}"></td>
+                                <td>
+                                    <img th:if="${book.imageUrl}" th:src="${book.imageUrl}" alt="책 이미지" class="book-thumbnail">
+                                    <span th:unless="${book.imageUrl}" class="no-image">이미지 없음</span>
+                                </td>
+                                <td th:text="${book.title}"></td>
+                                <td th:text="${book.author}"></td>
+                                <td th:text="${book.publisher}"></td>
+                                <td th:text="${book.price + '원'}"></td>
+                                <td>
+                                    <span th:class="${'status-badge ' + book.salesStatus}" th:text="${book.salesStatus}"></span>
+                                </td>
+                                <td th:text="${#temporals.format(book.registerDate, 'yyyy-MM-dd')}"></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a th:href="@{/admin/books/{id}/edit(id=${book.bookId})}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i> 수정
+                                        </a>
+                                        <button class="btn btn-sm btn-danger" th:onclick="'deleteBook(' + ${book.bookId} + ')'">
+                                            <i class="fas fa-trash"></i> 삭제
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 페이지네이션 -->
+                <div class="pagination" th:if="${pageInfo.totalPages > 1}">
+                    <div class="pagination-info">
+                        <span th:text="${pageInfo.currentPage + 1} + ' / ' + ${pageInfo.totalPages} + ' 페이지'"></span>
+                        <span th:text="'총 ' + ${pageInfo.totalElements} + '개 상품'"></span>
+                    </div>
+                    <div class="pagination-controls">
+                        <a th:if="${pageInfo.hasPrevious}" th:href="@{/admin/books(page=${pageInfo.currentPage - 1}, size=${pageInfo.size})}" class="btn btn-sm">
+                            <i class="fas fa-chevron-left"></i> 이전
+                        </a>
+                        <span th:each="pageNum : ${#numbers.sequence(0, pageInfo.totalPages - 1)}">
+                            <a th:if="${pageNum != pageInfo.currentPage}" th:href="@{/admin/books(page=${pageNum}, size=${pageInfo.size})}" class="btn btn-sm" th:text="${pageNum + 1}"></a>
+                            <span th:if="${pageNum == pageInfo.currentPage}" class="btn btn-sm btn-primary" th:text="${pageNum + 1}"></span>
+                        </span>
+                        <a th:if="${pageInfo.hasNext}" th:href="@{/admin/books(page=${pageInfo.currentPage + 1}, size=${pageInfo.size})}" class="btn btn-sm">
+                            다음 <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html> 

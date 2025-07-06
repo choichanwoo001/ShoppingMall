@@ -1,0 +1,248 @@
+/* 회원정보 수정 페이지 스타일 */
+
+.edit-container {
+    max-width: 50rem;
+    margin: 2rem auto;
+    background: var(--white);
+    padding: 2.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 1.5rem rgba(0,0,0,0.1);
+    border: 0.0625rem solid var(--border-color);
+}
+
+.edit-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--text-dark);
+    border-bottom: 0.125rem solid var(--accent-color);
+    padding-bottom: 1rem;
+}
+
+/* 폼 섹션 */
+.form-section {
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background: var(--background-light);
+    border-radius: 0.5rem;
+    border: 0.0625rem solid var(--border-color);
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 0.0625rem solid var(--border-color);
+}
+
+.section-title.danger {
+    color: #dc2626;
+    border-bottom-color: #dc2626;
+}
+
+/* 폼 그룹 */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 0.875rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 0.0625rem solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background: var(--white);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.1875rem rgba(159, 122, 234, 0.1);
+}
+
+.form-input:readonly {
+    background: #f8fafc;
+    color: var(--text-light);
+    cursor: not-allowed;
+}
+
+.form-hint {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+
+/* 이메일 중복확인 행 */
+.email-check-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+
+.email-check-row .form-input {
+    flex: 1;
+}
+
+.email-check-row .btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+/* 메시지 */
+.form-message {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.form-message.success {
+    color: var(--success-color);
+}
+
+.form-message.error {
+    color: #dc2626;
+}
+
+/* 버튼 스타일 */
+.btn {
+    padding: 0.875rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    min-width: 7.5rem;
+}
+
+.btn-primary {
+    background: var(--accent-color);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: #805ad5;
+    transform: translateY(-0.0625rem);
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    color: var(--white);
+}
+
+.btn-secondary:hover {
+    background: #5a6c7d;
+    transform: translateY(-0.0625rem);
+}
+
+.btn-danger {
+    background: #dc2626;
+    color: var(--white);
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+    transform: translateY(-0.0625rem);
+}
+
+/* 폼 액션 */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 0.0625rem solid var(--border-color);
+}
+
+/* 위험 구역 */
+.danger-zone {
+    margin-top: 3rem;
+    padding: 1.5rem;
+    background: #fef2f2;
+    border: 0.0625rem solid #fecaca;
+    border-radius: 0.5rem;
+}
+
+.danger-content {
+    text-align: center;
+}
+
+.danger-content p {
+    margin-bottom: 1rem;
+    color: #7f1d1d;
+    font-weight: 500;
+}
+
+/* 브레드크럼 */
+.breadcrumb {
+    padding: 1rem 0;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+.breadcrumb a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb .separator {
+    margin: 0 0.5rem;
+    color: var(--text-light);
+}
+
+/* 로딩 상태 */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn.loading {
+    position: relative;
+}
+
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 1rem;
+    height: 1rem;
+    margin: auto;
+    border: 0.125rem solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 반응형 - 큰 화면만 지원 */
+.container {
+    max-width: 120rem;
+    margin: 0 auto;
+    padding: 0 2rem;
+    width: 100%;
+}

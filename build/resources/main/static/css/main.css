@@ -1,0 +1,158 @@
+/* Main Page Styles */
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 15.625rem;
+    gap: 1.5rem;
+}
+
+.content-left {
+    background: var(--white);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 0.125rem 0.625rem rgba(0,0,0,0.05);
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+}
+
+.sidebar-section {
+    background: var(--white);
+    border-radius: 0.025rem;
+    padding: 0.0375rem;
+    box-shadow: 0 0.00625rem 0.03125rem rgba(0,0,0,0.05);
+}
+
+.sidebar-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 0.0375rem;
+    border-bottom: 0.1rem solid var(--light-accent);
+    padding-bottom: 0.025rem;
+}
+
+/* Popular Items */
+.popular-item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0;
+}
+
+.rank-number {
+    background: var(--accent-color);
+    color: var(--white);
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+/* Recent Books */
+.recent-book {
+    display: flex;
+    gap: 0.625rem;
+    padding: 0.625rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.recent-book:last-child {
+    border-bottom: none;
+}
+
+.recent-book-image {
+    width: 2.5rem;
+    height: 3.125rem;
+    background: var(--background-color);
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    font-size: 0.625rem;
+}
+
+.recent-book-info {
+    flex: 1;
+}
+
+.recent-book-title {
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-bottom: 0.125rem;
+}
+
+.recent-book-author {
+    font-size: 0.625rem;
+    color: var(--text-light);
+}
+
+/* 최근 본 상품 영역 고정 높이 */
+#recent-view-list {
+    min-height: 12rem; /* 최대 5개 크기로 고정 */
+    max-height: 12rem;
+    overflow-y: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        order: -1;
+    }
+}
+
+/* 인라인 스타일 분리 및 클래스화 */
+.logo-clickable {
+  cursor: pointer;
+}
+.category-dropdown .middle-dropdown,
+.category-dropdown .bottom-dropdown {
+  display: none;
+}
+.bestseller-title {
+  margin-bottom: 1.25rem;
+  color: var(--primary-color);
+}
+#popular-keyword-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  min-height: 8rem;
+  max-height: 8rem;
+  overflow-y: auto;
+}
+#popular-keyword-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+#popular-keyword-list li:hover {
+  background-color: #f8f9fa;
+}
+#popular-keyword-list li:last-child {
+  border-bottom: none;
+}
+.book-image-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #718096;
+}

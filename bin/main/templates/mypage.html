@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>마이페이지 - BookStore</title>
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/mypage.css">
+</head>
+<body>
+<header class="header">
+  <div class="header-container">
+    <div class="logo" onclick="location.href='/'">BookStore</div>
+    <div class="search-bar">
+      <input type="text" class="search-input" placeholder="책제목, 저자, 출판사를 검색하세요">
+      <button class="search-btn">검색</button>
+    </div>
+    <div class="user-menu">
+      <div th:if="${session.memberId != null}">
+        <span th:text="${'안녕하세요, ' + session.memberName + '님'}">사용자님</span>
+        <a th:href="@{/logout}">로그아웃</a>
+        <a th:href="@{/cart}">장바구니</a>
+        <a th:href="@{/mypage}">마이페이지</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <h2 class="page-title">마이페이지</h2>
+
+  <!-- 회원정보 요약 -->
+  <div class="user-info-summary">
+    <div class="section-header">
+      <h3>회원정보</h3>
+      <button class="btn btn-primary" onclick="location.href='/member/edit'">정보수정</button>
+    </div>
+    <div class="user-details">
+      <div class="detail-item">
+        <span class="label">이름</span>
+        <span class="value" th:text="${member?.memberName ?: 'N/A'}">홍길동</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">이메일</span>
+        <span class="value" th:text="${member?.email ?: 'N/A'}">hong@example.com</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">연락처</span>
+        <span class="value" th:text="${member?.phone ?: 'N/A'}">010-1234-5678</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">주소</span>
+        <span class="value" th:text="${member?.address ?: 'N/A'}">서울시 강남구</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">회원등급</span>
+        <span class="value grade" th:text="${member?.memberGrade ?: '일반'}">일반</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 탭 메뉴 -->
+  <div class="tab-menu">
+    <button class="tab-btn active" onclick="showTab('orders', this)">주문내역</button>
+    <button class="tab-btn" onclick="showTab('reviews', this)">리뷰관리</button>
+  </div>
+
+  <!-- 주문내역 탭 -->
+  <div class="tab-content active" id="orders">
+    <div class="order-controls">
+      <div class="search-options">
+        <select class="order-status-filter" onchange="filterOrders()">
+          <option value="">전체 주문상태</option>
+          <option value="결제완료">결제완료</option>
+          <option value="배송준비중">배송준비중</option>
+          <option value="배송중">배송중</option>
+          <option value="배송완료">배송완료</option>
+          <option value="주문취소">주문취소</option>
+        </select>
+        <input type="date" class="date-filter" id="startDate">
+        <span>~</span>
+        <input type="date" class="date-filter" id="endDate">
+        <button class="btn btn-secondary" onclick="filterOrders()">검색</button>
+      </div>
+    </div>
+
+    <div id="orders-list">
+      <!-- 주문 목록이 JavaScript로 동적 로드됩니다 -->
+      <div class="loading">주문 내역을 불러오는 중...</div>
+    </div>
+
+    <div class="pagination-container" id="orders-pagination">
+      <!-- 페이지네이션이 JavaScript로 동적 생성됩니다 -->
+    </div>
+  </div>
+
+  <!-- 리뷰관리 탭 -->
+  <div class="tab-content" id="reviews">
+    <div class="review-controls">
+      <div class="review-stats" id="review-stats">
+        <!-- 리뷰 통계가 JavaScript로 동적 로드됩니다 -->
+      </div>
+    </div>
+
+    <div id="reviews-list">
+      <!-- 리뷰 목록이 JavaScript로 동적 로드됩니다 -->
+      <div class="loading">리뷰 목록을 불러오는 중...</div>
+    </div>
+
+    <div class="pagination-container" id="reviews-pagination">
+      <!-- 페이지네이션이 JavaScript로 동적 생성됩니다 -->
+    </div>
+  </div>
+</div>
+
+<!-- 주문 상세 모달 -->
+<div id="orderDetailModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>주문 상세 정보</h3>
+      <span class="close" onclick="closeOrderDetailModal()">&times;</span>
+    </div>
+    <div class="modal-body" id="orderDetailContent">
+      <!-- 주문 상세 내용이 여기에 로드됩니다 -->
+    </div>
+  </div>
+</div>
+
+<!-- 리뷰 작성/수정 모달 -->
+<div id="reviewModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="reviewModalTitle">리뷰 작성</h3>
+      <span class="close" onclick="closeReviewModal()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <form id="reviewForm">
+        <input type="hidden" id="reviewId">
+        <input type="hidden" id="reviewBookId">
+        <input type="hidden" id="reviewOrderId">
+        <div class="form-group">
+          <label>도서 정보</label>
+          <div id="reviewBookInfo" class="review-book-display">
+            <!-- 도서 정보가 여기에 표시됩니다 -->
+          </div>
+        </div>
+        <div class="form-group">
+          <label>평점 <span class="required">*</span></label>
+          <div class="star-rating">
+            <span class="star" data-rating="1">★</span>
+            <span class="star" data-rating="2">★</span>
+            <span class="star" data-rating="3">★</span>
+            <span class="star" data-rating="4">★</span>
+            <span class="star" data-rating="5">★</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="reviewContent">리뷰 내용 <span class="required">*</span></label>
+          <textarea id="reviewContent" rows="5" placeholder="이 책에 대한 솔직한 후기를 남겨주세요." required></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeReviewModal()">취소</button>
+          <button type="submit" class="btn btn-primary">리뷰 저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="/js/mypage.js"></script>
+
+</body>
+</html>
