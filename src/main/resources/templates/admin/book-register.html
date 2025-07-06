@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 등록 - FastCampus BookStore</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-book"></i> 관리자</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="/admin"><i class="fas fa-home"></i> 대시보드</a></li>
+                    <li><a href="/admin/books" class="active"><i class="fas fa-book"></i> 상품 관리</a></li>
+                    <li><a href="/admin/orders"><i class="fas fa-shopping-cart"></i> 주문 관리</a></li>
+                    <li><a href="/admin/members"><i class="fas fa-users"></i> 회원 관리</a></li>
+                    <li><a href="/admin/inventory"><i class="fas fa-boxes"></i> 재고 관리</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1>상품 등록</h1>
+                <div class="admin-info">
+                    <a href="/admin/books" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> 목록으로
+                    </a>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <form id="bookRegisterForm" class="form-container">
+                    <div class="form-section">
+                        <h3>기본 정보</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="isbn">ISBN *</label>
+                                <input type="text" id="isbn" name="isbn" required placeholder="ISBN을 입력하세요">
+                            </div>
+                            <div class="form-group">
+                                <label for="title">책 이름 *</label>
+                                <input type="text" id="title" name="title" required placeholder="책 이름을 입력하세요">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="author">저자 *</label>
+                                <input type="text" id="author" name="author" required placeholder="저자를 입력하세요">
+                            </div>
+                            <div class="form-group">
+                                <label for="publisher">출판사 *</label>
+                                <input type="text" id="publisher" name="publisher" required placeholder="출판사를 입력하세요">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="price">가격 *</label>
+                                <input type="number" id="price" name="price" required placeholder="가격을 입력하세요">
+                            </div>
+                            <div class="form-group">
+                                <label for="stockQuantity">재고 수량 *</label>
+                                <input type="number" id="stockQuantity" name="stockQuantity" required placeholder="재고 수량을 입력하세요">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>카테고리</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="categoryTop">상위 카테고리</label>
+                                <select id="categoryTop" name="categoryTop">
+                                    <option value="">선택하세요</option>
+                                    <option th:each="category : ${categories}" th:value="${category.categoryName}" th:text="${category.categoryName}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="categoryMiddle">중위 카테고리</label>
+                                <select id="categoryMiddle" name="categoryMiddle">
+                                    <option value="">선택하세요</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="categoryBottom">하위 카테고리</label>
+                                <select id="categoryBottom" name="categoryBottom">
+                                    <option value="">선택하세요</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>상세 정보</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="size">책 크기</label>
+                                <input type="text" id="size" name="size" placeholder="예: 152x225mm">
+                            </div>
+                            <div class="form-group">
+                                <label for="rating">평점</label>
+                                <input type="number" id="rating" name="rating" step="0.1" min="0" max="5" placeholder="0.0 ~ 5.0">
+                            </div>
+                            <div class="form-group">
+                                <label for="salesIndex">판매 지수</label>
+                                <input type="number" id="salesIndex" name="salesIndex" placeholder="판매 지수를 입력하세요">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">책 설명</label>
+                            <textarea id="description" name="description" rows="5" placeholder="책에 대한 상세 설명을 입력하세요"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>이미지 및 파일</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="imageUrl">책 이미지 URL</label>
+                                <input type="url" id="imageUrl" name="imageUrl" placeholder="이미지 URL을 입력하세요">
+                            </div>
+                            <div class="form-group">
+                                <label for="pdfUrl">PDF 미리보기 URL</label>
+                                <input type="url" id="pdfUrl" name="pdfUrl" placeholder="PDF URL을 입력하세요">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>판매 설정</h3>
+                        <div class="form-group">
+                            <label for="salesStatus">판매 상태 *</label>
+                            <select id="salesStatus" name="salesStatus" required>
+                                <option value="">선택하세요</option>
+                                <option value="판매중">판매중</option>
+                                <option value="절판">절판</option>
+                                <option value="일시품절">일시품절</option>
+                                <option value="입고예정">입고예정</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 상품 등록
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="history.back()">
+                            <i class="fas fa-times"></i> 취소
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html> 

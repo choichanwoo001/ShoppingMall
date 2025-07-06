@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지 - FastCampus BookStore</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-book"></i> 관리자</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="/admin" class="active"><i class="fas fa-home"></i> 대시보드</a></li>
+                    <li><a href="/admin/books"><i class="fas fa-book"></i> 상품 관리</a></li>
+                    <li><a href="/admin/orders"><i class="fas fa-shopping-cart"></i> 주문 관리</a></li>
+                    <li><a href="/admin/members"><i class="fas fa-users"></i> 회원 관리</a></li>
+                    <li><a href="/admin/inventory"><i class="fas fa-boxes"></i> 재고 관리</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1>관리자 대시보드</h1>
+                <div class="admin-info">
+                    <span>관리자님 환영합니다</span>
+                    <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> 로그아웃</a>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <!-- 통계 카드 -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>총 상품 수</h3>
+                            <p class="stat-number" id="totalBooks">0</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>오늘 주문</h3>
+                            <p class="stat-number" id="todayOrders">0</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>총 회원 수</h3>
+                            <p class="stat-number" id="totalMembers">0</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>품절 상품</h3>
+                            <p class="stat-number" id="outOfStock">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 빠른 액션 -->
+                <div class="quick-actions">
+                    <h2>빠른 액션</h2>
+                    <div class="action-buttons">
+                        <a href="/admin/books/new" class="action-btn">
+                            <i class="fas fa-plus"></i>
+                            <span>새 상품 등록</span>
+                        </a>
+                        <a href="/admin/orders" class="action-btn">
+                            <i class="fas fa-list"></i>
+                            <span>주문 확인</span>
+                        </a>
+                        <a href="/admin/inventory" class="action-btn">
+                            <i class="fas fa-boxes"></i>
+                            <span>재고 확인</span>
+                        </a>
+                        <a href="/admin/members" class="action-btn">
+                            <i class="fas fa-users"></i>
+                            <span>회원 관리</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 최근 활동 -->
+                <div class="recent-activities">
+                    <h2>최근 활동</h2>
+                    <div class="activity-list" id="recentActivities">
+                        <!-- 최근 활동들이 여기에 동적으로 추가됩니다 -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html> 
