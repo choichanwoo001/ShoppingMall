@@ -1,5 +1,6 @@
 package com.example.fastcampusbookstore.controller;
 
+import com.example.fastcampusbookstore.dto.common.ApiResponse;
 import com.example.fastcampusbookstore.dto.common.PageRequest;
 import com.example.fastcampusbookstore.dto.common.PageResponse;
 import com.example.fastcampusbookstore.dto.request.*;
@@ -58,7 +59,7 @@ public class AdminController {
     // 상품 수정 화면
     @GetMapping("/books/{bookId}/edit")
     public String bookEditForm(@PathVariable Long bookId, Model model) {
-        BookDetailResponse book = bookService.getBookDetail(bookId);
+        BookDetailResponse book = bookService.getBookDetail(bookId.intValue());
         model.addAttribute("book", book);
         model.addAttribute("categories", categoryService.getAllCategories());
         return "admin/book-edit";

@@ -255,14 +255,12 @@ public class MemberService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Pageable pageable = pageRequest.toPageable();
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
         Page<Member> memberPage = memberRepository.findAll(spec, pageable);
-        
         List<MemberResponse> content = memberPage.getContent().stream()
             .map(MemberResponse::from)
             .collect(Collectors.toList());
-            
-        return PageResponse.of(memberPage, content);
+        return PageResponse.of(content, memberPage);
     }
 
     // 회원 상세 조회 (관리자용)

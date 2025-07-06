@@ -11,7 +11,7 @@ public class OrderStatusUpdateRequest {
     private Integer orderId;
 
     @NotBlank(message = "주문 상태는 필수입니다")
-    private String orderStatus; // 주문완료, 결제완료, 배송준비, 배송중, 배송완료, 주문취소
+    private String status; // 주문완료, 결제완료, 배송준비, 배송중, 배송완료, 주문취소
 
     private String reason; // 취소/변경 사유 (선택사항)
 }

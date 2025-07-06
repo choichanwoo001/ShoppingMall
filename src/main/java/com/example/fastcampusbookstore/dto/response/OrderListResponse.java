@@ -16,6 +16,9 @@ public class OrderListResponse {
     private BigDecimal totalAmount;
     private String orderStatus;
     private String paymentStatus;
+    private String paymentMethod;
+    private String memberId;
+    private String memberName;
 
     // 대표 상품 정보 (첫 번째 상품)
     private String representativeBookName;
@@ -28,6 +31,9 @@ public class OrderListResponse {
         response.totalAmount = order.getTotalAmount();
         response.orderStatus = order.getOrderStatus() != null ? order.getOrderStatus().toString() : null;
         response.paymentStatus = order.getPaymentStatus() != null ? order.getPaymentStatus().toString() : null;
+        response.paymentMethod = order.getPaymentMethod();
+        response.memberId = order.getMember().getMemberId();
+        response.memberName = order.getMember().getMemberName();
 
         if (order.getOrderDetails() != null && !order.getOrderDetails().isEmpty()) {
             // 첫 번째 상품을 대표 상품으로 설정

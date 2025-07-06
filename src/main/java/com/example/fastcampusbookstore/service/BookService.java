@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import jakarta.persistence.criteria.Predicate;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -157,14 +158,14 @@ public class BookService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Pageable pageable = pageRequest.toPageable();
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
         Page<Book> bookPage = bookRepository.findAll(spec, pageable);
         
         List<BookListResponse> content = bookPage.getContent().stream()
             .map(BookListResponse::from)
             .collect(Collectors.toList());
             
-        return PageResponse.of(bookPage, content);
+        return PageResponse.of(content, bookPage);
     }
 
     // 상품 등록
@@ -176,13 +177,13 @@ public class BookService {
         book.setAuthor(request.getAuthor());
         book.setPublisher(request.getPublisher());
         book.setDescription(request.getDescription());
-        book.setPrice(request.getPrice());
+        book.setPrice(BigDecimal.valueOf(request.getPrice()));
         book.setImageUrl(request.getImageUrl());
         book.setPdfUrl(request.getPdfUrl());
         book.setSize(request.getSize());
-        book.setRating(request.getRating());
+        book.setRating(request.getRating() != null ? BigDecimal.valueOf(request.getRating()) : null);
         book.setSalesIndex(request.getSalesIndex());
-        book.setSalesStatus(request.getSalesStatus());
+        book.setSalesStatus(Book.SalesStatus.valueOf(request.getSalesStatus()));
         book.setRegisterDate(LocalDateTime.now());
         
         // 카테고리 설정
@@ -216,7 +217,7 @@ public class BookService {
     // 상품 수정
     @Transactional
     public void updateBook(Long bookId, BookUpdateRequest request) {
-        Book book = bookRepository.findById(bookId)
+        Book book = bookRepository.findById(bookId.intValue())
             .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
         
         book.setIsbn(request.getIsbn());
@@ -224,13 +225,13 @@ public class BookService {
         book.setAuthor(request.getAuthor());
         book.setPublisher(request.getPublisher());
         book.setDescription(request.getDescription());
-        book.setPrice(request.getPrice());
+        book.setPrice(BigDecimal.valueOf(request.getPrice()));
         book.setImageUrl(request.getImageUrl());
         book.setPdfUrl(request.getPdfUrl());
         book.setSize(request.getSize());
-        book.setRating(request.getRating());
+        book.setRating(request.getRating() != null ? BigDecimal.valueOf(request.getRating()) : null);
         book.setSalesIndex(request.getSalesIndex());
-        book.setSalesStatus(request.getSalesStatus());
+        book.setSalesStatus(Book.SalesStatus.valueOf(request.getSalesStatus()));
         
         // 카테고리 설정
         if (StringUtils.hasText(request.getCategoryTop())) {
@@ -275,20 +276,20 @@ public class BookService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Pageable pageable = pageRequest.toPageable();
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
         Page<Inventory> inventoryPage = inventoryRepository.findAll(spec, pageable);
         
         List<InventoryResponse> content = inventoryPage.getContent().stream()
             .map(this::convertToInventoryResponse)
             .collect(Collectors.toList());
             
-        return PageResponse.of(inventoryPage, content);
+        return PageResponse.of(content, inventoryPage);
     }
 
     // 재고 수정
     @Transactional
     public void updateInventory(Long bookId, Integer quantity) {
-        Inventory inventory = inventoryRepository.findByBookId(bookId)
+        Inventory inventory = inventoryRepository.findByBookBookId(bookId.intValue())
             .orElseThrow(() -> new RuntimeException("재고 정보를 찾을 수 없습니다."));
         inventory.setQuantity(quantity);
     }
@@ -296,14 +297,14 @@ public class BookService {
     // 재고 응답 변환
     private InventoryResponse convertToInventoryResponse(Inventory inventory) {
         InventoryResponse response = new InventoryResponse();
-        response.setBookId(inventory.getBook().getBookId());
+        response.setBookId(Long.valueOf(inventory.getBook().getBookId()));
         response.setIsbn(inventory.getBook().getIsbn());
         response.setTitle(inventory.getBook().getTitle());
         response.setAuthor(inventory.getBook().getAuthor());
         response.setPublisher(inventory.getBook().getPublisher());
-        response.setPrice(inventory.getBook().getPrice());
+        response.setPrice(inventory.getBook().getPrice().intValue());
         response.setStockQuantity(inventory.getQuantity());
-        response.setSalesStatus(inventory.getBook().getSalesStatus());
+        response.setSalesStatus(inventory.getBook().getSalesStatus().toString());
         response.setRegisterDate(inventory.getBook().getRegisterDate());
         response.setImageUrl(inventory.getBook().getImageUrl());
         return response;

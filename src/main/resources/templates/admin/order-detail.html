@@ -60,7 +60,7 @@
                             </div>
                             <div class="info-item">
                                 <label>총 주문금액</label>
-                                <span class="total-amount" th:text="${#numbers.formatInteger(order.totalAmount, 3, 'COMMA')}원"></span>
+                                <span class="total-amount" th:text="${order.totalAmount + '원'}"></span>
                             </div>
                         </div>
                     </div>
@@ -139,9 +139,9 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')}원"></td>
+                                        <td th:text="${item.price + '원'}"></td>
                                         <td th:text="${item.quantity}"></td>
-                                        <td th:text="${#numbers.formatInteger(item.price * item.quantity, 3, 'COMMA')}원"></td>
+                                        <td th:text="${item.price * item.quantity + '원'}"></td>
                                     </tr>
                                 </tbody>
                             </table>

@@ -22,9 +22,34 @@ public class OrderResponse {
     private String shippingAddress;
     private String shippingPhone;
     private String orderMemo;
+    private String recipientName;
+    private String recipientPhone;
+    private String deliveryRequest;
+
+    // 회원 정보
+    private MemberInfo member;
 
     // 주문 상세 항목들
     private List<OrderDetailInfo> orderDetails;
+
+    // 주문 히스토리
+    private List<OrderHistoryInfo> orderHistory;
+
+    @Data
+    public static class MemberInfo {
+        private String memberId;
+        private String memberName;
+        private String email;
+        private String phone;
+        private String address;
+    }
+
+    @Data
+    public static class OrderHistoryInfo {
+        private LocalDateTime createdAt;
+        private String status;
+        private String note;
+    }
 
     @Data
     public static class OrderDetailInfo {

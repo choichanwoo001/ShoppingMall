@@ -88,9 +88,9 @@
                             <div class="filter-group">
                                 <label for="pageSize">페이지 크기</label>
                                 <select id="pageSize" name="pageSize">
-                                    <option value="30" th:selected="${pageInfo?.pageSize == 30}">30개</option>
-                                    <option value="50" th:selected="${pageInfo?.pageSize == 50}">50개</option>
-                                    <option value="100" th:selected="${pageInfo?.pageSize == 100}">100개</option>
+                                                                    <option value="30" th:selected="${pageInfo?.size == 30}">30개</option>
+                                <option value="50" th:selected="${pageInfo?.size == 50}">50개</option>
+                                <option value="100" th:selected="${pageInfo?.size == 100}">100개</option>
                                 </select>
                             </div>
                         </div>
@@ -129,7 +129,7 @@
                                     </div>
                                 </td>
                                 <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
-                                <td th:text="${#numbers.formatInteger(order.totalAmount, 3, 'COMMA')}원"></td>
+                                <td th:text="${order.totalAmount + '원'}"></td>
                                 <td>
                                     <span th:class="${'status-badge ' + order.orderStatus}" th:text="${order.orderStatus}"></span>
                                 </td>
@@ -152,18 +152,18 @@
                 <!-- 페이지네이션 -->
                 <div class="pagination" th:if="${pageInfo.totalPages > 1}">
                     <div class="pagination-info">
-                        <span th:text="${pageInfo.number + 1} + ' / ' + ${pageInfo.totalPages} + ' 페이지'"></span>
+                        <span th:text="${pageInfo.currentPage + 1} + ' / ' + ${pageInfo.totalPages} + ' 페이지'"></span>
                         <span th:text="'총 ' + ${pageInfo.totalElements} + '개 주문'"></span>
                     </div>
                     <div class="pagination-controls">
-                        <a th:if="${pageInfo.hasPrevious}" th:href="@{/admin/orders(page=${pageInfo.number - 1}, size=${pageInfo.pageSize})}" class="btn btn-sm">
+                        <a th:if="${pageInfo.hasPrevious}" th:href="@{/admin/orders(page=${pageInfo.currentPage - 1}, size=${pageInfo.size})}" class="btn btn-sm">
                             <i class="fas fa-chevron-left"></i> 이전
                         </a>
                         <span th:each="pageNum : ${#numbers.sequence(0, pageInfo.totalPages - 1)}">
-                            <a th:if="${pageNum != pageInfo.number}" th:href="@{/admin/orders(page=${pageNum}, size=${pageInfo.pageSize})}" class="btn btn-sm" th:text="${pageNum + 1}"></a>
-                            <span th:if="${pageNum == pageInfo.number}" class="btn btn-sm btn-primary" th:text="${pageNum + 1}"></span>
+                            <a th:if="${pageNum != pageInfo.currentPage}" th:href="@{/admin/orders(page=${pageNum}, size=${pageInfo.size})}" class="btn btn-sm" th:text="${pageNum + 1}"></a>
+                            <span th:if="${pageNum == pageInfo.currentPage}" class="btn btn-sm btn-primary" th:text="${pageNum + 1}"></span>
                         </span>
-                        <a th:if="${pageInfo.hasNext}" th:href="@{/admin/orders(page=${pageInfo.number + 1}, size=${pageInfo.pageSize})}" class="btn btn-sm">
+                        <a th:if="${pageInfo.hasNext}" th:href="@{/admin/orders(page=${pageInfo.currentPage + 1}, size=${pageInfo.size})}" class="btn btn-sm">
                             다음 <i class="fas fa-chevron-right"></i>
                         </a>
                     </div>

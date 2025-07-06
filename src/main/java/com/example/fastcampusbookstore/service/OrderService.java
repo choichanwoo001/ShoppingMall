@@ -198,19 +198,17 @@ public class OrderService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Pageable pageable = pageRequest.toPageable();
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
         Page<Order> orderPage = orderRepository.findAll(spec, pageable);
-        
         List<OrderListResponse> content = orderPage.getContent().stream()
             .map(OrderListResponse::from)
             .collect(Collectors.toList());
-            
-        return PageResponse.of(orderPage, content);
+        return PageResponse.of(content, orderPage);
     }
 
     // 주문 상세 조회 (관리자용)
     public OrderResponse getOrderDetail(Long orderId) {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findById(orderId.intValue())
             .orElseThrow(() -> new RuntimeException("주문을 찾을 수 없습니다."));
         return OrderResponse.from(order);
     }
@@ -218,7 +216,7 @@ public class OrderService {
     // 주문 상태 변경
     @Transactional
     public void updateOrderStatus(Long orderId, String status) {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findById(orderId.intValue())
             .orElseThrow(() -> new RuntimeException("주문을 찾을 수 없습니다."));
         order.setOrderStatus(Order.OrderStatus.valueOf(status));
         orderRepository.save(order);
@@ -229,13 +227,13 @@ public class OrderService {
         Member member = memberRepository.findByMemberId(memberId)
             .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
         
-        Pageable pageable = pageRequest.toPageable();
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
         Page<Order> orderPage = orderRepository.findByMember(member, pageable);
         
         List<OrderListResponse> content = orderPage.getContent().stream()
             .map(OrderListResponse::from)
             .collect(Collectors.toList());
             
-        return PageResponse.of(orderPage, content);
+        return PageResponse.of(content, orderPage);
     }
 }

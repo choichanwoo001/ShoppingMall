@@ -47,6 +47,15 @@ public class Order {
     @Column(name = "shipping_phone", length = 20)
     private String shippingPhone;
 
+    @Column(name = "recipient_name", length = 100)
+    private String recipientName;
+
+    @Column(name = "recipient_phone", length = 20)
+    private String recipientPhone;
+
+    @Column(name = "delivery_request", columnDefinition = "TEXT")
+    private String deliveryRequest;
+
     @Column(name = "order_memo", columnDefinition = "TEXT")
     private String orderMemo;
 

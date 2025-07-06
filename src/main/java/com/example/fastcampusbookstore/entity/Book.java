@@ -30,6 +30,9 @@ public class Book {
     @Column(name = "book_name", length = 200)
     private String bookName;
 
+    @Column(name = "title", length = 200)
+    private String title;
+
     @Column(name = "author", length = 100)
     private String author;
 
@@ -42,14 +45,23 @@ public class Book {
     @Column(name = "book_size", length = 50)
     private String bookSize;
 
+    @Column(name = "size", length = 50)
+    private String size;
+
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "book_image", length = 255)
     private String bookImage;
 
+    @Column(name = "image_url", length = 255)
+    private String imageUrl;
+
     @Column(name = "preview_pdf", length = 255)
     private String previewPdf;
+
+    @Column(name = "pdf_url", length = 255)
+    private String pdfUrl;
 
     @Column(name = "rating", precision = 3, scale = 2)
     private BigDecimal rating;
@@ -64,6 +76,9 @@ public class Book {
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
 
+    @Column(name = "register_date")
+    private LocalDateTime registerDate;
+
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -76,6 +91,18 @@ public class Book {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id2")
     private CategoryBottom category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_top_id")
+    private CategoryTop categoryTop;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_middle_id")
+    private CategoryMiddle categoryMiddle;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_bottom_id")
+    private CategoryBottom categoryBottom;
 
     @OneToOne(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Inventory inventory;

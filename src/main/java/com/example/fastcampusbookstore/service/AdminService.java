@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.criteria.Predicate;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,14 +58,12 @@ public class AdminService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Pageable pageable = pageRequest.toPageable();
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
         Page<Book> bookPage = bookRepository.findAll(spec, pageable);
-        
         List<BookListResponse> content = bookPage.getContent().stream()
             .map(this::convertToBookListResponse)
             .collect(Collectors.toList());
-            
-        return PageResponse.of(bookPage, content);
+        return PageResponse.of(content, bookPage);
     }
 
     // 상품 등록
@@ -78,13 +75,13 @@ public class AdminService {
         book.setAuthor(request.getAuthor());
         book.setPublisher(request.getPublisher());
         book.setDescription(request.getDescription());
-        book.setPrice(request.getPrice());
+        book.setPrice(java.math.BigDecimal.valueOf(request.getPrice()));
         book.setImageUrl(request.getImageUrl());
         book.setPdfUrl(request.getPdfUrl());
         book.setSize(request.getSize());
-        book.setRating(request.getRating());
+        book.setRating(request.getRating() != null ? java.math.BigDecimal.valueOf(request.getRating()) : null);
         book.setSalesIndex(request.getSalesIndex());
-        book.setSalesStatus(request.getSalesStatus());
+        book.setSalesStatus(Book.SalesStatus.valueOf(request.getSalesStatus()));
         book.setRegisterDate(LocalDateTime.now());
         
         // 카테고리 설정
@@ -118,7 +115,7 @@ public class AdminService {
     // 상품 수정
     @Transactional
     public void updateBook(Long bookId, BookUpdateRequest request) {
-        Book book = bookRepository.findById(bookId)
+        Book book = bookRepository.findById(bookId.intValue())
             .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
         
         book.setIsbn(request.getIsbn());
@@ -126,13 +123,13 @@ public class AdminService {
         book.setAuthor(request.getAuthor());
         book.setPublisher(request.getPublisher());
         book.setDescription(request.getDescription());
-        book.setPrice(request.getPrice());
+        book.setPrice(java.math.BigDecimal.valueOf(request.getPrice()));
         book.setImageUrl(request.getImageUrl());
         book.setPdfUrl(request.getPdfUrl());
         book.setSize(request.getSize());
-        book.setRating(request.getRating());
+        book.setRating(request.getRating() != null ? java.math.BigDecimal.valueOf(request.getRating()) : null);
         book.setSalesIndex(request.getSalesIndex());
-        book.setSalesStatus(request.getSalesStatus());
+        book.setSalesStatus(Book.SalesStatus.valueOf(request.getSalesStatus()));
         
         // 카테고리 설정
         if (request.getCategoryTop() != null) {
@@ -177,14 +174,12 @@ public class AdminService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Pageable pageable = pageRequest.toPageable();
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
         Page<Order> orderPage = orderRepository.findAll(spec, pageable);
-        
         List<OrderListResponse> content = orderPage.getContent().stream()
             .map(this::convertToOrderListResponse)
             .collect(Collectors.toList());
-            
-        return PageResponse.of(orderPage, content);
+        return PageResponse.of(content, orderPage);
     }
 
     // 회원 목록 조회 (관리자용)
@@ -216,14 +211,12 @@ public class AdminService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Pageable pageable = pageRequest.toPageable();
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
         Page<Member> memberPage = memberRepository.findAll(spec, pageable);
-        
         List<MemberResponse> content = memberPage.getContent().stream()
             .map(this::convertToMemberResponse)
             .collect(Collectors.toList());
-            
-        return PageResponse.of(memberPage, content);
+        return PageResponse.of(content, memberPage);
     }
 
     // 재고 목록 조회
@@ -249,20 +242,18 @@ public class AdminService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Pageable pageable = pageRequest.toPageable();
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
         Page<Inventory> inventoryPage = inventoryRepository.findAll(spec, pageable);
-        
         List<InventoryResponse> content = inventoryPage.getContent().stream()
             .map(this::convertToInventoryResponse)
             .collect(Collectors.toList());
-            
-        return PageResponse.of(inventoryPage, content);
+        return PageResponse.of(content, inventoryPage);
     }
 
     // 재고 수정
     @Transactional
     public void updateInventory(Long bookId, Integer quantity) {
-        Inventory inventory = inventoryRepository.findByBookId(bookId)
+        Inventory inventory = inventoryRepository.findByBookBookId(bookId.intValue())
             .orElseThrow(() -> new RuntimeException("재고 정보를 찾을 수 없습니다."));
         inventory.setQuantity(quantity);
     }
@@ -271,14 +262,13 @@ public class AdminService {
     private BookListResponse convertToBookListResponse(Book book) {
         BookListResponse response = new BookListResponse();
         response.setBookId(book.getBookId());
-        response.setIsbn(book.getIsbn());
         response.setTitle(book.getTitle());
         response.setAuthor(book.getAuthor());
         response.setPublisher(book.getPublisher());
         response.setPrice(book.getPrice());
         response.setImageUrl(book.getImageUrl());
         response.setRating(book.getRating());
-        response.setSalesStatus(book.getSalesStatus());
+        response.setSalesStatus(book.getSalesStatus().toString());
         response.setRegisterDate(book.getRegisterDate());
         return response;
     }
@@ -287,7 +277,7 @@ public class AdminService {
         OrderListResponse response = new OrderListResponse();
         response.setOrderId(order.getOrderId());
         response.setOrderDate(order.getOrderDate());
-        response.setOrderStatus(order.getOrderStatus());
+        response.setOrderStatus(order.getOrderStatus().toString());
         response.setTotalAmount(order.getTotalAmount());
         response.setMemberId(order.getMember().getMemberId());
         response.setMemberName(order.getMember().getMemberName());
@@ -303,21 +293,21 @@ public class AdminService {
         response.setAddress(member.getAddress());
         response.setJoinDate(member.getJoinDate());
         response.setLastLoginDate(member.getLastLoginDate());
-        response.setMemberGrade(member.getMemberGrade());
-        response.setMemberStatus(member.getMemberStatus());
+        response.setMemberGrade(member.getMemberGrade().toString());
+        response.setMemberStatus(member.getMemberStatus().toString());
         return response;
     }
 
     private InventoryResponse convertToInventoryResponse(Inventory inventory) {
         InventoryResponse response = new InventoryResponse();
-        response.setBookId(inventory.getBook().getBookId());
+        response.setBookId(Long.valueOf(inventory.getBook().getBookId()));
         response.setIsbn(inventory.getBook().getIsbn());
         response.setTitle(inventory.getBook().getTitle());
         response.setAuthor(inventory.getBook().getAuthor());
         response.setPublisher(inventory.getBook().getPublisher());
-        response.setPrice(inventory.getBook().getPrice());
+        response.setPrice(inventory.getBook().getPrice().intValue());
         response.setStockQuantity(inventory.getQuantity());
-        response.setSalesStatus(inventory.getBook().getSalesStatus());
+        response.setSalesStatus(inventory.getBook().getSalesStatus().toString());
         response.setRegisterDate(inventory.getBook().getRegisterDate());
         response.setImageUrl(inventory.getBook().getImageUrl());
         return response;
