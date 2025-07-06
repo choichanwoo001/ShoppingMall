@@ -2,6 +2,7 @@ package com.example.fastcampusbookstore.repository;
 
 import com.example.fastcampusbookstore.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface MemberRepository extends JpaRepository<Member, String> {
+public interface MemberRepository extends JpaRepository<Member, String>, JpaSpecificationExecutor<Member> {
     // Repository에서 하면 안 되는 것들:
     // - DTO 반환
     // - 비즈니스 로직 처리

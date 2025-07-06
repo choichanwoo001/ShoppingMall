@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주문 관리 - FastCampus BookStore</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-book"></i> 관리자</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="/admin"><i class="fas fa-home"></i> 대시보드</a></li>
+                    <li><a href="/admin/books"><i class="fas fa-book"></i> 상품 관리</a></li>
+                    <li><a href="/admin/orders" class="active"><i class="fas fa-shopping-cart"></i> 주문 관리</a></li>
+                    <li><a href="/admin/members"><i class="fas fa-users"></i> 회원 관리</a></li>
+                    <li><a href="/admin/inventory"><i class="fas fa-boxes"></i> 재고 관리</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1>주문 관리</h1>
+                <div class="admin-info">
+                    <span>주문 현황을 확인하고 관리할 수 있습니다</span>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <!-- 검색 필터 -->
+                <div class="search-filter">
+                    <form id="searchForm" method="get">
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label for="ordererName">주문자</label>
+                                <input type="text" id="ordererName" name="ordererName" th:value="${searchRequest?.ordererName}" placeholder="주문자 이름을 입력하세요">
+                            </div>
+                            <div class="filter-group">
+                                <label for="bookTitle">책 이름</label>
+                                <input type="text" id="bookTitle" name="bookTitle" th:value="${searchRequest?.bookTitle}" placeholder="책 이름을 입력하세요">
+                            </div>
+                            <div class="filter-group">
+                                <label for="salesStatus">주문 상태</label>
+                                <select id="salesStatus" name="salesStatus">
+                                    <option value="">전체</option>
+                                    <option value="주문접수" th:selected="${searchRequest?.salesStatus == '주문접수'}">주문접수</option>
+                                    <option value="결제완료" th:selected="${searchRequest?.salesStatus == '결제완료'}">결제완료</option>
+                                    <option value="배송준비중" th:selected="${searchRequest?.salesStatus == '배송준비중'}">배송준비중</option>
+                                    <option value="배송중" th:selected="${searchRequest?.salesStatus == '배송중'}">배송중</option>
+                                    <option value="배송완료" th:selected="${searchRequest?.salesStatus == '배송완료'}">배송완료</option>
+                                    <option value="주문취소" th:selected="${searchRequest?.salesStatus == '주문취소'}">주문취소</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label for="startDate">주문일 시작</label>
+                                <input type="date" id="startDate" name="startDate" th:value="${searchRequest?.startDate}">
+                            </div>
+                            <div class="filter-group">
+                                <label for="endDate">주문일 종료</label>
+                                <input type="date" id="endDate" name="endDate" th:value="${searchRequest?.endDate}">
+                            </div>
+                            <div class="filter-group">
+                                <label for="sortBy">정렬 기준</label>
+                                <select id="sortBy" name="sortBy">
+                                    <option value="orderDate" th:selected="${searchRequest?.sortBy == 'orderDate'}">주문 날짜</option>
+                                    <option value="ordererId" th:selected="${searchRequest?.sortBy == 'ordererId'}">주문자 ID</option>
+                                    <option value="totalAmount" th:selected="${searchRequest?.sortBy == 'totalAmount'}">주문금액</option>
+                                    <option value="orderStatus" th:selected="${searchRequest?.sortBy == 'orderStatus'}">주문 상태</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="sortOrder">정렬 순서</label>
+                                <select id="sortOrder" name="sortOrder">
+                                    <option value="desc" th:selected="${searchRequest?.sortOrder == 'desc'}">내림차순</option>
+                                    <option value="asc" th:selected="${searchRequest?.sortOrder == 'asc'}">오름차순</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="pageSize">페이지 크기</label>
+                                <select id="pageSize" name="pageSize">
+                                    <option value="30" th:selected="${pageInfo?.pageSize == 30}">30개</option>
+                                    <option value="50" th:selected="${pageInfo?.pageSize == 50}">50개</option>
+                                    <option value="100" th:selected="${pageInfo?.pageSize == 100}">100개</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> 검색
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                <i class="fas fa-undo"></i> 초기화
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 주문 목록 테이블 -->
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>주문 ID</th>
+                                <th>주문자</th>
+                                <th>주문일</th>
+                                <th>주문금액</th>
+                                <th>주문 상태</th>
+                                <th>결제 방법</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="order : ${orders}">
+                                <td th:text="${order.orderId}"></td>
+                                <td>
+                                    <div class="orderer-info">
+                                        <span th:text="${order.memberName}"></span>
+                                        <small th:text="${order.memberId}"></small>
+                                    </div>
+                                </td>
+                                <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
+                                <td th:text="${#numbers.formatInteger(order.totalAmount, 3, 'COMMA')}원"></td>
+                                <td>
+                                    <span th:class="${'status-badge ' + order.orderStatus}" th:text="${order.orderStatus}"></span>
+                                </td>
+                                <td th:text="${order.paymentMethod}"></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a th:href="@{/admin/orders/{id}(id=${order.orderId})}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye"></i> 상세보기
+                                        </a>
+                                        <button class="btn btn-sm btn-warning" th:onclick="'updateOrderStatus(' + ${order.orderId} + ')'">
+                                            <i class="fas fa-edit"></i> 상태변경
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 페이지네이션 -->
+                <div class="pagination" th:if="${pageInfo.totalPages > 1}">
+                    <div class="pagination-info">
+                        <span th:text="${pageInfo.number + 1} + ' / ' + ${pageInfo.totalPages} + ' 페이지'"></span>
+                        <span th:text="'총 ' + ${pageInfo.totalElements} + '개 주문'"></span>
+                    </div>
+                    <div class="pagination-controls">
+                        <a th:if="${pageInfo.hasPrevious}" th:href="@{/admin/orders(page=${pageInfo.number - 1}, size=${pageInfo.pageSize})}" class="btn btn-sm">
+                            <i class="fas fa-chevron-left"></i> 이전
+                        </a>
+                        <span th:each="pageNum : ${#numbers.sequence(0, pageInfo.totalPages - 1)}">
+                            <a th:if="${pageNum != pageInfo.number}" th:href="@{/admin/orders(page=${pageNum}, size=${pageInfo.pageSize})}" class="btn btn-sm" th:text="${pageNum + 1}"></a>
+                            <span th:if="${pageNum == pageInfo.number}" class="btn btn-sm btn-primary" th:text="${pageNum + 1}"></span>
+                        </span>
+                        <a th:if="${pageInfo.hasNext}" th:href="@{/admin/orders(page=${pageInfo.number + 1}, size=${pageInfo.pageSize})}" class="btn btn-sm">
+                            다음 <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 주문 상태 변경 모달 -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>주문 상태 변경</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="statusForm">
+                    <input type="hidden" id="orderId" name="orderId">
+                    <div class="form-group">
+                        <label for="newStatus">새로운 상태</label>
+                        <select id="newStatus" name="status" required>
+                            <option value="">선택하세요</option>
+                            <option value="주문접수">주문접수</option>
+                            <option value="결제완료">결제완료</option>
+                            <option value="배송준비중">배송준비중</option>
+                            <option value="배송중">배송중</option>
+                            <option value="배송완료">배송완료</option>
+                            <option value="주문취소">주문취소</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="confirmStatusUpdate()">변경</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html> 

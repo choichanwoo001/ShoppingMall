@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 관리 - FastCampus BookStore</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-book"></i> 관리자</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="/admin"><i class="fas fa-home"></i> 대시보드</a></li>
+                    <li><a href="/admin/books"><i class="fas fa-book"></i> 상품 관리</a></li>
+                    <li><a href="/admin/orders"><i class="fas fa-shopping-cart"></i> 주문 관리</a></li>
+                    <li><a href="/admin/members" class="active"><i class="fas fa-users"></i> 회원 관리</a></li>
+                    <li><a href="/admin/inventory"><i class="fas fa-boxes"></i> 재고 관리</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1>회원 관리</h1>
+                <div class="admin-info">
+                    <span>회원 정보를 확인하고 관리할 수 있습니다</span>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <!-- 검색 필터 -->
+                <div class="search-filter">
+                    <form id="searchForm" method="get">
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label for="memberId">회원 ID</label>
+                                <input type="text" id="memberId" name="memberId" th:value="${searchRequest?.memberId}" placeholder="회원 ID를 입력하세요">
+                            </div>
+                            <div class="filter-group">
+                                <label for="memberName">회원 이름</label>
+                                <input type="text" id="memberName" name="memberName" th:value="${searchRequest?.memberName}" placeholder="회원 이름을 입력하세요">
+                            </div>
+                            <div class="filter-group">
+                                <label for="email">이메일</label>
+                                <input type="email" id="email" name="email" th:value="${searchRequest?.email}" placeholder="이메일을 입력하세요">
+                            </div>
+                        </div>
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label for="memberStatus">회원 상태</label>
+                                <select id="memberStatus" name="memberStatus">
+                                    <option value="">전체</option>
+                                    <option value="활성" th:selected="${searchRequest?.memberStatus == '활성'}">활성</option>
+                                    <option value="비활성" th:selected="${searchRequest?.memberStatus == '비활성'}">비활성</option>
+                                    <option value="휴면" th:selected="${searchRequest?.memberStatus == '휴면'}">휴면</option>
+                                    <option value="탈퇴" th:selected="${searchRequest?.memberStatus == '탈퇴'}">탈퇴</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="memberGrade">회원 등급</label>
+                                <select id="memberGrade" name="memberGrade">
+                                    <option value="">전체</option>
+                                    <option value="일반" th:selected="${searchRequest?.memberGrade == '일반'}">일반</option>
+                                    <option value="실버" th:selected="${searchRequest?.memberGrade == '실버'}">실버</option>
+                                    <option value="골드" th:selected="${searchRequest?.memberGrade == '골드'}">골드</option>
+                                    <option value="플래티넘" th:selected="${searchRequest?.memberGrade == '플래티넘'}">플래티넘</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="startDate">가입일 시작</label>
+                                <input type="date" id="startDate" name="startDate" th:value="${searchRequest?.startDate}">
+                            </div>
+                            <div class="filter-group">
+                                <label for="endDate">가입일 종료</label>
+                                <input type="date" id="endDate" name="endDate" th:value="${searchRequest?.endDate}">
+                            </div>
+                        </div>
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label for="sortBy">정렬 기준</label>
+                                <select id="sortBy" name="sortBy">
+                                    <option value="joinDate" th:selected="${searchRequest?.sortBy == 'joinDate'}">가입일</option>
+                                    <option value="memberId" th:selected="${searchRequest?.sortBy == 'memberId'}">회원 ID</option>
+                                    <option value="memberName" th:selected="${searchRequest?.sortBy == 'memberName'}">회원 이름</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="sortOrder">정렬 순서</label>
+                                <select id="sortOrder" name="sortOrder">
+                                    <option value="desc" th:selected="${searchRequest?.sortOrder == 'desc'}">내림차순</option>
+                                    <option value="asc" th:selected="${searchRequest?.sortOrder == 'asc'}">오름차순</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="pageSize">페이지 크기</label>
+                                <select id="pageSize" name="pageSize">
+                                    <option value="30" th:selected="${pageInfo?.pageSize == 30}">30개</option>
+                                    <option value="50" th:selected="${pageInfo?.pageSize == 50}">50개</option>
+                                    <option value="100" th:selected="${pageInfo?.pageSize == 100}">100개</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> 검색
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                <i class="fas fa-undo"></i> 초기화
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 회원 목록 테이블 -->
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>회원 ID</th>
+                                <th>이름</th>
+                                <th>이메일</th>
+                                <th>연락처</th>
+                                <th>가입일</th>
+                                <th>최종 접속일</th>
+                                <th>회원 등급</th>
+                                <th>회원 상태</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="member : ${members}">
+                                <td th:text="${member.memberId}"></td>
+                                <td th:text="${member.memberName}"></td>
+                                <td th:text="${member.email}"></td>
+                                <td th:text="${member.phone}"></td>
+                                <td th:text="${#temporals.format(member.joinDate, 'yyyy-MM-dd')}"></td>
+                                <td th:text="${member.lastLoginDate != null ? #temporals.format(member.lastLoginDate, 'yyyy-MM-dd HH:mm') : '-'}"></td>
+                                <td>
+                                    <span th:class="${'grade-badge ' + member.memberGrade}" th:text="${member.memberGrade}"></span>
+                                </td>
+                                <td>
+                                    <span th:class="${'status-badge ' + member.memberStatus}" th:text="${member.memberStatus}"></span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a th:href="@{/admin/members/{id}(id=${member.memberId})}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye"></i> 상세보기
+                                        </a>
+                                        <a th:href="@{/admin/members/{id}/orders(id=${member.memberId})}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-shopping-cart"></i> 주문내역
+                                        </a>
+                                        <button class="btn btn-sm btn-warning" th:onclick="'updateMemberStatus(\'' + ${member.memberId} + '\')'">
+                                            <i class="fas fa-edit"></i> 상태변경
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 페이지네이션 -->
+                <div class="pagination" th:if="${pageInfo.totalPages > 1}">
+                    <div class="pagination-info">
+                        <span th:text="${pageInfo.number + 1} + ' / ' + ${pageInfo.totalPages} + ' 페이지'"></span>
+                        <span th:text="'총 ' + ${pageInfo.totalElements} + '명 회원'"></span>
+                    </div>
+                    <div class="pagination-controls">
+                        <a th:if="${pageInfo.hasPrevious}" th:href="@{/admin/members(page=${pageInfo.number - 1}, size=${pageInfo.pageSize})}" class="btn btn-sm">
+                            <i class="fas fa-chevron-left"></i> 이전
+                        </a>
+                        <span th:each="pageNum : ${#numbers.sequence(0, pageInfo.totalPages - 1)}">
+                            <a th:if="${pageNum != pageInfo.number}" th:href="@{/admin/members(page=${pageNum}, size=${pageInfo.pageSize})}" class="btn btn-sm" th:text="${pageNum + 1}"></a>
+                            <span th:if="${pageNum == pageInfo.number}" class="btn btn-sm btn-primary" th:text="${pageNum + 1}"></span>
+                        </span>
+                        <a th:if="${pageInfo.hasNext}" th:href="@{/admin/members(page=${pageInfo.number + 1}, size=${pageInfo.pageSize})}" class="btn btn-sm">
+                            다음 <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 회원 상태 변경 모달 -->
+    <div id="memberStatusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>회원 상태 변경</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="memberStatusForm">
+                    <input type="hidden" id="memberId" name="memberId">
+                    <div class="form-group">
+                        <label for="newMemberStatus">새로운 상태</label>
+                        <select id="newMemberStatus" name="memberStatus" required>
+                            <option value="">선택하세요</option>
+                            <option value="활성">활성</option>
+                            <option value="비활성">비활성</option>
+                            <option value="휴면">휴면</option>
+                            <option value="탈퇴">탈퇴</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="confirmMemberStatusUpdate()">변경</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html> 

@@ -1,21 +1,27 @@
 package com.example.fastcampusbookstore.service;
 
+import com.example.fastcampusbookstore.dto.common.PageRequest;
 import com.example.fastcampusbookstore.dto.common.PageResponse;
 import com.example.fastcampusbookstore.dto.request.OrderCreateRequest;
+import com.example.fastcampusbookstore.dto.request.OrderSearchRequest;
 import com.example.fastcampusbookstore.dto.response.OrderListResponse;
 import com.example.fastcampusbookstore.dto.response.OrderResponse;
 import com.example.fastcampusbookstore.entity.*;
 import com.example.fastcampusbookstore.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,7 +82,7 @@ public class OrderService {
         Member member = memberRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다"));
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "orderDate"));
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "orderDate"));
         Page<Order> orders = orderRepository.findByMember(member, pageable);
 
         List<OrderListResponse> orderResponses = orders.getContent().stream()
@@ -165,5 +171,71 @@ public class OrderService {
         if (book.getInventory() != null && book.getInventory().getStockQuantity() < quantity) {
             throw new IllegalArgumentException("재고가 부족합니다: " + book.getBookName());
         }
+    }
+
+    // === 관리자 기능 ===
+
+    // 관리자용 주문 목록 조회
+    public PageResponse<OrderListResponse> getOrderListForAdmin(OrderSearchRequest request, PageRequest pageRequest) {
+        Specification<Order> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            
+            if (StringUtils.hasText(request.getOrdererName())) {
+                predicates.add(cb.like(root.get("member").get("memberName"), "%" + request.getOrdererName() + "%"));
+            }
+            if (StringUtils.hasText(request.getBookTitle())) {
+                predicates.add(cb.like(root.join("orderDetails").get("book").get("title"), "%" + request.getBookTitle() + "%"));
+            }
+            if (StringUtils.hasText(request.getSalesStatus())) {
+                predicates.add(cb.equal(root.get("orderStatus"), Order.OrderStatus.valueOf(request.getSalesStatus())));
+            }
+            if (request.getStartDate() != null && request.getEndDate() != null) {
+                predicates.add(cb.between(root.get("orderDate"), 
+                    request.getStartDate().atStartOfDay(), 
+                    request.getEndDate().atTime(23, 59, 59)));
+            }
+            
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        Pageable pageable = pageRequest.toPageable();
+        Page<Order> orderPage = orderRepository.findAll(spec, pageable);
+        
+        List<OrderListResponse> content = orderPage.getContent().stream()
+            .map(OrderListResponse::from)
+            .collect(Collectors.toList());
+            
+        return PageResponse.of(orderPage, content);
+    }
+
+    // 주문 상세 조회 (관리자용)
+    public OrderResponse getOrderDetail(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new RuntimeException("주문을 찾을 수 없습니다."));
+        return OrderResponse.from(order);
+    }
+
+    // 주문 상태 변경
+    @Transactional
+    public void updateOrderStatus(Long orderId, String status) {
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new RuntimeException("주문을 찾을 수 없습니다."));
+        order.setOrderStatus(Order.OrderStatus.valueOf(status));
+        orderRepository.save(order);
+    }
+
+    // 특정 회원의 주문 목록 조회
+    public PageResponse<OrderListResponse> getOrderListByMember(String memberId, PageRequest pageRequest) {
+        Member member = memberRepository.findByMemberId(memberId)
+            .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
+        
+        Pageable pageable = pageRequest.toPageable();
+        Page<Order> orderPage = orderRepository.findByMember(member, pageable);
+        
+        List<OrderListResponse> content = orderPage.getContent().stream()
+            .map(OrderListResponse::from)
+            .collect(Collectors.toList());
+            
+        return PageResponse.of(orderPage, content);
     }
 }

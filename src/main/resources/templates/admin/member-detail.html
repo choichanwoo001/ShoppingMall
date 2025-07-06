@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 상세보기 - FastCampus BookStore</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-book"></i> 관리자</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="/admin"><i class="fas fa-home"></i> 대시보드</a></li>
+                    <li><a href="/admin/books"><i class="fas fa-book"></i> 상품 관리</a></li>
+                    <li><a href="/admin/orders"><i class="fas fa-shopping-cart"></i> 주문 관리</a></li>
+                    <li><a href="/admin/members" class="active"><i class="fas fa-users"></i> 회원 관리</a></li>
+                    <li><a href="/admin/inventory"><i class="fas fa-boxes"></i> 재고 관리</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1>회원 상세보기</h1>
+                <div class="admin-info">
+                    <a href="/admin/members" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> 목록으로
+                    </a>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <div class="detail-container">
+                    <!-- 회원 기본 정보 -->
+                    <div class="detail-section">
+                        <h3>회원 정보</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>회원 ID</label>
+                                <span th:text="${member.memberId}"></span>
+                            </div>
+                            <div class="info-item">
+                                <label>이름</label>
+                                <span th:text="${member.memberName}"></span>
+                            </div>
+                            <div class="info-item">
+                                <label>이메일</label>
+                                <span th:text="${member.email}"></span>
+                            </div>
+                            <div class="info-item">
+                                <label>연락처</label>
+                                <span th:text="${member.phone}"></span>
+                            </div>
+                            <div class="info-item">
+                                <label>주소</label>
+                                <span th:text="${member.address}"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 회원 상태 정보 -->
+                    <div class="detail-section">
+                        <h3>회원 상태</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>가입일</label>
+                                <span th:text="${#temporals.format(member.joinDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                            </div>
+                            <div class="info-item">
+                                <label>최종 접속일</label>
+                                <span th:text="${member.lastLoginDate != null ? #temporals.format(member.lastLoginDate, 'yyyy-MM-dd HH:mm:ss') : '접속 기록 없음'}"></span>
+                            </div>
+                            <div class="info-item">
+                                <label>회원 등급</label>
+                                <span th:class="${'grade-badge ' + member.memberGrade}" th:text="${member.memberGrade}"></span>
+                            </div>
+                            <div class="info-item">
+                                <label>회원 상태</label>
+                                <span th:class="${'status-badge ' + member.memberStatus}" th:text="${member.memberStatus}"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 회원 통계 -->
+                    <div class="detail-section">
+                        <h3>회원 통계</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h4>총 주문 수</h4>
+                                    <p class="stat-number" th:text="${memberStats.totalOrders}">0</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-won-sign"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h4>총 구매액</h4>
+                                    <p class="stat-number" th:text="${#numbers.formatInteger(memberStats.totalAmount, 3, 'COMMA')}원">0원</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h4>작성 리뷰</h4>
+                                    <p class="stat-number" th:text="${memberStats.totalReviews}">0</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-calendar"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h4>가입일수</h4>
+                                    <p class="stat-number" th:text="${memberStats.daysSinceJoin}">0일</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 최근 주문 내역 -->
+                    <div class="detail-section">
+                        <h3>최근 주문 내역</h3>
+                        <div class="recent-orders">
+                            <div class="order-item" th:each="order : ${recentOrders}">
+                                <div class="order-header">
+                                    <span class="order-id" th:text="'주문 #' + ${order.orderId}"></span>
+                                    <span class="order-date" th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></span>
+                                    <span th:class="${'status-badge ' + order.orderStatus}" th:text="${order.orderStatus}"></span>
+                                </div>
+                                <div class="order-items">
+                                    <div class="order-item-detail" th:each="item : ${order.orderDetails}">
+                                        <img th:if="${item.book.imageUrl}" th:src="${item.book.imageUrl}" alt="책 이미지" class="book-thumbnail">
+                                        <div class="item-info">
+                                            <span class="book-title" th:text="${item.book.title}"></span>
+                                            <span class="item-quantity" th:text="${item.quantity} + '개'"></span>
+                                        </div>
+                                        <span class="item-price" th:text="${#numbers.formatInteger(item.price * item.quantity, 3, 'COMMA')}원"></span>
+                                    </div>
+                                </div>
+                                <div class="order-footer">
+                                    <span class="total-amount" th:text="'총 ' + ${#numbers.formatInteger(order.totalAmount, 3, 'COMMA')} + '원'"></span>
+                                    <a th:href="@{/admin/orders/{id}(id=${order.orderId})}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye"></i> 상세보기
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="view-all-orders">
+                            <a th:href="@{/admin/members/{id}/orders(id=${member.memberId})}" class="btn btn-primary">
+                                <i class="fas fa-list"></i> 전체 주문 내역 보기
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 회원 관리 액션 -->
+                    <div class="detail-section">
+                        <h3>회원 관리</h3>
+                        <div class="member-actions">
+                            <div class="action-buttons">
+                                <button class="btn btn-warning" th:onclick="'updateMemberStatus(\'' + ${member.memberId} + '\')'">
+                                    <i class="fas fa-edit"></i> 회원 상태 변경
+                                </button>
+                                <button class="btn btn-info" th:onclick="'sendEmail(\'' + ${member.email} + '\')'">
+                                    <i class="fas fa-envelope"></i> 이메일 발송
+                                </button>
+                                <button class="btn btn-danger" th:onclick="'deleteMember(\'' + ${member.memberId} + '\')'">
+                                    <i class="fas fa-trash"></i> 회원 삭제
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 회원 상태 변경 모달 -->
+    <div id="memberStatusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>회원 상태 변경</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="memberStatusForm">
+                    <input type="hidden" id="memberId" name="memberId">
+                    <div class="form-group">
+                        <label for="newMemberStatus">새로운 상태</label>
+                        <select id="newMemberStatus" name="memberStatus" required>
+                            <option value="">선택하세요</option>
+                            <option value="활성">활성</option>
+                            <option value="비활성">비활성</option>
+                            <option value="휴면">휴면</option>
+                            <option value="탈퇴">탈퇴</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="statusReason">변경 사유</label>
+                        <textarea id="statusReason" name="statusReason" rows="3" placeholder="상태 변경 사유를 입력하세요"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="confirmMemberStatusUpdate()">변경</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html> 

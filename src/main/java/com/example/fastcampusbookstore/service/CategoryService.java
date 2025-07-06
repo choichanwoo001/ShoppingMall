@@ -73,4 +73,13 @@ public class CategoryService {
                 .map(CategoryResponse::fromBottom)
                 .collect(Collectors.toList());
     }
+
+    // 5. 모든 카테고리 조회 (관리자용)
+    public List<CategoryResponse> getAllCategories() {
+        List<CategoryTop> topCategories = categoryTopRepository.findByIsActiveTrueOrderBySortOrder();
+        
+        return topCategories.stream()
+                .map(CategoryResponse::fromTop)
+                .collect(Collectors.toList());
+    }
 }

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CategoryTopRepository extends JpaRepository<CategoryTop, Integer> {
@@ -14,4 +15,7 @@ public interface CategoryTopRepository extends JpaRepository<CategoryTop, Intege
 
     // 활성화 상태별 조회
     List<CategoryTop> findByIsActive(Boolean isActive);
+    
+    // 카테고리 이름으로 조회
+    Optional<CategoryTop> findByCategoryName(String categoryName);
 }

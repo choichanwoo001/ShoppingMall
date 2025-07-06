@@ -1,15 +1,25 @@
 package com.example.fastcampusbookstore.service;
 
+import com.example.fastcampusbookstore.dto.common.PageRequest;
+import com.example.fastcampusbookstore.dto.common.PageResponse;
 import com.example.fastcampusbookstore.dto.request.*;
 import com.example.fastcampusbookstore.dto.response.MemberResponse;
 import com.example.fastcampusbookstore.entity.Member;
 import com.example.fastcampusbookstore.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import jakarta.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -212,5 +222,53 @@ public class MemberService {
 
     private String generateTempPassword() {
         return "TEMP" + System.currentTimeMillis();
+    }
+
+    // === 관리자 기능 ===
+
+    // 관리자용 회원 목록 조회
+    public PageResponse<MemberResponse> getMemberListForAdmin(MemberSearchRequest request, PageRequest pageRequest) {
+        Specification<Member> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            
+            if (StringUtils.hasText(request.getMemberId())) {
+                predicates.add(cb.like(root.get("memberId"), "%" + request.getMemberId() + "%"));
+            }
+            if (StringUtils.hasText(request.getMemberStatus())) {
+                predicates.add(cb.equal(root.get("memberStatus"), Member.MemberStatus.valueOf(request.getMemberStatus())));
+            }
+            if (StringUtils.hasText(request.getEmail())) {
+                predicates.add(cb.like(root.get("email"), "%" + request.getEmail() + "%"));
+            }
+            if (StringUtils.hasText(request.getMemberGrade())) {
+                predicates.add(cb.equal(root.get("memberGrade"), Member.MemberGrade.valueOf(request.getMemberGrade())));
+            }
+            if (StringUtils.hasText(request.getMemberName())) {
+                predicates.add(cb.like(root.get("memberName"), "%" + request.getMemberName() + "%"));
+            }
+            if (request.getStartDate() != null && request.getEndDate() != null) {
+                predicates.add(cb.between(root.get("joinDate"), 
+                    request.getStartDate().atStartOfDay(), 
+                    request.getEndDate().atTime(23, 59, 59)));
+            }
+            
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        Pageable pageable = pageRequest.toPageable();
+        Page<Member> memberPage = memberRepository.findAll(spec, pageable);
+        
+        List<MemberResponse> content = memberPage.getContent().stream()
+            .map(MemberResponse::from)
+            .collect(Collectors.toList());
+            
+        return PageResponse.of(memberPage, content);
+    }
+
+    // 회원 상세 조회 (관리자용)
+    public MemberResponse getMemberDetail(String memberId) {
+        Member member = memberRepository.findByMemberId(memberId)
+            .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
+        return MemberResponse.from(member);
     }
 }
