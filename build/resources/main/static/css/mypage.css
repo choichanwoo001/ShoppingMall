@@ -1,0 +1,628 @@
+/* MyPage Styles */
+.page-title {
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+}
+
+/* User Info Summary */
+.user-info-summary {
+    background: var(--white);
+    border-radius: 0.4rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0.1rem 0.5rem rgba(0,0,0,0.05);
+}
+
+.user-info-summary h3 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.user-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.detail-item .label {
+    color: var(--text-light);
+    font-size: 0.7rem;
+}
+
+.detail-item .value {
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.detail-item .value.grade {
+    color: var(--accent-color);
+}
+
+/* Tab Menu */
+.tab-menu {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1.5rem;
+    border-bottom: 0.05rem solid var(--border-color);
+    background: var(--white);
+    border-radius: 0.4rem 0.4rem 0 0;
+    overflow: hidden;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: var(--background-color);
+    border: none;
+    border-bottom: 0.15rem solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.8rem;
+    color: var(--text-dark);
+}
+
+.tab-btn:hover {
+    background: var(--light-accent);
+}
+
+.tab-btn.active {
+    background: var(--white);
+    color: var(--accent-color);
+    border-bottom-color: var(--accent-color);
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+    background: var(--white);
+    border-radius: 0 0 0.4rem 0.4rem;
+    padding: 1.5rem;
+    box-shadow: 0 0.1rem 0.5rem rgba(0,0,0,0.05);
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Order Items */
+.order-item {
+    border: 0.05rem solid var(--border-color);
+    border-radius: 0.4rem;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--background-color);
+    border-bottom: 0.05rem solid var(--border-color);
+}
+
+.order-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.order-date {
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.order-number {
+    color: var(--text-light);
+    font-size: 0.7rem;
+}
+
+.order-status {
+    padding: 0.3rem 0.6rem;
+    border-radius: 1rem;
+    color: var(--white);
+    font-size: 0.6rem;
+    font-weight: bold;
+}
+
+.order-status.delivered {
+    background: var(--success-color);
+}
+
+.order-status.shipping {
+    background: var(--accent-color);
+}
+
+.order-status.preparing {
+    background: var(--warning-color);
+}
+
+.order-products {
+    padding: 0;
+}
+
+.product-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-bottom: 0.05rem solid var(--border-color);
+}
+
+.product-row:last-child {
+    border-bottom: none;
+}
+
+.product-image {
+    width: 3rem;
+    height: 4rem;
+    background: var(--background-color);
+    border-radius: 0.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    font-size: 0.5rem;
+    border: 0.05rem solid var(--border-color);
+}
+
+.product-info {
+    flex: 1;
+}
+
+.product-title {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.product-author {
+    color: var(--text-light);
+    font-size: 0.7rem;
+    margin-bottom: 0.25rem;
+}
+
+.product-price {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.product-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-small {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.6rem;
+}
+
+.btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Review List */
+.review-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    border: 0.05rem solid var(--border-color);
+    border-radius: 0.4rem;
+    margin-bottom: 0.75rem;
+}
+
+.review-book {
+    display: flex;
+    gap: 0.75rem;
+    min-width: 10rem;
+}
+
+.book-image {
+    width: 2.5rem;
+    height: 3.5rem;
+    background: var(--background-color);
+    border-radius: 0.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    font-size: 0.4rem;
+    border: 0.05rem solid var(--border-color);
+}
+
+.book-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.book-title {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.book-author {
+    color: var(--text-light);
+    font-size: 0.6rem;
+}
+
+.review-content {
+    flex: 1;
+}
+
+.review-rating {
+    color: var(--warning-color);
+    margin-bottom: 0.5rem;
+}
+
+.review-text {
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
+
+.review-date {
+    color: var(--text-light);
+    font-size: 0.6rem;
+}
+
+.review-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Wishlist */
+.wishlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: 1rem;
+}
+
+.book-card {
+    border: 0.05rem solid var(--border-color);
+    border-radius: 0.4rem;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.book-card:hover {
+    transform: translateY(-0.25rem);
+    box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.1);
+}
+
+.book-card .book-image {
+    width: 100%;
+    height: 10rem;
+    background: var(--background-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    border-bottom: 0.05rem solid var(--border-color);
+}
+
+.book-card .book-info {
+    padding: 0.75rem;
+}
+
+.book-card .book-title {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.book-card .book-author {
+    color: var(--text-light);
+    font-size: 0.6rem;
+    margin-bottom: 0.5rem;
+}
+
+.book-card .book-price {
+    color: var(--accent-color);
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+}
+
+.book-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.book-actions .btn {
+    flex: 1;
+}
+
+/* Points */
+.points-summary {
+    background: var(--light-accent);
+    padding: 1.25rem;
+    border-radius: 0.4rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.current-points {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.current-points .label {
+    color: var(--text-light);
+    font-size: 0.8rem;
+}
+
+.current-points .amount {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.points-history h4 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.points-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 0.05rem solid var(--border-color);
+}
+
+.points-item:last-child {
+    border-bottom: none;
+}
+
+.points-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.points-type {
+    font-weight: bold;
+}
+
+.points-date {
+    color: var(--text-light);
+    font-size: 0.6rem;
+}
+
+.points-amount {
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.points-amount.plus {
+    color: var(--success-color);
+}
+
+.points-amount.minus {
+    color: #e53e3e;
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-light);
+}
+
+.pagination-container {
+    margin-top: 0.75rem;
+    text-align: center;
+}
+
+.pagination {
+    display: inline-flex;
+    gap: 0.025rem;
+}
+
+.page-btn {
+    padding: 0.025rem 0.0375rem;
+    border: 0.05rem solid var(--border-color);
+    background: var(--white);
+    color: var(--text-dark);
+    cursor: pointer;
+    border-radius: 0.0125rem;
+    font-size: 0.04375rem;
+}
+
+.page-btn:hover {
+    background: var(--light-accent);
+}
+
+.page-btn.active {
+    background: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.review-book-display {
+    display: flex;
+    gap: 0.05rem;
+    padding: 0.05rem;
+    background: var(--background-color);
+    border-radius: 0.025rem;
+    align-items: center;
+}
+
+.review-book-display img {
+    width: 0.15rem;
+    height: 0.2rem;
+    object-fit: cover;
+    border-radius: 0.0125rem;
+}
+
+.review-book-display .book-info h4 {
+    margin: 0 0 0.0125rem 0;
+    font-size: 0.05rem;
+}
+
+.review-book-display .book-info p {
+    margin: 0;
+    font-size: 0.04375rem;
+    color: var(--text-light);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.075rem;
+    padding-bottom: 0.025rem;
+    border-bottom: 0.003125rem solid var(--border-color);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0.75rem, 1fr));
+    gap: 0.05rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.0125rem;
+}
+
+.info-item label {
+    font-size: 0.0375rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.info-item span {
+    font-size: 0.04375rem;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+/* --- MyPage: 추가 스타일 (modal, star-rating, controls 등) --- */
+
+/* Modal Styles */
+.modal {
+    display: none; /* JS로 제어 */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+    background: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+}
+.modal.show {
+    display: flex;
+}
+.modal-content {
+    background: var(--white);
+    margin: auto;
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.15);
+    position: relative;
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+}
+.modal-body {
+    padding: 0.5rem 0 0 0;
+}
+.close {
+    font-size: 1.5rem;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.close:hover {
+    color: var(--accent-color);
+}
+
+/* Star Rating */
+.star-rating {
+    display: flex;
+    gap: 0.25rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+.star {
+    color: #e0e0e0;
+    transition: color 0.2s;
+}
+.star.selected,
+.star:hover,
+.star:hover ~ .star {
+    color: var(--warning-color);
+}
+
+/* Controls (order, review, wishlist) */
+.order-controls,
+.review-controls,
+.wishlist-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+.search-options {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.date-filter {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    font-size: 1rem;
+}
+.order-status-filter {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    font-size: 1rem;
+}
+
+/* Review Stats */
+.review-stats {
+    font-size: 1rem;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+/* Wishlist Controls */
+.wishlist-controls {
+    gap: 0.5rem;
+}
+#wishlist-count {
+    font-size: 1rem;
+    color: var(--text-dark);
+}
+
+/* 인라인 스타일 분리 및 클래스화 */
+.recent-view-clear-btn {
+  font-size: 0.85rem;
+}

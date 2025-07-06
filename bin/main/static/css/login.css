@@ -1,0 +1,128 @@
+/* 전체 페이지 높이 설정 */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-color, #f7fafc);
+}
+
+/* 로그인 페이지 전체 컨테이너 */
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-color, #f7fafc);
+    padding: 1.25rem;
+}
+
+.form-container {
+    max-width: 40rem;
+    width: 100%;
+    padding: 2.5rem 2rem;
+    background: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.125rem 1rem rgba(0,0,0,0.08);
+    margin: 0;
+}
+
+.form-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 1.125rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.4375rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    transition: border 0.2s;
+}
+
+.form-input:focus {
+    border: 1.5px solid #3b82f6;
+    outline: none;
+}
+
+.remember-group {
+    margin-bottom: 1.125rem;
+}
+
+.remember-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.98rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.form-btn {
+    width: 100%;
+    padding: 0.75rem 0;
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.625rem;
+    transition: background 0.2s;
+}
+
+.form-btn:hover {
+    background: #2563eb;
+}
+
+.form-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.form-links a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-size: 0.97rem;
+}
+
+.form-links a:hover {
+    text-decoration: underline;
+}
+
+/* 인라인 스타일 분리 및 클래스화 */
+#logoutSection {
+  display: none;
+  margin-top: 2rem;
+  text-align: center;
+}
+.logout-btn {
+  margin-top: 1rem;
+}
+#resetPasswordModal {
+  display: none;
+}
+.modal-content {
+  /* 기존 스타일 유지, 필요시 추가 */
+}
