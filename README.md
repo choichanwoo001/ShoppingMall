@@ -189,21 +189,6 @@ java -jar build/libs/fastcampus-bookstore-0.0.1-SNAPSHOT.jar
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📝 라이선스
-
-이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 `LICENSE` 파일을 참조하세요.
-
-## 👨‍💻 개발자
-
-- **개발자**: FastCampus BookStore Team
-- **이메일**: contact@fastcampusbookstore.com
-
-## 🙏 감사의 말
-
-- Spring Boot 팀
-- Thymeleaf 팀
-- 카카오페이 API 팀
-
 ---
 
 ⭐ 이 프로젝트가 도움이 되었다면 스타를 눌러주세요!
