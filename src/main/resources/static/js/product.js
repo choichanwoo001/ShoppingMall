@@ -163,26 +163,17 @@ async function buyNow() {
 
     // 수량 확인
     const quantity = parseInt(document.querySelector('.quantity-input')?.value || '1');
-
     if (quantity <= 0) {
         alert('수량을 올바르게 입력해주세요.');
         return;
     }
-
     if (currentBook.stockQuantity && quantity > currentBook.stockQuantity) {
         alert(`재고가 부족합니다. (현재 재고: ${currentBook.stockQuantity}개)`);
         return;
     }
 
-    // 주문서 모달에 상품 정보 채우기 (장바구니와 동일 UX)
-    const orderModal = document.getElementById('orderModal');
-    if (!orderModal) {
-        alert('주문서 모달을 찾을 수 없습니다.');
-        return;
-    }
-
-    updateOrderModalSummary();
-    orderModal.style.display = 'flex';
+    // **주문서 작성 페이지로 이동**
+    window.location.href = `/order?bookId=${currentBookId}&quantity=${quantity}`;
 }
 
 // 리뷰 작성
@@ -208,7 +199,7 @@ async function addToRecentViews() {
     }
 
     try {
-        await apiRequest('/api/recent-views', {
+        await apiRequest('/recent-views', {
             method: 'POST',
             body: JSON.stringify({ bookId: currentBookId })
         });
@@ -382,4 +373,12 @@ function updateOrderModalSummary() {
     if (orderTotalDiv) {
         orderTotalDiv.textContent = formatPrice(currentBook.price * quantity) + '원';
     }
+}
+
+function formatPrice(price) {
+    if (typeof price !== 'number') {
+        price = Number(price);
+    }
+    if (isNaN(price)) return '';
+    return price.toLocaleString();
 }
