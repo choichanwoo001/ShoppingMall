@@ -188,7 +188,6 @@ java -jar build/libs/fastcampus-bookstore-0.0.1-SNAPSHOT.jar
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
 ---
 
 ⭐ 이 프로젝트가 도움이 되었다면 스타를 눌러주세요!

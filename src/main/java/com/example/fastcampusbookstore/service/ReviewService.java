@@ -49,10 +49,10 @@ public class ReviewService {
             throw new IllegalArgumentException("본인이 주문한 상품만 리뷰 작성이 가능합니다");
         }
 
-        // 이미 리뷰를 작성했는지 확인
-        if (reviewRepository.existsByMemberAndOrderDetail(member, orderDetail)) {
-            throw new IllegalArgumentException("이미 리뷰를 작성한 상품입니다");
-        }
+        // // 이미 리뷰를 작성했는지 확인
+        // if (reviewRepository.existsByMemberAndOrderDetail(member, orderDetail)) {
+        //     throw new IllegalArgumentException("이미 리뷰를 작성한 상품입니다");
+        // }
 
         // 리뷰 생성
         Review review = new Review();

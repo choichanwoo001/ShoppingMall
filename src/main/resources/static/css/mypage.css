@@ -423,17 +423,19 @@
 
 .pagination {
     display: inline-flex;
-    gap: 0.025rem;
+    gap: 0.25rem;
 }
 
 .page-btn {
-    padding: 0.025rem 0.0375rem;
-    border: 0.05rem solid var(--border-color);
+    padding: 0.5rem 1.1rem;
+    border: 1.5px solid var(--border-color);
     background: var(--white);
     color: var(--text-dark);
     cursor: pointer;
-    border-radius: 0.0125rem;
-    font-size: 0.04375rem;
+    border-radius: 0.3rem;
+    font-size: 1.15rem;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .page-btn:hover {
