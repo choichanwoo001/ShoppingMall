@@ -1,7 +1,11 @@
+// 전역 변수로 타이머 설정
+let categoryHoverTimer = null;
+
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     setupSearchFunctionality();
     setupSortAndFilter();
+    setupDropdownEvents();
 });
 
 // 검색 기능 설정
@@ -93,71 +97,68 @@ function applyFilters() {
     window.location.href = newUrl;
 }
 
-// 중분류 카테고리 표시
+// 카테고리 호버 처리 함수들
 function showMiddleCategories(topCategoryId) {
-    // 모든 중분류 드롭다운 숨기기
-    document.querySelectorAll('.middle-dropdown').forEach(dropdown => {
-        dropdown.style.display = 'none';
-    });
-
+    // 타이머가 있으면 취소
+    if (categoryHoverTimer) {
+        clearTimeout(categoryHoverTimer);
+        categoryHoverTimer = null;
+    }
+    
+    // 해당 중분류 드롭다운을 복사해서 공통 영역에 표시
     const middleDropdown = document.getElementById(`middle-${topCategoryId}`);
-    if (middleDropdown) {
-        middleDropdown.style.display = 'block';
+    const dropdownArea = document.querySelector('.category-dropdown-area');
+    
+    if (middleDropdown && dropdownArea) {
+        // 원본 HTML을 복사하되, display 스타일 제거
+        let html = middleDropdown.outerHTML;
+        html = html.replace(/style="[^"]*"/g, '');
+        dropdownArea.innerHTML = html;
+        
+        // 복사된 요소의 이벤트 재설정
+        setupDropdownEvents();
     }
 }
 
-// 중분류 카테고리 숨김
 function hideMiddleCategories(topCategoryId) {
-    const middleDropdown = document.getElementById(`middle-${topCategoryId}`);
-    if (middleDropdown) {
-        middleDropdown.style.display = 'none';
-
-        // 해당 중분류의 모든 소분류도 숨김
-        const bottomDropdowns = middleDropdown.querySelectorAll('.bottom-dropdown');
-        bottomDropdowns.forEach(bottom => {
-            bottom.style.display = 'none';
-        });
-    }
+    // 300ms 후에 숨김 (다른 카테고리로 이동할 시간 확보)
+    categoryHoverTimer = setTimeout(() => {
+        const dropdownArea = document.querySelector('.category-dropdown-area');
+        if (dropdownArea) {
+            dropdownArea.innerHTML = '';
+        }
+    }, 300);
 }
 
-// 소분류 카테고리 표시
 function showBottomCategories(middleCategoryId) {
-    // 다른 소분류 드롭다운 숨기기
-    document.querySelectorAll('.bottom-dropdown').forEach(dropdown => {
-        dropdown.style.display = 'none';
-    });
-
-    const bottomDropdown = document.getElementById(`bottom-${middleCategoryId}`);
-    if (bottomDropdown) {
-        bottomDropdown.style.display = 'block';
-    }
+    // 소분류는 이미 CSS로 표시되므로 별도 처리 불필요
 }
 
-// 소분류 카테고리 숨김
 function hideBottomCategories(middleCategoryId) {
-    const bottomDropdown = document.getElementById(`bottom-${middleCategoryId}`);
-    if (bottomDropdown) {
-        bottomDropdown.style.display = 'none';
-    }
+    // 소분류는 이미 CSS로 표시되므로 별도 처리 불필요
 }
 
-// 전역 클릭 이벤트로 드롭다운 닫기
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('.category-dropdown')) {
-        document.querySelectorAll('.middle-dropdown, .bottom-dropdown').forEach(dropdown => {
-            dropdown.style.display = 'none';
+// 드롭다운 영역의 이벤트 설정
+function setupDropdownEvents() {
+    const dropdownArea = document.querySelector('.category-dropdown-area');
+    
+    if (dropdownArea) {
+        // 드롭다운 영역에 마우스가 있을 때는 숨기지 않음
+        dropdownArea.addEventListener('mouseenter', () => {
+            if (categoryHoverTimer) {
+                clearTimeout(categoryHoverTimer);
+                categoryHoverTimer = null;
+            }
+        });
+        
+        // 드롭다운 영역을 벗어나면 숨김
+        dropdownArea.addEventListener('mouseleave', () => {
+            categoryHoverTimer = setTimeout(() => {
+                dropdownArea.innerHTML = '';
+            }, 300);
         });
     }
-});
-
-// ESC 키로 드롭다운 닫기
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        document.querySelectorAll('.middle-dropdown, .bottom-dropdown').forEach(dropdown => {
-            dropdown.style.display = 'none';
-        });
-    }
-});
+}
 
 // 페이지네이션 기능
 function goToPage(page) {
@@ -178,8 +179,8 @@ function goToPage(page) {
 }
 
 // 전역 함수로 노출 (HTML에서 사용)
+window.goToPage = goToPage;
 window.showMiddleCategories = showMiddleCategories;
 window.hideMiddleCategories = hideMiddleCategories;
 window.showBottomCategories = showBottomCategories;
 window.hideBottomCategories = hideBottomCategories;
-window.goToPage = goToPage;

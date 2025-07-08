@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title != null ? title + ' - BookStore' : 'BookStore'}">BookStore</title>
+    
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" href="/css/common.css">
+    
+    <!-- 페이지별 CSS -->
+    <th:block th:if="${cssFiles != null}">
+        <th:block th:each="cssFile : ${cssFiles}">
+            <link rel="stylesheet" th:href="@{'/css/' + ${cssFile}}">
+        </th:block>
+    </th:block>
+    
+    <!-- 추가 CSS -->
+    <th:block th:if="${additionalCss != null}">
+        <th:block th:each="css : ${additionalCss}">
+            <link rel="stylesheet" th:href="${css}">
+        </th:block>
+    </th:block>
+</head>
+<body>
+    <!-- 헤더 -->
+    <div th:replace="~{layout/header :: header}"></div>
+    
+    <!-- 네비게이션 -->
+    <div th:replace="~{layout/navigation :: navigation}"></div>
+    
+    <!-- 메인 컨텐츠 -->
+    <main class="container">
+        <div th:replace="~{::content}"></div>
+    </main>
+    
+    <!-- 페이지별 JavaScript -->
+    <th:block th:if="${jsFiles != null}">
+        <th:block th:each="jsFile : ${jsFiles}">
+            <script th:src="@{'/js/' + ${jsFile}}"></script>
+        </th:block>
+    </th:block>
+    
+    <!-- 추가 JavaScript -->
+    <th:block th:if="${additionalJs != null}">
+        <th:block th:each="js : ${additionalJs}">
+            <script th:src="${js}"></script>
+        </th:block>
+    </th:block>
+</body>
+</html> 

@@ -6,6 +6,7 @@
   <title th:text="${book != null ? book.bookName + ' - BookStore' : 'BookStore'}">BookStore</title>
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/product.css">
+  <link rel="stylesheet" href="/css/category.css">
 </head>
 <body>
 <header class="header">
@@ -33,13 +34,48 @@
 
 <nav class="category-nav">
   <div class="category-list">
-    <!-- 카테고리 목록 동적 생성 -->
-    <th:block th:each="category : ${categories}">
-      <a th:href="@{'/category/' + ${category.categoryId}}"
-         th:text="${category.categoryName}"
-         class="category-item">카테고리</a>
+    <!-- 동적 카테고리 목록 with 드롭다운 -->
+    <th:block th:each="topCategory : ${categories}">
+      <div class="category-dropdown"
+           th:onmouseover="'showMiddleCategories(' + ${topCategory.categoryId} + ')'"
+           th:onmouseleave="'hideMiddleCategories(' + ${topCategory.categoryId} + ')'">
+
+        <a th:href="@{'/category/' + ${topCategory.categoryId}}"
+           th:text="${topCategory.categoryName}"
+           class="category-item">대분류</a>
+
+        <!-- 중분류 드롭다운 -->
+        <div th:id="'middle-' + ${topCategory.categoryId}"
+             class="middle-dropdown"
+             style="display: none;">
+
+          <th:block th:each="middleCategory : ${topCategory.subCategories}" th:if="${topCategory.subCategories != null}">
+            <div class="middle-item"
+                 th:onmouseover="'showBottomCategories(' + ${middleCategory.categoryId} + ')'"
+                 th:onmouseleave="'hideBottomCategories(' + ${middleCategory.categoryId} + ')'">
+
+              <a th:href="@{'/category/' + ${middleCategory.categoryId}}"
+                 th:text="${middleCategory.categoryName}"
+                 class="middle-link">중분류</a>
+
+              <!-- 소분류 드롭다운 -->
+              <div th:id="'bottom-' + ${middleCategory.categoryId}"
+                   class="bottom-dropdown"
+                   style="display: none;">
+
+                <th:block th:each="bottomCategory : ${middleCategory.subCategories}" th:if="${middleCategory.subCategories != null}">
+                  <a th:href="@{'/category/' + ${bottomCategory.categoryId}}"
+                     th:text="${bottomCategory.categoryName}"
+                     class="bottom-link">소분류</a>
+                </th:block>
+              </div>
+            </div>
+          </th:block>
+        </div>
+      </div>
     </th:block>
   </div>
+  <div class="category-dropdown-area"></div>
 </nav>
 
 <div class="container">
