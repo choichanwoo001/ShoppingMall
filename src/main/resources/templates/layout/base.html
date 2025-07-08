@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,8 @@
     
     <!-- 공통 CSS -->
     <link rel="stylesheet" href="/css/common.css">
-    
+    <link rel="stylesheet" href="/css/category.css">
+
     <!-- 페이지별 CSS -->
     <th:block th:if="${cssFiles != null}">
         <th:block th:each="cssFile : ${cssFiles}">
@@ -34,6 +35,10 @@
         <div th:replace="~{::content}"></div>
     </main>
     
+    <!-- 공통 JavaScript (먼저 로드) -->
+    <script src="/js/common.js"></script>
+    <script src="/js/category.js"></script>
+
     <!-- 페이지별 JavaScript -->
     <th:block th:if="${jsFiles != null}">
         <th:block th:each="jsFile : ${jsFiles}">

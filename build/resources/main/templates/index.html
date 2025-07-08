@@ -1,156 +1,80 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BookStore - 온라인 서점</title>
-    <link rel="stylesheet" href="/css/common.css">
-    <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/category.css">
 </head>
 <body>
-<header class="header">
-    <div class="header-container">
-        <div class="logo logo-clickable" onclick="location.href='/'" style="cursor: pointer;">BookStore</div>
-        <div class="search-bar">
-            <input type="text" class="search-input" placeholder="책제목, 저자, 출판사를 검색하세요">
-            <button class="search-btn">검색</button>
-        </div>
-        <div class="user-menu">
-            <!-- 로그인 상태에 따른 메뉴 표시 -->
-            <div th:if="${session.memberId == null}">
-                <a th:href="@{/login}">로그인</a>
-                <a th:href="@{/signup}">회원가입</a>
-            </div>
-            <div th:if="${session.memberId != null}">
-                <span th:text="${'안녕하세요, ' + session.memberName + '님'}">사용자님</span>
-                <a th:href="@{/logout}">로그아웃</a>
-                <a th:href="@{/cart}">장바구니</a>
-                <a th:href="@{/mypage}" th:if="${session.memberId != null}">마이페이지</a>
-            </div>
-        </div>
-    </div>
-</header>
+    <div th:fragment="content">
+        <div class="main-content">
+            <div class="content-left">
+                <h2 class="bestseller-title">이달의 베스트셀러</h2>
 
-<nav class="category-nav">
-    <div class="category-list">
-        <!-- 동적 카테고리 목록 with 드롭다운 -->
-        <th:block th:each="topCategory : ${categories}">
-            <div class="category-dropdown"
-                 th:onmouseover="'showMiddleCategories(' + ${topCategory.categoryId} + ')'"
-                 th:onmouseleave="'hideMiddleCategories(' + ${topCategory.categoryId} + ')'">
+                <!-- 베스트셀러가 없는 경우 -->
+                <div th:if="${#lists.isEmpty(bestsellers)}" class="no-data">
+                    <p>이달의 베스트셀러 정보가 준비 중입니다.</p>
+                </div>
 
-                <a th:href="@{'/category/' + ${topCategory.categoryId}}"
-                   th:text="${topCategory.categoryName}"
-                   class="category-item">대분류</a>
-
-                <!-- 중분류 드롭다운 -->
-                <div th:id="'middle-' + ${topCategory.categoryId}"
-                     class="middle-dropdown"
-                     style="display: none;">
-
-                    <th:block th:each="middleCategory : ${topCategory.subCategories}" th:if="${topCategory.subCategories != null}">
-                        <div class="middle-item"
-                             th:onmouseover="'showBottomCategories(' + ${middleCategory.categoryId} + ')'"
-                             th:onmouseleave="'hideBottomCategories(' + ${middleCategory.categoryId} + ')'">
-
-                            <a th:href="@{'/category/' + ${middleCategory.categoryId}}"
-                               th:text="${middleCategory.categoryName}"
-                               class="middle-link">중분류</a>
-
-                            <!-- 소분류 드롭다운 -->
-                            <div th:id="'bottom-' + ${middleCategory.categoryId}"
-                                 class="bottom-dropdown"
-                                 style="display: none;">
-
-                                <th:block th:each="bottomCategory : ${middleCategory.subCategories}" th:if="${middleCategory.subCategories != null}">
-                                    <a th:href="@{'/category/' + ${bottomCategory.categoryId}}"
-                                       th:text="${bottomCategory.categoryName}"
-                                       class="bottom-link">소분류</a>
-                                </th:block>
+                <!-- 베스트셀러 목록 -->
+                <div th:unless="${#lists.isEmpty(bestsellers)}" class="book-grid">
+                    <th:block th:each="bestseller : ${bestsellers}">
+                        <div class="book-card" th:onclick="'location.href=\'/product/' + ${bestseller.bookId} + '\''">
+                            <div class="book-image">
+                                <img th:if="${bestseller.bookImage != null and bestseller.bookImage != ''}"
+                                     th:src="${bestseller.bookImage}"
+                                     th:alt="${bestseller.bookName}"
+                                     class="book-image-img">
+                                <div th:unless="${bestseller.bookImage != null and bestseller.bookImage != ''}"
+                                     class="no-image">
+                                    <span th:text="${bestseller.ranking + '위'}">순위</span>
+                                </div>
+                            </div>
+                            <div class="book-info">
+                                <div class="book-title" th:text="${bestseller.bookName}">책 제목</div>
+                                <div class="book-author" th:text="${bestseller.author}">저자</div>
+                                <div class="book-price" th:text="${#numbers.formatInteger(bestseller.price, 0, 'COMMA') + '원'}">가격</div>
+                                <!-- 베스트셀러 순위 표시 -->
+                                <div class="bestseller-rank" th:text="'베스트셀러 ' + ${bestseller.ranking} + '위'">순위</div>
                             </div>
                         </div>
                     </th:block>
                 </div>
             </div>
-        </th:block>
-    </div>
-    <div class="category-dropdown-area"></div>
-</nav>
 
-<div class="container">
-    <div class="main-content">
-        <div class="content-left">
-            <h2 class="bestseller-title">이달의 베스트셀러</h2>
-
-            <!-- 베스트셀러가 없는 경우 -->
-            <div th:if="${#lists.isEmpty(bestsellers)}" class="no-data">
-                <p>이달의 베스트셀러 정보가 준비 중입니다.</p>
-            </div>
-
-            <!-- 베스트셀러 목록 -->
-            <div th:unless="${#lists.isEmpty(bestsellers)}" class="book-grid">
-                <th:block th:each="bestseller : ${bestsellers}">
-                    <div class="book-card" th:onclick="'location.href=\'/product/' + ${bestseller.bookId} + '\''">
-                        <div class="book-image">
-                            <img th:if="${bestseller.bookImage != null and bestseller.bookImage != ''}"
-                                 th:src="${bestseller.bookImage}"
-                                 th:alt="${bestseller.bookName}"
-                                 class="book-image-img">
-                            <div th:unless="${bestseller.bookImage != null and bestseller.bookImage != ''}"
-                                 class="no-image">
-                                <span th:text="${bestseller.ranking + '위'}">순위</span>
-                            </div>
-                        </div>
-                        <div class="book-info">
-                            <div class="book-title" th:text="${bestseller.bookName}">책 제목</div>
-                            <div class="book-author" th:text="${bestseller.author}">저자</div>
-                            <div class="book-price" th:text="${#numbers.formatInteger(bestseller.price, 0, 'COMMA') + '원'}">가격</div>
-                            <!-- 베스트셀러 순위 표시 -->
-                            <div class="bestseller-rank" th:text="'베스트셀러 ' + ${bestseller.ranking} + '위'">순위</div>
-                        </div>
-                    </div>
-                </th:block>
-            </div>
-        </div>
-
-        <div class="sidebar">
-            <!-- 인기 검색어 순위 Top 5 -->
-            <div class="sidebar-section">
-                <div class="sidebar-title">인기 검색어</div>
-                <ul id="popular-keyword-list"></ul>
-            </div>
-
-            <!-- 인기 검색어 (실제로는 베스트셀러 기반) -->
-            <div class="sidebar-section">
-                <div class="sidebar-title">인기 도서</div>
-
-                <!-- 인기 도서가 없는 경우 -->
-                <div th:if="${#lists.isEmpty(popularBooks)}" class="no-data-small">
-                    <p>인기 도서 정보가 준비 중입니다.</p>
+            <div class="sidebar">
+                <!-- 인기 검색어 순위 Top 5 -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title">인기 검색어</div>
+                    <ul id="popular-keyword-list"></ul>
                 </div>
 
-                <!-- 인기 도서 목록 (상위 5개) -->
-                <th:block th:each="book, iterStat : ${popularBooks}" th:if="${iterStat.index < 5}">
-                    <div class="popular-item" th:onclick="'location.href=\'/product/' + ${book.bookId} + '\''">
-                        <div class="rank-number" th:text="${iterStat.index + 1}">순위</div>
-                        <div th:text="${book.bookName}">도서명</div>
-                    </div>
-                </th:block>
-            </div>
+                <!-- 인기 검색어 (실제로는 베스트셀러 기반) -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title">인기 도서</div>
 
-            <!-- 최근 본 상품 (로그인한 경우만) -->
-            <div class="sidebar-section" id="recent-view-section">
-                <div class="sidebar-title">최근 본 상품</div>
-                <div id="recent-view-list">
-                    <!-- JS로 동적 렌더링 -->
+                    <!-- 인기 도서가 없는 경우 -->
+                    <div th:if="${#lists.isEmpty(popularBooks)}" class="no-data-small">
+                        <p>인기 도서 정보가 준비 중입니다.</p>
+                    </div>
+
+                    <!-- 인기 도서 목록 (상위 5개) -->
+                    <th:block th:each="book, iterStat : ${popularBooks}" th:if="${iterStat.index < 5}">
+                        <div class="popular-item" th:onclick="'location.href=\'/product/' + ${book.bookId} + '\''">
+                            <div class="rank-number" th:text="${iterStat.index + 1}">순위</div>
+                            <div th:text="${book.bookName}">도서명</div>
+                        </div>
+                    </th:block>
+                </div>
+
+                <!-- 최근 본 상품 (로그인한 경우만) -->
+                <div class="sidebar-section" id="recent-view-section">
+                    <div class="sidebar-title">최근 본 상품</div>
+                    <div id="recent-view-list">
+                        <!-- JS로 동적 렌더링 -->
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-<script src="/js/main.js"></script>
-
 </body>
 </html>

@@ -36,6 +36,12 @@ public class PageController {
     @GetMapping("/cart")
     public String cart(Model model) {
         addCategoryData(model); // 네비게이션용 카테고리 추가
+        
+        // 레이아웃 관련 속성 추가
+        model.addAttribute("title", "장바구니");
+        model.addAttribute("cssFiles", java.util.List.of("cart.css"));
+        model.addAttribute("jsFiles", java.util.List.of("cart.js"));
+        
         return "cart";
     }
 
@@ -65,6 +71,12 @@ public class PageController {
         if (loginMember != null) {
             model.addAttribute("member", loginMember);
         }
+        
+        // 레이아웃 관련 속성 추가
+        model.addAttribute("title", "마이페이지");
+        model.addAttribute("cssFiles", java.util.List.of("mypage.css"));
+        model.addAttribute("jsFiles", java.util.List.of("mypage.js"));
+        
         return "mypage";
     }
 
@@ -136,6 +148,11 @@ public class PageController {
         }
         model.addAttribute("pageNumbers", pageNumbers);
 
+        // 레이아웃 관련 속성 추가
+        model.addAttribute("title", book != null ? book.getBookName() : "상품 상세");
+        model.addAttribute("cssFiles", java.util.List.of("product.css"));
+        model.addAttribute("jsFiles", java.util.List.of("product.js"));
+
         return "product";
     }
 
@@ -150,6 +167,12 @@ public class PageController {
         }
 
         addCategoryData(model); // 네비게이션용 카테고리 추가
+        
+        // 레이아웃 관련 속성 추가
+        model.addAttribute("title", "회원정보 수정");
+        model.addAttribute("cssFiles", java.util.List.of("member-edit.css"));
+        model.addAttribute("jsFiles", java.util.List.of("member-edit.js"));
+        
         return "member-edit";
     }
 
@@ -197,6 +220,11 @@ public class PageController {
             model.addAttribute("currentKeyword", keyword);
 
             log.info("카테고리 페이지 데이터 로드 완료 - 총 {}개 상품", booksResponse.getTotalElements());
+
+            // 레이아웃 관련 속성 추가
+            model.addAttribute("title", "카테고리별 도서");
+            model.addAttribute("cssFiles", java.util.List.of("category.css"));
+            model.addAttribute("jsFiles", java.util.List.of("category.js"));
 
             return "category";
 
@@ -250,6 +278,11 @@ public class PageController {
 
             log.info("검색 완료 - 키워드: {}, 결과: {}개", keyword, searchResults.getTotalElements());
 
+            // 레이아웃 관련 속성 추가
+            model.addAttribute("title", "\"" + keyword + "\" 검색결과");
+            model.addAttribute("cssFiles", java.util.List.of("category.css")); // 검색결과는 카테고리와 같은 스타일 사용
+            model.addAttribute("jsFiles", java.util.List.of("search.js"));
+
             return "search-results";
 
         } catch (Exception e) {
@@ -274,6 +307,12 @@ public class PageController {
     public String orderPage(Model model, HttpSession session) {
         addCategoryData(model);
         // 필요시 세션에서 회원정보 등 추가
+        
+        // 레이아웃 관련 속성 추가
+        model.addAttribute("title", "주문서 작성");
+        model.addAttribute("cssFiles", java.util.List.of("cart.css", "order.css"));
+        model.addAttribute("jsFiles", java.util.List.of("order.js"));
+        
         return "order";
     }
 }

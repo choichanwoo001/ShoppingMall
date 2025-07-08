@@ -225,14 +225,14 @@ async function proceedToCheckout() {
     alert('주문 기능은 추후 구현 예정입니다.');
 }
 
-// 주문서 모달 열기
-function openOrderModal() {
-    window.location.href = '/order';
-}
+// 주문서 모달 열기 (common.js에서 처리)
+// function openOrderModal() {
+//     window.location.href = '/order';
+// }
 
-function closeOrderModal() {
-    document.getElementById('orderModal').style.display = 'none';
-}
+// function closeOrderModal() {
+//     document.getElementById('orderModal').style.display = 'none';
+// }
 
 // 주문서 제출(카카오페이 결제)
 document.getElementById('orderForm').addEventListener('submit', async function(e) {

@@ -1,7 +1,7 @@
-/* 카테고리 페이지 전용 스타일 */
+/* 카테고리 페이지 전용 스타일 (네비게이션 관련 스타일 삭제됨) */
 
 /* 컨테이너 기본 설정 - 큰 화면에서도 전체 너비 사용 */
-.container {
+.category-page .container {
     max-width: 120rem;
     margin: 0 auto;
     padding: 0 2rem;
@@ -9,7 +9,7 @@
 }
 
 /* 메인 콘텐츠 - 세로 배치 */
-.main-content {
+.category-page .main-content {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -17,29 +17,29 @@
 }
 
 /* 브레드크럼 */
-.breadcrumb {
+.category-page .breadcrumb {
     padding: 1rem 0;
     border-bottom: 0.0625rem solid var(--border-color);
     margin-bottom: 1.5rem;
     font-size: 0.875rem;
 }
 
-.breadcrumb a {
+.category-page .breadcrumb a {
     color: var(--primary-color);
     text-decoration: none;
 }
 
-.breadcrumb a:hover {
+.category-page .breadcrumb a:hover {
     text-decoration: underline;
 }
 
-.breadcrumb .separator {
+.category-page .breadcrumb .separator {
     margin: 0 0.5rem;
     color: var(--text-light);
 }
 
 /* 필터 섹션 - 상단에 고정, 전체 너비 */
-.filter-section {
+.category-page .filter-section {
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -52,23 +52,23 @@
     box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.05);
 }
 
-.filter-left {
+.category-page .filter-left {
     flex: 1;
 }
 
-.filter-left h2 {
+.category-page .filter-left h2 {
     margin: 0 0 0.5rem 0;
     color: var(--text-dark);
     font-size: 1.75rem;
     font-weight: 600;
 }
 
-.result-count {
+.category-page .result-count {
     color: var(--text-light);
     font-size: 0.875rem;
 }
 
-.filter-right {
+.category-page .filter-right {
     display: flex;
     gap: 1.5rem;
     align-items: center;
@@ -76,20 +76,20 @@
     flex-shrink: 0;
 }
 
-.sort-options, .view-options {
+.category-page .sort-options, .category-page .view-options {
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.sort-options label, .view-options label {
+.category-page .sort-options label, .category-page .view-options label {
     font-size: 0.875rem;
     color: var(--text-dark);
     font-weight: 500;
     white-space: nowrap;
 }
 
-.sort-select, .size-select {
+.category-page .sort-select, .category-page .size-select {
     padding: 0.5rem 0.75rem;
     border: 0.0625rem solid var(--border-color);
     border-radius: 0.375rem;
@@ -100,20 +100,20 @@
     min-width: 7.5rem;
 }
 
-.sort-select:focus, .size-select:focus {
+.category-page .sort-select:focus, .category-page .size-select:focus {
     outline: none;
     border-color: var(--accent-color);
     box-shadow: 0 0 0 0.125rem rgba(159, 122, 234, 0.1);
 }
 
 /* 도서 목록 섹션 - 필터 아래에 배치 */
-.books-section {
+.category-page .books-section {
     width: 100%;
     min-height: 60vh;
     margin-bottom: 3rem;
 }
 
-.no-books {
+.category-page .no-books {
     text-align: center;
     padding: 4rem 2rem;
     color: var(--text-light);
@@ -123,7 +123,7 @@
     border: 0.0625rem solid var(--border-color);
 }
 
-.book-grid {
+.category-page .book-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(13.75rem, 1fr));
     gap: 2rem;
@@ -132,7 +132,7 @@
     justify-content: center;
 }
 
-.book-card {
+.category-page .book-card {
     background: var(--white);
     border-radius: 0.75rem;
     box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,0.08);
@@ -142,31 +142,31 @@
     border: 0.0625rem solid var(--border-color);
 }
 
-.book-card:hover {
+.category-page .book-card:hover {
     transform: translateY(-0.375rem);
     box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,0.15);
     border-color: var(--accent-color);
 }
 
-.book-image {
+.category-page .book-image {
     height: 17.5rem;
     overflow: hidden;
     position: relative;
     background: var(--background-light);
 }
 
-.book-image img {
+.category-page .book-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
 }
 
-.book-card:hover .book-image img {
+.category-page .book-card:hover .book-image img {
     transform: scale(1.05);
 }
 
-.no-image {
+.category-page .no-image {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -177,11 +177,11 @@
     font-weight: 500;
 }
 
-.book-info {
+.category-page .book-info {
     padding: 1.25rem;
 }
 
-.book-title {
+.category-page .book-title {
     font-size: 1rem;
     font-weight: 600;
     color: var(--text-dark);
@@ -194,46 +194,46 @@
     -webkit-box-orient: vertical;
 }
 
-.book-author {
+.category-page .book-author {
     font-size: 0.875rem;
     color: var(--text-light);
     margin-bottom: 0.5rem;
     font-weight: 500;
 }
 
-.book-publisher {
+.category-page .book-publisher {
     font-size: 0.75rem;
     color: var(--text-muted);
     margin-bottom: 0.75rem;
 }
 
-.book-price {
+.category-page .book-price {
     font-size: 1.25rem;
     font-weight: bold;
     color: var(--accent-color);
     margin-bottom: 0.75rem;
 }
 
-.book-rating {
+.category-page .book-rating {
     display: flex;
     align-items: center;
     gap: 0.375rem;
     margin-bottom: 0.75rem;
 }
 
-.rating-stars {
+.category-page .rating-stars {
     color: #fbbf24;
     font-size: 0.875rem;
     letter-spacing: 0.05em;
 }
 
-.rating-text {
+.category-page .rating-text {
     font-size: 0.75rem;
     color: var(--text-light);
     font-weight: 500;
 }
 
-.book-status {
+.category-page .book-status {
     display: inline-block;
     padding: 0.375rem 0.75rem;
     border-radius: 1rem;
@@ -243,20 +243,20 @@
     letter-spacing: 0.025em;
 }
 
-.status-available {
+.category-page .status-available {
     background: linear-gradient(135deg, #dcfce7, #bbf7d0);
     color: #166534;
     border: 0.0625rem solid #86efac;
 }
 
-.status-unavailable {
+.category-page .status-unavailable {
     background: linear-gradient(135deg, #fef2f2, #fecaca);
     color: #dc2626;
     border: 0.0625rem solid #fca5a5;
 }
 
 /* 페이징 */
-.pagination {
+.category-page .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -265,7 +265,7 @@
     padding: 1rem;
 }
 
-.page-btn {
+.category-page .page-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -282,212 +282,61 @@
     height: 3rem;
 }
 
-.page-btn:hover {
+.category-page .page-btn:hover {
     background: var(--light-accent);
     border-color: var(--accent-color);
     color: var(--accent-color);
     transform: translateY(-0.125rem);
 }
 
-.page-btn.current {
+.category-page .page-btn.current {
     background: var(--accent-color);
     color: var(--white);
     border-color: var(--accent-color);
     box-shadow: 0 0.25rem 0.5rem rgba(159, 122, 234, 0.3);
 }
 
-.page-btn.prev, .page-btn.next {
+.category-page .page-btn.prev, .category-page .page-btn.next {
     font-weight: 600;
     padding: 0.75rem 1.25rem;
 }
 
-.page-btn:disabled {
+.category-page .page-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
 }
 
-/* 카테고리 네비게이션 전체 구조 */
-.category-nav {
-    background: var(--white);
-    border-bottom: 1px solid var(--border-color);
-    position: relative;
-    z-index: 100;
-}
-
-/* 카테고리 리스트 - 상단 대분류 영역 */
-.category-list {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    padding: 0 2rem;
-    height: 2.75rem;
-    border-bottom: 1px solid var(--border-color);
-}
-
-/* 각 카테고리 아이템 */
-.category-dropdown {
-    position: relative;
-    height: 100%;
-    display: flex;
-    align-items: center;
-}
-
-.category-item {
-    display: flex;
-    align-items: center;
-    padding: 0 1rem;
-    height: 100%;
-    color: var(--text-dark);
-    text-decoration: none;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    position: relative;
-}
-
-.category-item:hover {
-    background-color: var(--light-accent);
-    color: var(--accent-color);
-}
-
-.category-item.active {
-    color: var(--accent-color);
-    font-weight: 600;
-}
-
-.category-item.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background-color: var(--accent-color);
-}
-
-/* 공통 드롭다운 영역 */
-.category-dropdown-area {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--white);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-in-out;
-    z-index: 99;
-}
-
-/* 드롭다운이 표시될 때 */
-.category-dropdown-area:not(:empty) {
-    max-height: 400px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-/* 중분류 드롭다운 스타일 */
-.middle-dropdown {
-    display: flex !important;
-    flex-wrap: wrap;
-    gap: 2rem;
-    padding: 1.5rem 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/* 중분류 아이템 */
-.middle-item {
-    position: relative;
-    min-width: 150px;
-}
-
-.middle-link {
-    display: block;
-    padding: 0.5rem 0;
-    color: var(--text-dark);
-    text-decoration: none;
-    font-size: 0.875rem;
-    font-weight: 600;
-    transition: color 0.2s ease;
-    margin-bottom: 0.5rem;
-}
-
-.middle-link:hover {
-    color: var(--accent-color);
-}
-
-.middle-link.active {
-    color: var(--accent-color);
-}
-
-/* 소분류 드롭다운 */
-.bottom-dropdown {
-    display: block !important;
-    padding-left: 0;
-    margin-top: 0.25rem;
-}
-
-.bottom-link {
-    display: block;
-    padding: 0.375rem 0;
-    color: var(--text-light);
-    text-decoration: none;
-    font-size: 0.8125rem;
-    transition: all 0.2s ease;
-    line-height: 1.4;
-}
-
-.bottom-link:hover {
-    color: var(--accent-color);
-    padding-left: 0.5rem;
-}
-
-.bottom-link.active {
-    color: var(--accent-color);
-    font-weight: 500;
-}
-
-/* 호버 시 배경색 효과 제거 */
-.category-dropdown:hover {
-    background-color: transparent;
-}
-
-/* 기존 개별 드롭다운 숨김 */
-.category-dropdown > .middle-dropdown {
-    display: none !important;
-}
-
 /* 검색결과(search-results.html) 인라인/내부 스타일 분리 및 클래스화 */
-.logo-clickable {
+.category-page .logo-clickable {
   cursor: pointer;
 }
-.book-image-img {
+.category-page .book-image-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.no-image {
+.category-page .no-image {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100%;
   color: #718096;
 }
-.no-results {
+.category-page .no-results {
   text-align: center;
   padding: 3rem 2rem;
 }
-.no-results h3 {
+.category-page .no-results h3 {
   color: var(--text-dark);
   margin-bottom: 1rem;
   font-size: 1.25rem;
 }
-.no-results p {
+.category-page .no-results p {
   color: var(--text-light);
   margin-bottom: 2rem;
 }
-.search-suggestions {
+.category-page .search-suggestions {
   text-align: left;
   max-width: 500px;
   margin: 0 auto;
@@ -495,49 +344,74 @@
   background: var(--background-light);
   border-radius: 0.5rem;
 }
-.search-suggestions h4 {
+.category-page .search-suggestions h4 {
   color: var(--primary-color);
   margin-bottom: 1rem;
 }
-.search-suggestions ul {
+.category-page .search-suggestions ul {
   color: var(--text-dark);
   margin: 0;
   padding-left: 1.5rem;
 }
-.search-suggestions li {
+.category-page .search-suggestions li {
   margin-bottom: 0.5rem;
 }
 
 /* 반응형 처리 */
 @media (max-width: 768px) {
-    .category-list {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        padding: 0 1rem;
-    }
-    
-    .middle-dropdown {
-        gap: 1rem;
-        padding: 1rem;
-    }
-    
-    .middle-item {
-        min-width: 120px;
-    }
-    
-    .filter-section {
+    .category-page .filter-section {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
     }
     
-    .filter-right {
+    .category-page .filter-right {
         width: 100%;
         justify-content: space-between;
     }
     
-    .book-grid {
+    .category-page .book-grid {
         grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
         gap: 1rem;
     }
+}
+
+.category-dropdown {
+    position: relative;
+}
+
+.category-dropdown .middle-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 200px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    z-index: 100;
+}
+
+.category-dropdown:hover > .middle-dropdown,
+.category-dropdown:focus-within > .middle-dropdown {
+    display: block;
+}
+
+.middle-item {
+    position: relative;
+}
+
+.middle-item .bottom-dropdown {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    min-width: 180px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    z-index: 110;
+}
+
+.middle-item:hover > .bottom-dropdown,
+.middle-item:focus-within > .bottom-dropdown {
+    display: block;
 }

@@ -1,213 +1,137 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BookStore - 카테고리별 도서</title>
-    <link rel="stylesheet" href="/css/common.css">
-    <link rel="stylesheet" href="/css/category.css">
+    <title>카테고리별 도서</title>
 </head>
 <body>
-<header class="header">
-    <div class="header-container">
-        <div class="logo" onclick="location.href='/'" style="cursor: pointer;">BookStore</div>
-        <div class="search-bar">
-            <input type="text" class="search-input" placeholder="책제목, 저자, 출판사를 검색하세요"
-                   th:value="${currentKeyword}">
-            <button class="search-btn">검색</button>
+    <div th:fragment="content">
+        <div class="category-page">
+        <!-- 브레드크럼 -->
+        <div class="breadcrumb">
+            <a href="/">홈</a>
+            <span class="separator">></span>
+            <span>카테고리</span>
         </div>
-        <div class="user-menu">
-            <div th:if="${session.memberId == null}">
-                <a th:href="@{/login}">로그인</a>
-                <a th:href="@{/signup}">회원가입</a>
+
+        <div class="main-content">
+            <!-- 필터 및 정렬 옵션 -->
+            <div class="filter-section">
+                <div class="filter-left">
+                    <h2>카테고리별 도서</h2>
+                    <span class="result-count" th:text="${'총 ' + totalElements + '권의 도서'}">총 0권의 도서</span>
+                </div>
+                <div class="filter-right">
+                    <div class="sort-options">
+                        <label for="sort-select">정렬:</label>
+                        <select id="sort-select" class="sort-select">
+                            <option value="registration_date-desc"
+                                    th:selected="${currentSort == 'registration_date' && currentDirection == 'desc'}">
+                                최신순
+                            </option>
+                            <option value="registration_date-asc"
+                                    th:selected="${currentSort == 'registration_date' && currentDirection == 'asc'}">
+                                오래된순
+                            </option>
+                            <option value="name-asc"
+                                    th:selected="${currentSort == 'name' && currentDirection == 'asc'}">
+                                상품명 오름차순
+                            </option>
+                            <option value="name-desc"
+                                    th:selected="${currentSort == 'name' && currentDirection == 'desc'}">
+                                상품명 내림차순
+                            </option>
+                            <option value="price-asc"
+                                    th:selected="${currentSort == 'price' && currentDirection == 'asc'}">
+                                가격 낮은순
+                            </option>
+                            <option value="price-desc"
+                                    th:selected="${currentSort == 'price' && currentDirection == 'desc'}">
+                                가격 높은순
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="view-options">
+                        <label for="size-select">페이지당:</label>
+                        <select id="size-select" class="size-select">
+                            <option value="30" th:selected="${size == 30}">30개</option>
+                            <option value="50" th:selected="${size == 50}">50개</option>
+                            <option value="100" th:selected="${size == 100}">100개</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-            <div th:if="${session.memberId != null}">
-                <span th:text="${'안녕하세요, ' + session.memberName + '님'}">사용자님</span>
-                <a th:href="@{/logout}">로그아웃</a>
-                <a th:href="@{/cart}">장바구니</a>
-                <a th:href="@{/mypage}" th:if="${session.memberId != null}">마이페이지</a>
-            </div>
-        </div>
-    </div>
-</header>
 
-<nav class="category-nav">
-    <div class="category-list">
-        <!-- 동적 카테고리 목록 with 드롭다운 -->
-        <th:block th:each="topCategory : ${categories}">
-            <div class="category-dropdown"
-                 th:onmouseover="'showMiddleCategories(' + ${topCategory.categoryId} + ')'"
-                 th:onmouseleave="'hideMiddleCategories(' + ${topCategory.categoryId} + ')'">
+            <!-- 상품 목록 -->
+            <div class="books-section">
+                <!-- 상품이 없는 경우 -->
+                <div th:if="${#lists.isEmpty(books)}" class="no-books">
+                    <p>해당 카테고리에 등록된 도서가 없습니다.</p>
+                </div>
 
-                <a th:href="@{'/category/' + ${topCategory.categoryId}}"
-                   th:text="${topCategory.categoryName}"
-                   class="category-item"
-                   th:classappend="${currentCategoryId == topCategory.categoryId ? 'active' : ''}">대분류</a>
+                <!-- 상품 목록 -->
+                <div th:unless="${#lists.isEmpty(books)}" class="book-grid">
+                    <th:block th:each="book : ${books}">
+                        <div class="book-card" th:onclick="'location.href=\'/product/' + ${book.bookId} + '\''">
+                            <div class="book-image">
+                                <img th:if="${book.bookImage != null and book.bookImage != ''}"
+                                     th:src="${book.bookImage}"
+                                     th:alt="${book.bookName}"
+                                     style="width: 100%; height: 100%; object-fit: cover;">
+                                <div th:unless="${book.bookImage != null and book.bookImage != ''}"
+                                     class="no-image">
+                                    <span>이미지 없음</span>
+                                </div>
+                            </div>
+                            <div class="book-info">
+                                <div class="book-title" th:text="${book.bookName}">책 제목</div>
+                                <div class="book-author" th:text="${book.author}">저자</div>
+                                <div class="book-publisher" th:text="${book.publisher}">출판사</div>
+                                <div class="book-price" th:text="${#numbers.formatInteger(book.price, 0, 'COMMA') + '원'}">가격</div>
 
-                <!-- 중분류 드롭다운 -->
-                <div th:id="'middle-' + ${topCategory.categoryId}"
-                     class="middle-dropdown"
-                     style="display: none;">
+                                <!-- 평점 표시 -->
+                                <div class="book-rating" th:if="${book.rating != null}">
+                                    <span class="rating-stars" th:text="${'★'.repeat(book.rating.intValue())}">★★★★★</span>
+                                    <span class="rating-text" th:text="${book.rating}">평점</span>
+                                </div>
 
-                    <th:block th:each="middleCategory : ${topCategory.subCategories}" th:if="${topCategory.subCategories != null}">
-                        <div class="middle-item"
-                             th:onmouseover="'showBottomCategories(' + ${middleCategory.categoryId} + ')'"
-                             th:onmouseleave="'hideBottomCategories(' + ${middleCategory.categoryId} + ')'">
-
-                            <a th:href="@{'/category/' + ${middleCategory.categoryId}}"
-                               th:text="${middleCategory.categoryName}"
-                               class="middle-link"
-                               th:classappend="${currentCategoryId == middleCategory.categoryId ? 'active' : ''}">중분류</a>
-
-                            <!-- 소분류 드롭다운 -->
-                            <div th:id="'bottom-' + ${middleCategory.categoryId}"
-                                 class="bottom-dropdown"
-                                 style="display: none;">
-
-                                <th:block th:each="bottomCategory : ${middleCategory.subCategories}" th:if="${middleCategory.subCategories != null}">
-                                    <a th:href="@{'/category/' + ${bottomCategory.categoryId}}"
-                                       th:text="${bottomCategory.categoryName}"
-                                       class="bottom-link"
-                                       th:classappend="${currentCategoryId == bottomCategory.categoryId ? 'active' : ''}">소분류</a>
-                                </th:block>
+                                <!-- 판매 상태 -->
+                                <div class="book-status" th:text="${book.salesStatus}"
+                                     th:classappend="${book.salesStatus == '판매중' ? 'status-available' : 'status-unavailable'}">
+                                    판매상태
+                                </div>
                             </div>
                         </div>
                     </th:block>
                 </div>
             </div>
-        </th:block>
-    </div>
-    <div class="category-dropdown-area"></div>
-</nav>
 
-<div class="container">
-    <!-- 브레드크럼 -->
-    <div class="breadcrumb">
-        <a href="/">홈</a>
-        <span class="separator">></span>
-        <span>카테고리</span>
-    </div>
+            <!-- 페이징 -->
+            <div class="pagination" th:if="${totalPages > 1}">
+                <!-- 이전 페이지 -->
+                <a th:if="${hasPrevious}"
+                   th:href="@{'/category/' + ${currentCategoryId} + '?page=' + ${currentPage - 1} + '&size=' + ${size} + '&sort=' + ${currentSort} + '&direction=' + ${currentDirection} + (${currentKeyword != null} ? '&keyword=' + ${currentKeyword} : '')}"
+                   class="page-btn prev">이전</a>
 
-    <div class="main-content">
-        <!-- 필터 및 정렬 옵션 -->
-        <div class="filter-section">
-            <div class="filter-left">
-                <h2>카테고리별 도서</h2>
-                <span class="result-count" th:text="${'총 ' + totalElements + '권의 도서'}">총 0권의 도서</span>
-            </div>
-            <div class="filter-right">
-                <div class="sort-options">
-                    <label for="sort-select">정렬:</label>
-                    <select id="sort-select" class="sort-select">
-                        <option value="registration_date-desc"
-                                th:selected="${currentSort == 'registration_date' && currentDirection == 'desc'}">
-                            최신순
-                        </option>
-                        <option value="registration_date-asc"
-                                th:selected="${currentSort == 'registration_date' && currentDirection == 'asc'}">
-                            오래된순
-                        </option>
-                        <option value="name-asc"
-                                th:selected="${currentSort == 'name' && currentDirection == 'asc'}">
-                            상품명 오름차순
-                        </option>
-                        <option value="name-desc"
-                                th:selected="${currentSort == 'name' && currentDirection == 'desc'}">
-                            상품명 내림차순
-                        </option>
-                        <option value="price-asc"
-                                th:selected="${currentSort == 'price' && currentDirection == 'asc'}">
-                            가격 낮은순
-                        </option>
-                        <option value="price-desc"
-                                th:selected="${currentSort == 'price' && currentDirection == 'desc'}">
-                            가격 높은순
-                        </option>
-                    </select>
-                </div>
-
-                <div class="view-options">
-                    <label for="size-select">페이지당:</label>
-                    <select id="size-select" class="size-select">
-                        <option value="30" th:selected="${size == 30}">30개</option>
-                        <option value="50" th:selected="${size == 50}">50개</option>
-                        <option value="100" th:selected="${size == 100}">100개</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- 상품 목록 -->
-        <div class="books-section">
-            <!-- 상품이 없는 경우 -->
-            <div th:if="${#lists.isEmpty(books)}" class="no-books">
-                <p>해당 카테고리에 등록된 도서가 없습니다.</p>
-            </div>
-
-            <!-- 상품 목록 -->
-            <div th:unless="${#lists.isEmpty(books)}" class="book-grid">
-                <th:block th:each="book : ${books}">
-                    <div class="book-card" th:onclick="'location.href=\'/product/' + ${book.bookId} + '\''">
-                        <div class="book-image">
-                            <img th:if="${book.bookImage != null and book.bookImage != ''}"
-                                 th:src="${book.bookImage}"
-                                 th:alt="${book.bookName}"
-                                 style="width: 100%; height: 100%; object-fit: cover;">
-                            <div th:unless="${book.bookImage != null and book.bookImage != ''}"
-                                 class="no-image">
-                                <span>이미지 없음</span>
-                            </div>
-                        </div>
-                        <div class="book-info">
-                            <div class="book-title" th:text="${book.bookName}">책 제목</div>
-                            <div class="book-author" th:text="${book.author}">저자</div>
-                            <div class="book-publisher" th:text="${book.publisher}">출판사</div>
-                            <div class="book-price" th:text="${#numbers.formatInteger(book.price, 0, 'COMMA') + '원'}">가격</div>
-
-                            <!-- 평점 표시 -->
-                            <div class="book-rating" th:if="${book.rating != null}">
-                                <span class="rating-stars" th:text="${'★'.repeat(book.rating.intValue())}">★★★★★</span>
-                                <span class="rating-text" th:text="${book.rating}">평점</span>
-                            </div>
-
-                            <!-- 판매 상태 -->
-                            <div class="book-status" th:text="${book.salesStatus}"
-                                 th:classappend="${book.salesStatus == '판매중' ? 'status-available' : 'status-unavailable'}">
-                                판매상태
-                            </div>
-                        </div>
-                    </div>
+                <!-- 페이지 번호들 -->
+                <th:block th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}">
+                    <a th:if="${pageNum == currentPage}"
+                       class="page-btn current"
+                       th:text="${pageNum + 1}">1</a>
+                    <a th:unless="${pageNum == currentPage}"
+                       th:href="@{'/category/' + ${currentCategoryId} + '?page=' + ${pageNum} + '&size=' + ${size} + '&sort=' + ${currentSort} + '&direction=' + ${currentDirection} + (${currentKeyword != null} ? '&keyword=' + ${currentKeyword} : '')}"
+                       class="page-btn"
+                       th:text="${pageNum + 1}">1</a>
                 </th:block>
+
+                <!-- 다음 페이지 -->
+                <a th:if="${hasNext}"
+                   th:href="@{'/category/' + ${currentCategoryId} + '?page=' + ${currentPage + 1} + '&size=' + ${size} + '&sort=' + ${currentSort} + '&direction=' + ${currentDirection} + (${currentKeyword != null} ? '&keyword=' + ${currentKeyword} : '')}"
+                   class="page-btn next">다음</a>
             </div>
         </div>
-
-        <!-- 페이징 -->
-        <div class="pagination" th:if="${totalPages > 1}">
-            <!-- 이전 페이지 -->
-            <a th:if="${hasPrevious}"
-               th:href="@{'/category/' + ${currentCategoryId} + '?page=' + ${currentPage - 1} + '&size=' + ${size} + '&sort=' + ${currentSort} + '&direction=' + ${currentDirection} + (${currentKeyword != null} ? '&keyword=' + ${currentKeyword} : '')}"
-               class="page-btn prev">이전</a>
-
-            <!-- 페이지 번호들 -->
-            <th:block th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}">
-                <a th:if="${pageNum == currentPage}"
-                   class="page-btn current"
-                   th:text="${pageNum + 1}">1</a>
-                <a th:unless="${pageNum == currentPage}"
-                   th:href="@{'/category/' + ${currentCategoryId} + '?page=' + ${pageNum} + '&size=' + ${size} + '&sort=' + ${currentSort} + '&direction=' + ${currentDirection} + (${currentKeyword != null} ? '&keyword=' + ${currentKeyword} : '')}"
-                   class="page-btn"
-                   th:text="${pageNum + 1}">1</a>
-            </th:block>
-
-            <!-- 다음 페이지 -->
-            <a th:if="${hasNext}"
-               th:href="@{'/category/' + ${currentCategoryId} + '?page=' + ${currentPage + 1} + '&size=' + ${size} + '&sort=' + ${currentSort} + '&direction=' + ${currentDirection} + (${currentKeyword != null} ? '&keyword=' + ${currentKeyword} : '')}"
-               class="page-btn next">다음</a>
         </div>
     </div>
-</div>
-
-<script src="/js/category.js"></script>
-
 </body>
 </html>

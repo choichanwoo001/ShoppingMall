@@ -1,310 +1,177 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="${book != null ? book.bookName + ' - BookStore' : 'BookStore'}">BookStore</title>
-  <link rel="stylesheet" href="/css/common.css">
-  <link rel="stylesheet" href="/css/product.css">
-  <link rel="stylesheet" href="/css/category.css">
+    <title>상품 상세</title>
 </head>
 <body>
-<header class="header">
-  <div class="header-container">
-    <div class="logo logo-clickable" onclick="location.href='/'" style="cursor: pointer;">BookStore</div>
-    <div class="search-bar">
-      <input type="text" class="search-input" placeholder="책제목, 저자, 출판사를 검색하세요">
-      <button class="search-btn">검색</button>
-    </div>
-    <div class="user-menu">
-      <!-- 로그인 상태에 따른 메뉴 표시 -->
-      <div th:if="${session.memberId == null}">
-        <a th:href="@{/login}">로그인</a>
-        <a th:href="@{/signup}">회원가입</a>
-      </div>
-      <div th:if="${session.memberId != null}">
-        <span th:text="${'안녕하세요, ' + session.memberName + '님'}">사용자님</span>
-        <a th:href="@{/logout}">로그아웃</a>
-        <a th:href="@{/cart}">장바구니</a>
-        <a th:href="@{/mypage}" th:if="${session.memberId != null}">마이페이지</a>
-      </div>
-    </div>
-  </div>
-</header>
+    <div th:fragment="content">
+        <script th:if="${book != null}" th:inline="javascript">
+        /*<![CDATA[*/
+        window.currentBookId = [[${book.bookId}]];
+        /*]]>*/
+        </script>
+        <!-- 상품이 존재하지 않는 경우 -->
+        <div th:if="${book == null}" class="error-message">
+            <h2>상품을 찾을 수 없습니다</h2>
+            <p>요청하신 상품이 존재하지 않거나 삭제되었습니다.</p>
+            <a th:href="@{/}" class="btn btn-primary">홈으로 돌아가기</a>
+        </div>
 
-<nav class="category-nav">
-  <div class="category-list">
-    <!-- 동적 카테고리 목록 with 드롭다운 -->
-    <th:block th:each="topCategory : ${categories}">
-      <div class="category-dropdown"
-           th:onmouseover="'showMiddleCategories(' + ${topCategory.categoryId} + ')'"
-           th:onmouseleave="'hideMiddleCategories(' + ${topCategory.categoryId} + ')'">
-
-        <a th:href="@{'/category/' + ${topCategory.categoryId}}"
-           th:text="${topCategory.categoryName}"
-           class="category-item">대분류</a>
-
-        <!-- 중분류 드롭다운 -->
-        <div th:id="'middle-' + ${topCategory.categoryId}"
-             class="middle-dropdown"
-             style="display: none;">
-
-          <th:block th:each="middleCategory : ${topCategory.subCategories}" th:if="${topCategory.subCategories != null}">
-            <div class="middle-item"
-                 th:onmouseover="'showBottomCategories(' + ${middleCategory.categoryId} + ')'"
-                 th:onmouseleave="'hideBottomCategories(' + ${middleCategory.categoryId} + ')'">
-
-              <a th:href="@{'/category/' + ${middleCategory.categoryId}}"
-                 th:text="${middleCategory.categoryName}"
-                 class="middle-link">중분류</a>
-
-              <!-- 소분류 드롭다운 -->
-              <div th:id="'bottom-' + ${middleCategory.categoryId}"
-                   class="bottom-dropdown"
-                   style="display: none;">
-
-                <th:block th:each="bottomCategory : ${middleCategory.subCategories}" th:if="${middleCategory.subCategories != null}">
-                  <a th:href="@{'/category/' + ${bottomCategory.categoryId}}"
-                     th:text="${bottomCategory.categoryName}"
-                     class="bottom-link">소분류</a>
-                </th:block>
-              </div>
+        <!-- 상품 상세 정보 -->
+        <div th:if="${book != null}" class="product-detail">
+            <div class="product-image">
+                <img th:if="${book.bookImage != null and book.bookImage != ''}"
+                     th:src="${book.bookImage}"
+                     th:alt="${book.bookName}"
+                     class="product-image-img">
+                <div th:unless="${book.bookImage != null and book.bookImage != ''}"
+                     class="no-image">
+                    이미지 준비중
+                </div>
             </div>
-          </th:block>
+
+            <div class="product-info">
+                <h1 th:text="${book.bookName}">책 제목</h1>
+
+                <div class="product-meta">
+                    <p><strong>저자:</strong> <span th:text="${book.author}">저자명</span></p>
+                    <p><strong>출판사:</strong> <span th:text="${book.publisher}">출판사명</span></p>
+                    <p th:if="${book.isbn != null and book.isbn != ''}">
+                        <strong>ISBN:</strong> <span th:text="${book.isbn}">ISBN</span>
+                    </p>
+                    <p th:if="${book.registrationDate != null}">
+                        <strong>등록일:</strong>
+                        <span th:text="${#temporals.format(book.registrationDate, 'yyyy년 MM월 dd일')}">등록일</span>
+                    </p>
+                    <p th:if="${book.bookSize != null and book.bookSize != ''}">
+                        <strong>크기:</strong> <span th:text="${book.bookSize}">책 크기</span>
+                    </p>
+                    <p th:if="${book.rating != null}">
+                        <strong>평점:</strong>
+                        <span th:text="${bookRatingStars}">★★★★☆ (4.5/5)</span>
+                    </p>
+                    <!-- 카테고리 정보 -->
+                    <p th:if="${book.category != null}">
+                        <strong>카테고리:</strong>
+                        <span th:text="${book.category.categoryName}">카테고리</span>
+                    </p>
+                    <!-- 판매 상태 -->
+                    <p><strong>판매 상태:</strong>
+                        <span th:text="${book.salesStatus}"
+                              th:class="${book.salesStatus == '판매중' ? 'status-available' : 'status-unavailable'}">판매중</span>
+                    </p>
+                    <!-- 재고 정보 -->
+                    <p th:if="${book.stockQuantity != null}">
+                        <strong>재고:</strong>
+                        <span th:text="${book.stockQuantity > 0 ? book.stockQuantity + '개' : '품절'}"
+                              th:class="${book.stockQuantity > 0 ? 'stock-available' : 'stock-out'}">재고</span>
+                    </p>
+                </div>
+
+                <div class="product-price" th:text="${#numbers.formatInteger(book.price, 0, 'COMMA') + '원'}">가격</div>
+
+                <!-- 수량 선택 -->
+                <div class="quantity-selector">
+                    <label for="quantity" class="quantity-label">수량:</label>
+                    <div class="quantity-control">
+                        <button type="button" class="quantity-decrease">-</button>
+                        <input type="number" id="quantity" class="quantity-input" value="1" min="1"
+                               th:max="${book.stockQuantity != null ? book.stockQuantity : 999}">
+                        <button type="button" class="quantity-increase">+</button>
+                    </div>
+                </div>
+
+                <div class="product-actions">
+                    <button class="btn btn-secondary add-to-cart-btn"
+                            th:disabled="${book.salesStatus != '판매중' or (book.stockQuantity != null and book.stockQuantity <= 0)}">
+                        장바구니
+                    </button>
+                    <button class="btn btn-primary buy-now-btn"
+                            th:disabled="${book.salesStatus != '판매중' or (book.stockQuantity != null and book.stockQuantity <= 0)}">
+                        바로구매
+                    </button>
+                </div>
+
+                <div class="product-description" th:if="${book.description != null and book.description != ''}">
+                    <h3>상품 설명</h3>
+                    <div th:utext="${bookDescriptionHtml}" class="product-description-content">상품 설명</div>
+                </div>
+
+                <!-- PDF 미리보기 링크 -->
+                <div th:if="${book.previewPdf != null and book.previewPdf != ''}"
+                     class="pdf-preview-link">
+                    <a th:href="${book.previewPdf}" target="_blank" class="btn btn-secondary">
+                        미리보기 (PDF)
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
-    </th:block>
-  </div>
-  <div class="category-dropdown-area"></div>
-</nav>
 
-<div class="container">
-  <!-- 상품이 존재하지 않는 경우 -->
-  <div th:if="${book == null}" class="error-message">
-    <h2>상품을 찾을 수 없습니다</h2>
-    <p>요청하신 상품이 존재하지 않거나 삭제되었습니다.</p>
-    <a th:href="@{/}" class="btn btn-primary">홈으로 돌아가기</a>
-  </div>
+        <!-- 리뷰 섹션 -->
+        <div th:if="${book != null}" class="review-section">
+            <h3>고객 리뷰</h3>
+            <div class="review-summary">
+                <div class="rating-overview">
+                    <div class="average-rating" th:text="${reviewSummary != null ? reviewSummary.averageRating : '0.0'}">0.0</div>
+                    <div class="stars" th:if="${reviewSummary != null and reviewSummary.averageRating != null}">
+                        <span th:text="${reviewSummaryStars}">☆☆☆☆☆</span>
+                    </div>
+                    <div class="total-reviews" th:text="${'총 ' + (reviewSummary != null ? reviewSummary.totalReviews : 0) + '개의 리뷰'}">총 0개의 리뷰</div>
+                </div>
+                <button class="btn btn-primary write-review-btn">리뷰 작성하기</button>
+            </div>
 
-  <!-- 상품 상세 정보 -->
-  <div th:if="${book != null}" class="product-detail">
-    <div class="product-image">
-      <img th:if="${book.bookImage != null and book.bookImage != ''}"
-           th:src="${book.bookImage}"
-           th:alt="${book.bookName}"
-           class="product-image-img">
-      <div th:unless="${book.bookImage != null and book.bookImage != ''}"
-           class="no-image">
-        이미지 준비중
-      </div>
+            <!-- 리뷰 목록 -->
+            <div class="review-list">
+                <!-- 리뷰가 없는 경우 -->
+                <div th:if="${#lists.isEmpty(reviews)}" class="no-reviews">
+                    <p>아직 작성된 리뷰가 없습니다.</p>
+                    <p>첫 번째 리뷰를 작성해보세요!</p>
+                </div>
+
+                <!-- 리뷰 목록 -->
+                <div th:unless="${#lists.isEmpty(reviews)}" class="reviews">
+                    <div th:each="review : ${reviews}" class="review-item">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <span class="reviewer-name" th:text="${review.reviewerName}">리뷰어</span>
+                                <span class="review-date" th:text="${#temporals.format(review.createdAt, 'yyyy년 MM월 dd일')}">작성일</span>
+                            </div>
+                            <div class="review-rating">
+                                <span th:text="${review.ratingStars}">★★★★☆</span>
+                            </div>
+                        </div>
+                        <div class="review-content" th:text="${review.content}">리뷰 내용</div>
+                    </div>
+                </div>
+
+                <!-- 리뷰 페이지네이션 -->
+                <div th:if="${!reviewPage.isEmpty()}" class="review-pagination">
+                    <div class="pagination-info">
+                        <span th:text="${'총 ' + reviewPage.totalElements + '개의 리뷰 중 ' + (reviewPage.number * reviewPage.size + 1) + '-' + Math.min((reviewPage.number + 1) * reviewPage.size, reviewPage.totalElements) + '번째'}">페이지 정보</span>
+                    </div>
+                    <div class="pagination-controls">
+                        <a th:if="${reviewPage.hasPrevious()}" 
+                           th:href="@{/product/{bookId}(bookId=${book.bookId}, page=${reviewPage.number - 1})}"
+                           class="pagination-btn">이전</a>
+                        
+                        <th:block th:each="pageNum : ${pageNumbers}">
+                            <a th:href="@{/product/{bookId}(bookId=${book.bookId}, page=${pageNum})}"
+                               th:text="${pageNum + 1}"
+                               th:class="${pageNum == reviewPage.number ? 'pagination-btn active' : 'pagination-btn'}">페이지 번호</a>
+                        </th:block>
+                        
+                        <a th:if="${reviewPage.hasNext()}" 
+                           th:href="@{/product/{bookId}(bookId=${book.bookId}, page=${reviewPage.number + 1})}"
+                           class="pagination-btn">다음</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 주문서 모달 -->
+        <div th:replace="~{layout/modal :: orderModal}"></div>
     </div>
-
-    <div class="product-info">
-      <h1 th:text="${book.bookName}">책 제목</h1>
-
-      <div class="product-meta">
-        <p><strong>저자:</strong> <span th:text="${book.author}">저자명</span></p>
-        <p><strong>출판사:</strong> <span th:text="${book.publisher}">출판사명</span></p>
-        <p th:if="${book.isbn != null and book.isbn != ''}">
-          <strong>ISBN:</strong> <span th:text="${book.isbn}">ISBN</span>
-        </p>
-        <p th:if="${book.registrationDate != null}">
-          <strong>등록일:</strong>
-          <span th:text="${#temporals.format(book.registrationDate, 'yyyy년 MM월 dd일')}">등록일</span>
-        </p>
-        <p th:if="${book.bookSize != null and book.bookSize != ''}">
-          <strong>크기:</strong> <span th:text="${book.bookSize}">책 크기</span>
-        </p>
-        <p th:if="${book.rating != null}">
-          <strong>평점:</strong>
-          <span th:text="${bookRatingStars}">★★★★☆ (4.5/5)</span>
-        </p>
-        <!-- 카테고리 정보 -->
-        <p th:if="${book.category != null}">
-          <strong>카테고리:</strong>
-          <span th:text="${book.category.categoryName}">카테고리</span>
-        </p>
-        <!-- 판매 상태 -->
-        <p><strong>판매 상태:</strong>
-          <span th:text="${book.salesStatus}"
-                th:class="${book.salesStatus == '판매중' ? 'status-available' : 'status-unavailable'}">판매중</span>
-        </p>
-        <!-- 재고 정보 -->
-        <p th:if="${book.stockQuantity != null}">
-          <strong>재고:</strong>
-          <span th:text="${book.stockQuantity > 0 ? book.stockQuantity + '개' : '품절'}"
-                th:class="${book.stockQuantity > 0 ? 'stock-available' : 'stock-out'}">재고</span>
-        </p>
-      </div>
-
-      <div class="product-price" th:text="${#numbers.formatInteger(book.price, 0, 'COMMA') + '원'}">가격</div>
-
-      <!-- 수량 선택 -->
-      <div class="quantity-selector">
-        <label for="quantity" class="quantity-label">수량:</label>
-        <div class="quantity-control">
-          <button type="button" class="quantity-decrease">-</button>
-          <input type="number" id="quantity" class="quantity-input" value="1" min="1"
-                 th:max="${book.stockQuantity != null ? book.stockQuantity : 999}">
-          <button type="button" class="quantity-increase">+</button>
-        </div>
-      </div>
-
-      <div class="product-actions">
-        <button class="btn btn-secondary add-to-cart-btn"
-                th:disabled="${book.salesStatus != '판매중' or (book.stockQuantity != null and book.stockQuantity <= 0)}">
-          장바구니
-        </button>
-        <button class="btn btn-primary buy-now-btn"
-                th:disabled="${book.salesStatus != '판매중' or (book.stockQuantity != null and book.stockQuantity <= 0)}">
-          바로구매
-        </button>
-      </div>
-
-      <div class="product-description" th:if="${book.description != null and book.description != ''}">
-        <h3>상품 설명</h3>
-        <div th:utext="${bookDescriptionHtml}" class="product-description-content">상품 설명</div>
-      </div>
-
-      <!-- PDF 미리보기 링크 -->
-      <div th:if="${book.previewPdf != null and book.previewPdf != ''}"
-           class="pdf-preview-link">
-        <a th:href="${book.previewPdf}" target="_blank" class="btn btn-secondary">
-          미리보기 (PDF)
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 리뷰 섹션 -->
-  <div th:if="${book != null}" class="review-section">
-    <h3>고객 리뷰</h3>
-    <div class="review-summary">
-      <div class="rating-overview">
-        <div class="average-rating" th:text="${reviewSummary != null ? reviewSummary.averageRating : '0.0'}">0.0</div>
-        <div class="stars" th:if="${reviewSummary != null and reviewSummary.averageRating != null}">
-          <span th:text="${reviewSummaryStars}">☆☆☆☆☆</span>
-        </div>
-        <div class="total-reviews" th:text="${'총 ' + (reviewSummary != null ? reviewSummary.totalReviews : 0) + '개의 리뷰'}">총 0개의 리뷰</div>
-      </div>
-      <button class="btn btn-primary write-review-btn">리뷰 작성하기</button>
-    </div>
-
-    <!-- 리뷰 목록 -->
-    <div class="review-list">
-      <!-- 리뷰가 없는 경우 -->
-      <div th:if="${#lists.isEmpty(reviews)}" class="no-reviews">
-        <p>아직 작성된 리뷰가 없습니다.</p>
-        <p>첫 번째 리뷰를 작성해보세요!</p>
-      </div>
-
-      <!-- 리뷰 목록 -->
-      <div th:each="review : ${reviews}" class="review-item">
-        <div class="review-header">
-          <div class="reviewer-info">
-            <span class="reviewer-name" th:text="${review.reviewer != null ? review.reviewer.memberName : '익명'}">작성자</span>
-            <span th:if="${review.reviewer != null and review.reviewer.memberGrade != null}"
-                  class="reviewer-grade"
-                  th:text="${'[' + review.reviewer.memberGrade + ']'}">[등급]</span>
-          </div>
-          <div class="review-date"
-               th:text="${#temporals.format(review.createdAt, 'yyyy.MM.dd')}">작성일</div>
-        </div>
-
-        <div class="review-rating" th:if="${review.rating != null}">
-          <span th:text="${'★'.repeat(review.rating) + '☆'.repeat(5 - review.rating)}">★★★★★</span>
-          <span th:if="${review.isRecommended != null and review.isRecommended}"
-                class="recommended-badge">
-            추천
-          </span>
-        </div>
-
-        <h5 th:if="${review.reviewTitle != null and review.reviewTitle != ''}"
-            class="review-title"
-            th:text="${review.reviewTitle}">리뷰 제목</h5>
-
-        <p class="review-content" th:text="${review.reviewContent}">리뷰 내용</p>
-
-        <div th:if="${review.updatedAt != null and !#temporals.format(review.createdAt, 'yyyy-MM-dd').equals(#temporals.format(review.updatedAt, 'yyyy-MM-dd'))}"
-             class="review-updated">
-          (수정일: <span th:text="${#temporals.format(review.updatedAt, 'yyyy.MM.dd')}"></span>)
-        </div>
-      </div>
-    </div>
-
-    <!-- 페이지네이션 -->
-    <div th:if="${reviewPage != null and reviewPage.totalPages > 1}" class="pagination">
-      <!-- 이전 페이지 -->
-      <button th:if="${reviewPage.hasPrevious}"
-              class="page-btn"
-              th:onclick="'loadBookReviews(' + ${reviewPage.number - 1} + ')'">이전</button>
-
-      <!-- 페이지 번호 -->
-      <th:block th:each="pageNum : ${pageNumbers}">
-        <button class="page-btn"
-                th:classappend="${pageNum == reviewPage.number ? 'active' : ''}"
-                th:onclick="'loadBookReviews(' + ${pageNum} + ')'"
-                th:text="${pageNum + 1}">1</button>
-      </th:block>
-
-      <!-- 다음 페이지 -->
-      <button th:if="${reviewPage.hasNext}"
-              class="page-btn"
-              th:onclick="'loadBookReviews(' + ${reviewPage.number + 1} + ')'">다음</button>
-    </div>
-  </div>
-</div>
-
-<!-- window.currentBookId에 bookId 할당 -->
-<script th:if="${book != null}" th:inline="javascript">
-    window.currentBookId = '[[${book.bookId}]]';
-</script>
-
-<script src="/js/product.js"></script>
-
-<!-- 주문서 모달 (cart.html과 동일) -->
-<div id="orderModal" class="modal">
-  <div class="modal-content order-modal-content">
-    <div class="modal-header">
-      <h3>주문서 작성</h3>
-      <span class="close" onclick="closeOrderModal()">&times;</span>
-    </div>
-    <div class="modal-body">
-      <form id="orderForm">
-        <!-- 주문 상품 정보 -->
-        <div id="orderItems" class="order-items-summary"></div>
-        <!-- 총 결제금액 -->
-        <div class="order-total-row">
-          <span>총 결제금액:</span>
-          <span id="orderTotal">0원</span>
-        </div>
-        <div class="form-group">
-          <label>배송지 주소</label>
-          <input type="text" id="orderAddress" name="shippingAddress" required>
-        </div>
-        <div class="form-group">
-          <label>연락처</label>
-          <input type="text" id="orderPhone" name="shippingPhone" required>
-        </div>
-        <div class="form-group">
-          <label>주문 메모</label>
-          <input type="text" id="orderMemo" name="orderMemo" placeholder="요청사항이 있으면 입력하세요">
-        </div>
-        <div class="form-group">
-          <label>결제수단</label>
-          <select id="paymentMethod" name="paymentMethod" required>
-            <option value="KAKAO_PAY">카카오페이</option>
-            <!-- 추후 신용카드 등 추가 가능 -->
-          </select>
-        </div>
-        <div class="form-actions">
-          <button type="button" class="btn btn-secondary" onclick="closeOrderModal()">취소</button>
-          <button type="submit" class="btn btn-primary" id="kakaoPayBtn">카카오페이 결제</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>

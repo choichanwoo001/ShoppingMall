@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Modal</title>
+</head>
+<body>
+    <!-- 주문서 모달 -->
+    <div id="orderModal" class="modal" th:fragment="orderModal">
+        <div class="modal-content order-modal-content">
+            <div class="modal-header">
+                <h3>주문서 작성</h3>
+                <span class="close" onclick="closeOrderModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="orderForm">
+                    <!-- 주문 상품 정보 -->
+                    <div id="orderItems" class="order-items-summary"></div>
+                    <!-- 총 결제금액 -->
+                    <div class="order-total-row">
+                        <span>총 결제금액:</span>
+                        <span id="orderTotal">0원</span>
+                    </div>
+                    <div class="form-group">
+                        <label>배송지 주소</label>
+                        <input type="text" id="orderAddress" name="shippingAddress" required>
+                    </div>
+                    <div class="form-group">
+                        <label>연락처</label>
+                        <input type="text" id="orderPhone" name="shippingPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>주문 메모</label>
+                        <input type="text" id="orderMemo" name="orderMemo" placeholder="요청사항이 있으면 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label>결제수단</label>
+                        <select id="paymentMethod" name="paymentMethod" required>
+                            <option value="KAKAO_PAY">카카오페이</option>
+                            <!-- 추후 신용카드 등 추가 가능 -->
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeOrderModal()">취소</button>
+                        <button type="submit" class="btn btn-primary" id="kakaoPayBtn">카카오페이 결제</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 일반 알림 모달 -->
+    <div id="alertModal" class="modal" th:fragment="alertModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="alertTitle">알림</h3>
+                <span class="close" onclick="closeAlertModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="alertMessage">메시지</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeAlertModal()">확인</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
