@@ -356,4 +356,31 @@ public class PageController {
         
         return "order";
     }
+
+    @GetMapping("/order/success")
+    public String orderSuccess(Model model) {
+        addCategoryData(model);
+        model.addAttribute("title", "주문 완료");
+        model.addAttribute("cssFiles", java.util.List.of("order.css"));
+        model.addAttribute("jsFiles", java.util.List.of());
+        return "order-success";
+    }
+
+    @GetMapping("/order/fail")
+    public String orderFail(Model model) {
+        addCategoryData(model);
+        model.addAttribute("title", "결제 실패");
+        model.addAttribute("cssFiles", java.util.List.of("order.css"));
+        model.addAttribute("jsFiles", java.util.List.of());
+        return "order-fail";
+    }
+
+    @GetMapping("/order/cancel")
+    public String orderCancel(Model model) {
+        addCategoryData(model);
+        model.addAttribute("title", "결제 취소");
+        model.addAttribute("cssFiles", java.util.List.of("order.css"));
+        model.addAttribute("jsFiles", java.util.List.of());
+        return "order-cancel";
+    }
 }
