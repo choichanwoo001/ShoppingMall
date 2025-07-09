@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
 
+// BookController, CategoryController, PopularKeywordController의 모든 메서드와 의존성 주입을 이 파일로 합친다.
+// 클래스명: BookCategoryController
+// @RestController, @RequestMapping 등은 그대로 유지
+// CategoryController, PopularKeywordController의 메서드와 의존성 주입을 이 클래스에 추가
 @RestController
 @RequestMapping("/api/books")
 @RequiredArgsConstructor

@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
+// OrderController, KakaoPayController의 모든 메서드와 의존성 주입을 이 파일로 합친다.
+// 클래스명: OrderApiController
+// @RestController, @RequestMapping 등은 그대로 유지
+// KakaoPayController의 메서드와 의존성 주입을 이 클래스에 추가
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
