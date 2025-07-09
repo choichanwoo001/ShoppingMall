@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.example.fastcampusbookstore.FastCampusBookStoreApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-07-09T07:16:11.597Z" hostname="CHOI" time="0.416">
+<testsuite name="com.example.fastcampusbookstore.FastCampusBookStoreApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-07-09T08:24:40.807Z" hostname="CHOI" time="0.456">
   <properties/>
-  <testcase name="contextLoads()" classname="com.example.fastcampusbookstore.FastCampusBookStoreApplicationTests" time="0.416"/>
-  <system-out><![CDATA[16:16:03.536 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.example.fastcampusbookstore.FastCampusBookStoreApplicationTests]: FastCampusBookStoreApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-16:16:03.745 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.example.fastcampusbookstore.FastCampusBookStoreApplication for test class com.example.fastcampusbookstore.FastCampusBookStoreApplicationTests
+  <testcase name="contextLoads()" classname="com.example.fastcampusbookstore.FastCampusBookStoreApplicationTests" time="0.456"/>
+  <system-out><![CDATA[17:24:33.275 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.example.fastcampusbookstore.FastCampusBookStoreApplicationTests]: FastCampusBookStoreApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+17:24:33.428 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.example.fastcampusbookstore.FastCampusBookStoreApplication for test class com.example.fastcampusbookstore.FastCampusBookStoreApplicationTests
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -14,20 +14,20 @@
 
  :: Spring Boot ::                (v3.5.3)
 
-2025-07-09T16:16:04.326+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] .e.f.FastCampusBookStoreApplicationTests : Starting FastCampusBookStoreApplicationTests using Java 21.0.7 with PID 21288 (started by chanwoo in C:\Users\chanwoo\FastCampusBookStore)
-2025-07-09T16:16:04.328+09:00 DEBUG 21288 --- [FastCampusBookStore] [    Test worker] .e.f.FastCampusBookStoreApplicationTests : Running with Spring Boot v3.5.3, Spring v6.2.8
-2025-07-09T16:16:04.329+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] .e.f.FastCampusBookStoreApplicationTests : No active profile set, falling back to 1 default profile: "default"
-2025-07-09T16:16:04.377+09:00 DEBUG 21288 --- [FastCampusBookStore] [    Test worker] o.s.w.c.s.GenericWebApplicationContext   : Refreshing org.springframework.web.context.support.GenericWebApplicationContext@4dafba3e
-2025-07-09T16:16:05.434+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-07-09T16:16:05.574+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 125 ms. Found 12 JPA repository interfaces.
-2025-07-09T16:16:06.359+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-07-09T16:16:06.467+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.18.Final
-2025-07-09T16:16:06.542+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2025-07-09T16:16:07.060+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-07-09T16:16:07.128+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2025-07-09T16:16:07.574+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@48aa0813
-2025-07-09T16:16:07.577+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2025-07-09T16:16:07.677+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2025-07-09T17:24:33.904+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] .e.f.FastCampusBookStoreApplicationTests : Starting FastCampusBookStoreApplicationTests using Java 21.0.7 with PID 18548 (started by chanwoo in C:\Users\chanwoo\FastCampusBookStore)
+2025-07-09T17:24:33.905+09:00 DEBUG 18548 --- [FastCampusBookStore] [    Test worker] .e.f.FastCampusBookStoreApplicationTests : Running with Spring Boot v3.5.3, Spring v6.2.8
+2025-07-09T17:24:33.906+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] .e.f.FastCampusBookStoreApplicationTests : No active profile set, falling back to 1 default profile: "default"
+2025-07-09T17:24:33.939+09:00 DEBUG 18548 --- [FastCampusBookStore] [    Test worker] o.s.w.c.s.GenericWebApplicationContext   : Refreshing org.springframework.web.context.support.GenericWebApplicationContext@4dafba3e
+2025-07-09T17:24:34.774+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-07-09T17:24:34.896+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 110 ms. Found 12 JPA repository interfaces.
+2025-07-09T17:24:35.443+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-07-09T17:24:35.548+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.18.Final
+2025-07-09T17:24:35.603+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-07-09T17:24:36.047+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-07-09T17:24:36.087+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-07-09T17:24:36.478+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2a531637
+2025-07-09T17:24:36.481+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-07-09T17:24:36.575+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
 	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
 	Database driver: undefined/unknown
 	Database version: 8.0.37
@@ -35,16 +35,16 @@
 	Isolation level: undefined/unknown
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2025-07-09T16:16:08.972+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-07-09T16:16:09.119+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-07-09T16:16:09.547+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-07-09T16:16:10.981+09:00  WARN 21288 --- [FastCampusBookStore] [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2025-07-09T16:16:11.023+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
-2025-07-09T16:16:11.149+09:00 DEBUG 21288 --- [FastCampusBookStore] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : 67 mappings in 'requestMappingHandlerMapping'
-2025-07-09T16:16:11.300+09:00 DEBUG 21288 --- [FastCampusBookStore] [    Test worker] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
-2025-07-09T16:16:11.327+09:00 DEBUG 21288 --- [FastCampusBookStore] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
-2025-07-09T16:16:11.434+09:00 DEBUG 21288 --- [FastCampusBookStore] [    Test worker] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
-2025-07-09T16:16:11.577+09:00  INFO 21288 --- [FastCampusBookStore] [    Test worker] .e.f.FastCampusBookStoreApplicationTests : Started FastCampusBookStoreApplicationTests in 7.601 seconds (process running for 9.103)
+2025-07-09T17:24:37.891+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-07-09T17:24:38.052+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-07-09T17:24:38.411+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-07-09T17:24:40.011+09:00  WARN 18548 --- [FastCampusBookStore] [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-07-09T17:24:40.041+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2025-07-09T17:24:40.169+09:00 DEBUG 18548 --- [FastCampusBookStore] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : 73 mappings in 'requestMappingHandlerMapping'
+2025-07-09T17:24:40.381+09:00 DEBUG 18548 --- [FastCampusBookStore] [    Test worker] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-07-09T17:24:40.425+09:00 DEBUG 18548 --- [FastCampusBookStore] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-07-09T17:24:40.551+09:00 DEBUG 18548 --- [FastCampusBookStore] [    Test worker] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-07-09T17:24:40.777+09:00  INFO 18548 --- [FastCampusBookStore] [    Test worker] .e.f.FastCampusBookStoreApplicationTests : Started FastCampusBookStoreApplicationTests in 7.165 seconds (process running for 8.476)
 ]]></system-out>
   <system-err><![CDATA[Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
 WARNING: A Java agent has been loaded dynamically (C:\Users\chanwoo\.gradle\caches\modules-2\files-2.1\net.bytebuddy\byte-buddy-agent\1.17.6\17b32fd9f57deef02842f7f05abc4ad8127fe34e\byte-buddy-agent-1.17.6.jar)
