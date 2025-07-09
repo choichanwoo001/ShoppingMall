@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -67,8 +69,9 @@ public class MainController {
 
             // 5. 검색 기능 (검색어가 있는 경우)
             if (search != null && !search.trim().isEmpty()) {
-                // 검색 결과 페이지로 리다이렉트
-                return "redirect:/search?keyword=" + search;
+                // 검색 결과 페이지로 리다이렉트 (한글 인코딩)
+                String encoded = URLEncoder.encode(search, StandardCharsets.UTF_8);
+                return "redirect:/search?keyword=" + encoded;
             }
 
             // 6. 모델에 데이터 추가

@@ -24,4 +24,7 @@ public interface RecentViewRepository extends JpaRepository<RecentView, Integer>
 
     // 회원별 최근 본 상품 전체 삭제
     void deleteByMember(Member member);
+    
+    // memberId로 최근 본 상품 전체 삭제
+    void deleteByMember_MemberId(String memberId);
 }

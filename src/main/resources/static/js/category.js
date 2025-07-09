@@ -33,21 +33,10 @@ function performSearch() {
     const searchInput = document.querySelector('.search-input');
     const searchTerm = searchInput?.value.trim();
 
-    // 현재 URL에서 파라미터 추출
-    const urlParams = new URLSearchParams(window.location.search);
-    const currentCategoryId = getCurrentCategoryId();
-    const currentSort = urlParams.get('sort') || 'registration_date';
-    const currentDirection = urlParams.get('direction') || 'desc';
-    const currentSize = urlParams.get('size') || '30';
-
-    // 새 URL 생성
-    let newUrl = `/category/${currentCategoryId}?page=0&size=${currentSize}&sort=${currentSort}&direction=${currentDirection}`;
-
     if (searchTerm) {
-        newUrl += `&keyword=${encodeURIComponent(searchTerm)}`;
+        // 새로운 검색어로 검색
+        window.location.href = `/search?keyword=${encodeURIComponent(searchTerm)}`;
     }
-
-    window.location.href = newUrl;
 }
 
 // 현재 카테고리 ID 추출
@@ -78,21 +67,15 @@ function setupSortAndFilter() {
 function applyFilters() {
     const sortSelect = document.getElementById('sort-select');
     const sizeSelect = document.getElementById('size-select');
-    const searchInput = document.querySelector('.search-input');
 
     const sortValue = sortSelect?.value || 'registration_date-desc';
     const [sort, direction] = sortValue.split('-');
     const size = sizeSelect?.value || '30';
-    const keyword = searchInput?.value.trim();
 
     const currentCategoryId = getCurrentCategoryId();
 
     // 새 URL 생성
     let newUrl = `/category/${currentCategoryId}?page=0&size=${size}&sort=${sort}&direction=${direction}`;
-
-    if (keyword) {
-        newUrl += `&keyword=${encodeURIComponent(keyword)}`;
-    }
 
     window.location.href = newUrl;
 }

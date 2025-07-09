@@ -31,7 +31,9 @@ async function loadCart() {
             cartItems.innerHTML = cartData.items.map(item => `
                 <div class="cart-item" data-cart-id="${item.cartId}">
                     <input type="checkbox" class="item-checkbox" checked onchange="updateSummaryDisplay()">
-                    <div class="item-image">${item.book.bookImage || '책 이미지'}</div>
+                    <div class="item-image">
+                        ${item.book.bookImage ? `<img src="${item.book.bookImage}" alt="${item.book.bookName}" style="width: 100px; height: 100px; object-fit: cover;">` : '책 이미지'}
+                    </div>
                     <div class="item-info">
                         <div class="item-title">${item.book.bookName}</div>
                         <div class="item-author">${item.book.author} | ${item.book.publisher}</div>
