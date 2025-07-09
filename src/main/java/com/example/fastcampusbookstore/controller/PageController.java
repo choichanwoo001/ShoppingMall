@@ -255,7 +255,7 @@ public class PageController {
             model.addAttribute("hasPrevious", booksResponse.isHasPrevious());
 
             // 현재 카테고리 정보
-            model.addAttribute("currentCategoryId", categoryId);
+            model.addAttribute("currentCategoryId", String.valueOf(categoryId));
             model.addAttribute("currentSort", sort);
             model.addAttribute("currentDirection", direction);
             model.addAttribute("currentKeyword", keyword);

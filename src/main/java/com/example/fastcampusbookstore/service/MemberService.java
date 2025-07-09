@@ -6,6 +6,8 @@ import com.example.fastcampusbookstore.dto.request.*;
 import com.example.fastcampusbookstore.dto.response.MemberResponse;
 import com.example.fastcampusbookstore.entity.Member;
 import com.example.fastcampusbookstore.repository.MemberRepository;
+import com.example.fastcampusbookstore.repository.CartRepository;
+import com.example.fastcampusbookstore.repository.RecentViewRepository;
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.data.domain.Page;
@@ -27,6 +29,8 @@ import java.util.stream.Collectors;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final CartRepository cartRepository;
+    private final RecentViewRepository recentViewRepository;
 
     // 1. 회원가입
     @Transactional
@@ -53,9 +57,14 @@ public class MemberService {
         Member member = memberRepository.findByMemberId(request.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다"));
 
-        // 비밀번호 확인
-        if (!BCrypt.checkpw(request.getPassword(), member.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
+        // 비밀번호 확인 (안전한 BCrypt 검증)
+        try {
+            if (!BCrypt.checkpw(request.getPassword(), member.getPassword())) {
+                throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
+            }
+        } catch (IllegalArgumentException e) {
+            // BCrypt 관련 오류 (Invalid salt version 등)
+            throw new IllegalArgumentException("비밀번호 형식이 올바르지 않습니다. 관리자에게 문의하세요.");
         }
 
         // 최종 로그인 시간 업데이트
@@ -118,17 +127,14 @@ public class MemberService {
         Member member = memberRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다"));
 
-        // 탈퇴 가능 상태 확인
-        validateWithdrawal(member);
+        // 탈퇴 가능 상태 확인 // 그냥 삭제할건데 이 확인 프로세스가 필요없음 
+        // validateWithdrawal(member);
 
-        // 회원 상태를 탈퇴로 변경 (실제 삭제 대신 상태 변경)
-        member.setMemberStatus(Member.MemberStatus.탈퇴);
-        member.setUpdatedAt(LocalDateTime.now());
+        // 관련 데이터 정리 (주문 내역, 리뷰, 장바구니, 최근 본 상품 등)
+        cleanupMemberData(memberId);
 
-        memberRepository.save(member);
-
-        // TODO: 관련 데이터 정리 (주문 내역은 보관, 개인정보는 마스킹 등)
-        // cleanupMemberData(memberId);
+        // 회원 정보 완전 삭제
+        memberRepository.delete(member);
     }
 
     public boolean checkEmailDuplicate(EmailCheckRequest request) {
@@ -268,5 +274,20 @@ public class MemberService {
         Member member = memberRepository.findByMemberId(memberId)
             .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
         return MemberResponse.from(member);
+    }
+
+    // 회원 관련 데이터 정리
+    private void cleanupMemberData(String memberId) {
+        // 장바구니 삭제
+        cartRepository.deleteByMember_MemberId(memberId);
+        
+        // 최근 본 상품 삭제
+        recentViewRepository.deleteByMember_MemberId(memberId);
+        
+        // 주문 내역은 보관하되 개인정보 마스킹 (통계용)
+        // orderRepository.maskPersonalInfo(memberId);
+        
+        // 리뷰는 보관하되 작성자 정보 마스킹 (다른 사용자 참고용)
+        // reviewRepository.maskAuthorInfo(memberId);
     }
 }

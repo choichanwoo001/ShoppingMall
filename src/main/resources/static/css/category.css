@@ -38,13 +38,14 @@
     color: var(--text-light);
 }
 
+
+
 /* 필터 섹션 - 상단에 고정, 전체 너비 */
 .category-page .filter-section {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-bottom: 2rem;
     padding: 2rem;
     background: var(--white);
     border-radius: 0.5rem;
