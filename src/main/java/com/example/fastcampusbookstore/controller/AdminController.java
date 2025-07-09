@@ -5,7 +5,9 @@ import com.example.fastcampusbookstore.dto.common.PageRequest;
 import com.example.fastcampusbookstore.dto.common.PageResponse;
 import com.example.fastcampusbookstore.dto.request.*;
 import com.example.fastcampusbookstore.dto.response.*;
-import com.example.fastcampusbookstore.service.*;
+import com.example.fastcampusbookstore.service.BookCategoryService;
+import com.example.fastcampusbookstore.service.OrderPaymentService;
+import com.example.fastcampusbookstore.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,10 +18,9 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AdminController {
 
-    private final BookService bookService;
-    private final OrderService orderService;
+    private final BookCategoryService bookCategoryService;
+    private final OrderPaymentService orderPaymentService;
     private final MemberService memberService;
-    private final CategoryService categoryService;
 
     // 관리자 메인 페이지
     @GetMapping("")
@@ -34,7 +35,7 @@ public class AdminController {
             @ModelAttribute PageRequest pageRequest,
             Model model) {
         
-        PageResponse<BookListResponse> bookPage = bookService.getBookListForAdmin(request, pageRequest);
+        PageResponse<BookListResponse> bookPage = bookCategoryService.getBookListForAdmin(request, pageRequest);
         model.addAttribute("books", bookPage.getContent());
         model.addAttribute("pageInfo", bookPage);
         model.addAttribute("searchRequest", request);
@@ -44,7 +45,7 @@ public class AdminController {
     // 상품 등록 화면
     @GetMapping("/books/new")
     public String bookRegisterForm(Model model) {
-        model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("categories", bookCategoryService.getAllCategories());
         return "admin/book-register";
     }
 
@@ -52,16 +53,16 @@ public class AdminController {
     @PostMapping("/books")
     @ResponseBody
     public ApiResponse<String> bookRegister(@RequestBody BookRegisterRequest request) {
-        bookService.registerBook(request);
+        bookCategoryService.registerBook(request);
         return ApiResponse.success("상품이 성공적으로 등록되었습니다.");
     }
 
     // 상품 수정 화면
     @GetMapping("/books/{bookId}/edit")
     public String bookEditForm(@PathVariable Long bookId, Model model) {
-        BookDetailResponse book = bookService.getBookDetail(bookId.intValue());
+        BookDetailResponse book = bookCategoryService.getBookDetail(bookId.intValue());
         model.addAttribute("book", book);
-        model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("categories", bookCategoryService.getAllCategories());
         return "admin/book-edit";
     }
 
@@ -69,7 +70,7 @@ public class AdminController {
     @PutMapping("/books/{bookId}")
     @ResponseBody
     public ApiResponse<String> bookEdit(@PathVariable Long bookId, @RequestBody BookUpdateRequest request) {
-        bookService.updateBook(bookId, request);
+        bookCategoryService.updateBook(bookId, request);
         return ApiResponse.success("상품이 성공적으로 수정되었습니다.");
     }
 
@@ -80,7 +81,7 @@ public class AdminController {
             @ModelAttribute PageRequest pageRequest,
             Model model) {
         
-        PageResponse<OrderListResponse> orderPage = orderService.getOrderListForAdmin(request, pageRequest);
+        PageResponse<OrderListResponse> orderPage = orderPaymentService.getOrderListForAdmin(request, pageRequest);
         model.addAttribute("orders", orderPage.getContent());
         model.addAttribute("pageInfo", orderPage);
         model.addAttribute("searchRequest", request);
@@ -90,7 +91,7 @@ public class AdminController {
     // 주문 상세 조회
     @GetMapping("/orders/{orderId}")
     public String orderDetail(@PathVariable Long orderId, Model model) {
-        OrderResponse order = orderService.getOrderDetail(orderId);
+        OrderResponse order = orderPaymentService.getOrderDetail(orderId);
         model.addAttribute("order", order);
         return "admin/order-detail";
     }
@@ -101,7 +102,7 @@ public class AdminController {
     public ApiResponse<String> updateOrderStatus(
             @PathVariable Long orderId,
             @RequestBody OrderStatusUpdateRequest request) {
-        orderService.updateOrderStatus(orderId, request.getStatus());
+        orderPaymentService.updateOrderStatus(orderId, request.getStatus());
         return ApiResponse.success("주문 상태가 성공적으로 변경되었습니다.");
     }
 
@@ -134,7 +135,7 @@ public class AdminController {
             @ModelAttribute PageRequest pageRequest,
             Model model) {
         
-        PageResponse<OrderListResponse> orderPage = orderService.getOrderListByMember(memberId, pageRequest);
+        PageResponse<OrderListResponse> orderPage = orderPaymentService.getOrderListByMember(memberId, pageRequest);
         model.addAttribute("orders", orderPage.getContent());
         model.addAttribute("pageInfo", orderPage);
         model.addAttribute("memberId", memberId);
@@ -148,7 +149,7 @@ public class AdminController {
             @ModelAttribute PageRequest pageRequest,
             Model model) {
         
-        PageResponse<InventoryResponse> inventoryPage = bookService.getInventoryList(request, pageRequest);
+        PageResponse<InventoryResponse> inventoryPage = bookCategoryService.getInventoryList(request, pageRequest);
         model.addAttribute("inventory", inventoryPage.getContent());
         model.addAttribute("pageInfo", inventoryPage);
         model.addAttribute("searchRequest", request);
@@ -161,7 +162,7 @@ public class AdminController {
     public ApiResponse<String> updateInventory(
             @PathVariable Long bookId,
             @RequestBody InventoryUpdateRequest request) {
-        bookService.updateInventory(bookId, request.getQuantity());
+        bookCategoryService.updateInventory(bookId, request.getQuantity());
         return ApiResponse.success("재고가 성공적으로 수정되었습니다.");
     }
 } 

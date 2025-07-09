@@ -3,10 +3,9 @@ package com.example.fastcampusbookstore.controller;
 import com.example.fastcampusbookstore.dto.common.ApiResponse;
 import com.example.fastcampusbookstore.dto.common.PageResponse;
 import com.example.fastcampusbookstore.dto.request.OrderCreateRequest;
-import com.example.fastcampusbookstore.dto.request.OrderStatusUpdateRequest;
 import com.example.fastcampusbookstore.dto.response.OrderListResponse;
 import com.example.fastcampusbookstore.dto.response.OrderResponse;
-import com.example.fastcampusbookstore.service.OrderService;
+import com.example.fastcampusbookstore.service.OrderPaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,7 +27,7 @@ import jakarta.validation.Valid;
 @Slf4j
 public class OrderController {
 
-    private final OrderService orderService;
+    private final OrderPaymentService orderPaymentService;
 
     // 1. 주문 생성
     @PostMapping
@@ -47,7 +46,7 @@ public class OrderController {
                 memberId, request.getOrderItems().size());
 
         try {
-            OrderResponse response = orderService.createOrder(memberId, request);
+            OrderResponse response = orderPaymentService.createOrder(memberId, request);
             log.info("주문 생성 완료: orderId={}", response.getOrderId());
 
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -83,7 +82,7 @@ public class OrderController {
                 memberId, page, size);
 
         try {
-            PageResponse<OrderListResponse> response = orderService.getMyOrders(memberId, page, size);
+            PageResponse<OrderListResponse> response = orderPaymentService.getMyOrders(memberId, page, size);
             return ResponseEntity.ok(ApiResponse.success(response));
 
         } catch (Exception e) {
@@ -109,7 +108,7 @@ public class OrderController {
         log.info("주문 상세 조회 요청: memberId={}, orderId={}", memberId, orderId);
 
         try {
-            OrderResponse response = orderService.getOrderDetail(memberId, orderId);
+            OrderResponse response = orderPaymentService.getOrderDetail(memberId, orderId);
             return ResponseEntity.ok(ApiResponse.success(response));
 
         } catch (IllegalArgumentException e) {
@@ -142,7 +141,7 @@ public class OrderController {
                 memberId, orderId, reason);
 
         try {
-            orderService.cancelOrder(memberId, orderId, reason);
+            orderPaymentService.cancelOrder(memberId, orderId, reason);
             return ResponseEntity.ok(ApiResponse.success("주문이 취소되었습니다."));
 
         } catch (IllegalArgumentException e) {

@@ -96,8 +96,8 @@
 
 /* 최근 본 상품 영역 고정 높이 */
 #recent-view-list {
-    min-height: 12rem; /* 최대 5개 크기로 고정 */
-    max-height: 12rem;
+    min-height: 20rem; /* 최대 5개 크기로 고정 */
+    max-height: 20rem;
     overflow-y: auto;
 }
 

@@ -5,10 +5,7 @@ import com.example.fastcampusbookstore.dto.response.*;
 import com.example.fastcampusbookstore.dto.request.BookSearchRequest;
 import com.example.fastcampusbookstore.dto.common.PageResponse;
 import com.example.fastcampusbookstore.entity.Book;
-import com.example.fastcampusbookstore.service.BookService;
-import com.example.fastcampusbookstore.service.ReviewService;
-import com.example.fastcampusbookstore.service.RecentViewService;
-import com.example.fastcampusbookstore.service.CategoryService;
+import com.example.fastcampusbookstore.service.BookCategoryService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +31,10 @@ import java.util.List;
 @Slf4j
 public class PageController {
 
-    private final BookService bookService;
+    private final BookCategoryService bookCategoryService;
     private final ReviewService reviewService;
-    private final CategoryService categoryService;
     private final RecentViewService recentViewService;
-    private final PopularKeywordService popularKeywordService;
+    // private final PopularKeywordService popularKeywordService; // 삭제
 
     /**
      * 메인 페이지
@@ -52,11 +48,11 @@ public class PageController {
 
         try {
             // 1. 카테고리 트리 조회 (네비게이션용)
-            List<CategoryResponse> categories = categoryService.getAllCategoriesTree().getCategories();
+            List<CategoryResponse> categories = bookCategoryService.getAllCategoriesTree().getCategories();
 
             // 2. 이달의 베스트셀러 조회 (상위 12개)
             String currentMonth = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
-            List<BestsellerResponse> bestsellers = bookService.getAllBestsellers();
+            List<BestsellerResponse> bestsellers = bookCategoryService.getAllBestsellers();
 
             // 베스트셀러가 12개보다 적으면 12개로 제한
             if (bestsellers.size() > 12) {
@@ -179,7 +175,7 @@ public class PageController {
         // 상품 상세 정보
         BookDetailResponse book = null;
         try {
-            book = bookService.getBookDetail(bookId);
+            book = bookCategoryService.getBookDetail(bookId);
         } catch (Exception e) {
             log.warn("상품 상세 정보 조회 실패: {}", bookId, e);
         }
@@ -322,7 +318,7 @@ public class PageController {
 
         try {
             // 전체 카테고리 트리 조회 (네비게이션용)
-            CategoryTreeResponse categoryTree = categoryService.getAllCategoriesTree();
+            CategoryTreeResponse categoryTree = bookCategoryService.getAllCategoriesTree();
             model.addAttribute("categories", categoryTree.getCategories());
 
             // 해당 카테고리의 상품 조회
@@ -334,7 +330,7 @@ public class PageController {
                 request.setKeyword(keyword);
             }
 
-            PageResponse<BookListResponse> booksResponse = bookService.getBooksByCategory(request);
+            PageResponse<BookListResponse> booksResponse = bookCategoryService.getBooksByCategory(request);
 
             model.addAttribute("books", booksResponse.getContent());
             model.addAttribute("currentPage", booksResponse.getCurrentPage());
@@ -381,7 +377,7 @@ public class PageController {
         try {
             // 인기 검색어 카운트 증가
             if (keyword != null && !keyword.trim().isEmpty()) {
-                popularKeywordService.increaseCount(keyword);
+                // popularKeywordService.increaseCount(keyword); // 삭제
             }
             // 카테고리 네비게이션 추가
             addCategoryData(model);
@@ -392,7 +388,7 @@ public class PageController {
             request.setSort(sort);
             request.setDirection(direction);
 
-            PageResponse<BookListResponse> searchResults = bookService.searchBooks(request);
+            PageResponse<BookListResponse> searchResults = bookCategoryService.searchBooks(request);
 
             model.addAttribute("books", searchResults.getContent());
             model.addAttribute("currentPage", searchResults.getCurrentPage());
@@ -466,7 +462,7 @@ public class PageController {
     // 공통 메서드: 카테고리 데이터 추가
     private void addCategoryData(Model model) {
         try {
-            CategoryTreeResponse categoryTree = categoryService.getAllCategoriesTree();
+            CategoryTreeResponse categoryTree = bookCategoryService.getAllCategoriesTree();
             model.addAttribute("categories", categoryTree.getCategories());
         } catch (Exception e) {
             log.warn("카테고리 데이터 로드 실패", e);
@@ -479,7 +475,7 @@ public class PageController {
     private List<Book> getPopularBooks() {
         try {
             Pageable pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "salesIndex"));
-            return bookService.getTopBySalesIndex(pageable);
+            return bookCategoryService.getTopBySalesIndex(pageable);
         } catch (Exception e) {
             log.warn("인기 도서 조회 실패", e);
             return List.of();

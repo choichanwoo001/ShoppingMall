@@ -47,25 +47,6 @@
                     <div class="sidebar-title">인기 검색어</div>
                     <ul id="popular-keyword-list"></ul>
                 </div>
-
-                <!-- 인기 검색어 (실제로는 베스트셀러 기반) -->
-                <div class="sidebar-section">
-                    <div class="sidebar-title">인기 도서</div>
-
-                    <!-- 인기 도서가 없는 경우 -->
-                    <div th:if="${#lists.isEmpty(popularBooks)}" class="no-data-small">
-                        <p>인기 도서 정보가 준비 중입니다.</p>
-                    </div>
-
-                    <!-- 인기 도서 목록 (상위 5개) -->
-                    <th:block th:each="book, iterStat : ${popularBooks}" th:if="${iterStat.index < 5}">
-                        <div class="popular-item" th:onclick="'location.href=\'/product/' + ${book.bookId} + '\''">
-                            <div class="rank-number" th:text="${iterStat.index + 1}">순위</div>
-                            <div th:text="${book.bookName}">도서명</div>
-                        </div>
-                    </th:block>
-                </div>
-
                 <!-- 최근 본 상품 (로그인한 경우만) -->
                 <div class="sidebar-section" id="recent-view-section">
                     <div class="sidebar-title">최근 본 상품</div>
