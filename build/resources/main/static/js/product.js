@@ -3,7 +3,20 @@ const API_BASE_URL = '/api';
 
 // 현재 상품 정보
 let currentBook = null;
-let currentBookId = window.currentBookId; // HTML에서 전달받은 책 ID
+let currentBookId = null; // URL에서 추출할 책 ID
+
+// URL에서 상품 ID 추출
+function extractBookIdFromUrl() {
+    const pathSegments = window.location.pathname.split('/');
+    const bookIdIndex = pathSegments.indexOf('product') + 1;
+    if (bookIdIndex < pathSegments.length) {
+        const bookId = parseInt(pathSegments[bookIdIndex]);
+        if (!isNaN(bookId)) {
+            return bookId;
+        }
+    }
+    return null;
+}
 
 // 세션 기반 인증 확인
 async function checkLoginStatus() {
@@ -55,10 +68,15 @@ async function apiRequest(url, options = {}) {
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', async function() {
+    // URL에서 상품 ID 추출
+    currentBookId = extractBookIdFromUrl();
+    
     if (!currentBookId) {
-        console.error('상품 ID가 없습니다.');
+        console.error('상품 ID를 찾을 수 없습니다.');
         return;
     }
+
+    console.log('상품 ID 설정:', currentBookId);
 
     await loadBookDetailFromAPI();
     await addToRecentViews();
@@ -146,6 +164,32 @@ async function addToCart() {
     }
 }
 
+// 주문서 모달에 상품 정보 채우고 모달 열기 (상품 상세용)
+function openProductOrderModal() {
+    if (!currentBook) return;
+    const quantity = parseInt(document.querySelector('.quantity-input')?.value || '1');
+    // 상품 정보
+    const orderItemsDiv = document.getElementById('orderItems');
+    if (orderItemsDiv) {
+        orderItemsDiv.innerHTML = `
+            <div class="order-item-row">
+                <img src="${currentBook.bookImage || ''}" alt="${currentBook.bookName}" class="order-item-img">
+                <div class="order-item-info">
+                    <div class="order-item-title">${currentBook.bookName}</div>
+                    <div class="order-item-qty">수량: ${quantity}개</div>
+                    <div class="order-item-price">${formatPrice(currentBook.price * quantity)}원</div>
+                </div>
+            </div>
+        `;
+    }
+    // 총 결제금액
+    const orderTotalDiv = document.getElementById('orderTotal');
+    if (orderTotalDiv) {
+        orderTotalDiv.textContent = formatPrice(currentBook.price * quantity) + '원';
+    }
+    openOrderModal();
+}
+
 // 바로 구매
 async function buyNow() {
     const loginStatus = await checkLoginStatus();
@@ -172,8 +216,8 @@ async function buyNow() {
         return;
     }
 
-    // **주문서 작성 페이지로 이동**
-    window.location.href = `/order?bookId=${currentBookId}&quantity=${quantity}`;
+    // 주문서 모달 열기 (페이지 이동 대신)
+    openProductOrderModal();
 }
 
 // 리뷰 작성

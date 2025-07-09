@@ -225,14 +225,51 @@ async function proceedToCheckout() {
     alert('주문 기능은 추후 구현 예정입니다.');
 }
 
-// 주문서 모달 열기 (common.js에서 처리)
-// function openOrderModal() {
-//     window.location.href = '/order';
-// }
+// 주문서 모달에 장바구니 선택 상품 정보 채우고 모달 열기
+function openCartOrderModal() {
+    // 1. 선택된 상품 정보 추출
+    const checkedBoxes = document.querySelectorAll('.item-checkbox:checked');
+    let items = Array.from(checkedBoxes).map(cb => {
+        const cartItem = cb.closest('.cart-item');
+        const title = cartItem.querySelector('.item-title').textContent;
+        const author = cartItem.querySelector('.item-author').textContent;
+        const price = cartItem.querySelector('.item-price').textContent;
+        const quantity = cartItem.querySelector('input[type="number"]').value;
+        const img = cartItem.querySelector('.item-image')?.innerHTML || '';
+        return { title, author, price, quantity, img };
+    });
 
-// function closeOrderModal() {
-//     document.getElementById('orderModal').style.display = 'none';
-// }
+    // 2. 모달 내 주문 상품 정보 채우기
+    const orderItemsDiv = document.getElementById('orderItems');
+    if (orderItemsDiv) {
+        if (items.length === 0) {
+            orderItemsDiv.innerHTML = '<p>주문할 상품이 없습니다.</p>';
+        } else {
+            orderItemsDiv.innerHTML = items.map(item =>
+                `<div class="order-item-row">
+                    <div class="order-item-img">${item.img}</div>
+                    <div class="order-item-info">
+                        <div class="order-item-title">${item.title}</div>
+                        <div class="order-item-qty">${item.author} / 수량: ${item.quantity}개</div>
+                    </div>
+                    <div class="order-item-price">${item.price}</div>
+                </div>`
+            ).join('');
+        }
+    }
+
+    // 3. 총 결제금액 등도 채우기
+    const total = items.reduce((sum, item) => {
+        // item.price는 이미 (수량 × 단가)로 들어가 있으므로, 수량을 곱하지 않는다!
+        const price = parseInt(item.price.replace(/[^\d]/g, '')) || 0;
+        return sum + price;
+    }, 0);
+    const orderTotal = document.getElementById('orderTotal');
+    if (orderTotal) orderTotal.textContent = total.toLocaleString() + '원';
+
+    // 4. 모달 열기
+    openOrderModal();
+}
 
 // 주문서 제출(카카오페이 결제)
 document.getElementById('orderForm').addEventListener('submit', async function(e) {

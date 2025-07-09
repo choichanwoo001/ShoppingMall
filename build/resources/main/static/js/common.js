@@ -4,7 +4,8 @@
 function openOrderModal() {
     const modal = document.getElementById('orderModal');
     if (modal) {
-        modal.style.display = 'block';
+        modal.classList.add('show');
+        modal.style.display = 'flex';
     }
 }
 
@@ -12,6 +13,7 @@ function openOrderModal() {
 function closeOrderModal() {
     const modal = document.getElementById('orderModal');
     if (modal) {
+        modal.classList.remove('show');
         modal.style.display = 'none';
     }
 }

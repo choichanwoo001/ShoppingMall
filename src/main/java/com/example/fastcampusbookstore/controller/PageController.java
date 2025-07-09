@@ -108,10 +108,51 @@ public class PageController {
         String bookDescriptionHtml = (book != null && book.getDescription() != null) ? book.getDescription().replace("\n", "<br>") : "";
         model.addAttribute("bookDescriptionHtml", bookDescriptionHtml);
 
-        // 리뷰 목록 (최신순 1페이지, 5개)
+        // // 리뷰 목록 (최신순 1페이지, 5개)
+        // Pageable pageable = PageRequest.of(0, 5);
+        // var reviewPage = reviewService.getBookReviews(bookId, pageable);
+        
+            // 리뷰 목록 (최신순 1페이지, 5개)
         Pageable pageable = PageRequest.of(0, 5);
         var reviewPage = reviewService.getBookReviews(bookId, pageable);
-        model.addAttribute("reviews", reviewPage.getContent());
+        
+        // 페이지네이션 정보 계산 추가
+        int startItem = reviewPage.getNumber() * reviewPage.getSize() + 1;
+        int endItem = Math.min((reviewPage.getNumber() + 1) * reviewPage.getSize(), 
+                            (int) reviewPage.getTotalElements());
+        
+        model.addAttribute("startItem", startItem);
+        model.addAttribute("endItem", endItem);
+    
+        // 각 리뷰의 별점을 별표 문자열로 변환
+        var reviews = reviewPage.getContent().stream()
+            .map(review -> {
+                // 별점을 별표로 변환
+                String ratingStars = "";
+                if (review.getRating() != null) {
+                    int fullStars = review.getRating();
+                    int emptyStars = 5 - fullStars;
+                    ratingStars = "★".repeat(fullStars) + "☆".repeat(emptyStars);
+                }
+                
+                // ReviewResponse에 ratingStars 필드 추가 (임시로 Map 사용)
+                java.util.Map<String, Object> reviewWithStars = new java.util.HashMap<>();
+                reviewWithStars.put("reviewId", review.getReviewId());
+                reviewWithStars.put("rating", review.getRating());
+                reviewWithStars.put("reviewTitle", review.getReviewTitle());
+                reviewWithStars.put("reviewContent", review.getReviewContent());
+                reviewWithStars.put("isRecommended", review.getIsRecommended());
+                reviewWithStars.put("createdAt", review.getCreatedAt());
+                reviewWithStars.put("updatedAt", review.getUpdatedAt());
+                reviewWithStars.put("reviewer", review.getReviewer());
+                reviewWithStars.put("book", review.getBook());
+                reviewWithStars.put("ratingStars", ratingStars);
+                
+                return reviewWithStars;
+            })
+            .collect(java.util.stream.Collectors.toList());
+        
+        model.addAttribute("reviews", reviews);
         model.addAttribute("reviewPage", reviewPage);
 
         // 리뷰 요약 (평균 평점, 총 리뷰 수)

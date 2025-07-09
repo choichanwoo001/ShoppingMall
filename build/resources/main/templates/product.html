@@ -6,18 +6,12 @@
 </head>
 <body>
     <div th:fragment="content">
-        <script th:if="${book != null}" th:inline="javascript">
-        /*<![CDATA[*/
-        window.currentBookId = [[${book.bookId}]];
-        /*]]>*/
-        </script>
         <!-- 상품이 존재하지 않는 경우 -->
         <div th:if="${book == null}" class="error-message">
             <h2>상품을 찾을 수 없습니다</h2>
             <p>요청하신 상품이 존재하지 않거나 삭제되었습니다.</p>
             <a th:href="@{/}" class="btn btn-primary">홈으로 돌아가기</a>
         </div>
-
         <!-- 상품 상세 정보 -->
         <div th:if="${book != null}" class="product-detail">
             <div class="product-image">
@@ -135,21 +129,21 @@
                     <div th:each="review : ${reviews}" class="review-item">
                         <div class="review-header">
                             <div class="reviewer-info">
-                                <span class="reviewer-name" th:text="${review.reviewerName}">리뷰어</span>
+                                <span class="reviewer-name" th:text="${review.reviewer != null ? review.reviewer.memberName : '익명'}">리뷰어</span>
                                 <span class="review-date" th:text="${#temporals.format(review.createdAt, 'yyyy년 MM월 dd일')}">작성일</span>
                             </div>
                             <div class="review-rating">
                                 <span th:text="${review.ratingStars}">★★★★☆</span>
                             </div>
                         </div>
-                        <div class="review-content" th:text="${review.content}">리뷰 내용</div>
+                        <div class="review-content" th:text="${review.reviewContent}">리뷰 내용</div>
                     </div>
                 </div>
 
                 <!-- 리뷰 페이지네이션 -->
                 <div th:if="${!reviewPage.isEmpty()}" class="review-pagination">
                     <div class="pagination-info">
-                        <span th:text="${'총 ' + reviewPage.totalElements + '개의 리뷰 중 ' + (reviewPage.number * reviewPage.size + 1) + '-' + Math.min((reviewPage.number + 1) * reviewPage.size, reviewPage.totalElements) + '번째'}">페이지 정보</span>
+                        <span th:text="${'총 ' + reviewPage.totalElements + '개의 리뷰 중 ' + startItem + '-' + endItem + '번째'}">페이지 정보</span>
                     </div>
                     <div class="pagination-controls">
                         <a th:if="${reviewPage.hasPrevious()}" 

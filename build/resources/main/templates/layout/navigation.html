@@ -19,7 +19,7 @@
                        th:aria-label="${topCategory.categoryName + ' 카테고리'}">대분류</a>
 
                     <!-- 중분류 드롭다운 -->
-                    <div th:id="'middle-' + ${topCategory.categoryId}"
+                    <div id="middle-[[${topCategory.categoryId}]]"
                          class="middle-dropdown"
                          role="menu"
                          th:aria-label="${topCategory.categoryName + ' 하위 카테고리'}">
@@ -36,7 +36,7 @@
                                    th:aria-label="${middleCategory.categoryName + ' 카테고리'}">중분류</a>
 
                                 <!-- 소분류 드롭다운 -->
-                                <div th:id="'bottom-' + ${middleCategory.categoryId}"
+                                <div id="bottom-[[${middleCategory.categoryId}]]"
                                      class="bottom-dropdown"
                                      role="menu"
                                      th:aria-label="${middleCategory.categoryName + ' 세부 카테고리'}">
