@@ -5,7 +5,7 @@
     <title>검색결과</title>
 </head>
 <body>
-    <div th:fragment="content">
+    <div th:fragment="content" class="category-page">
         <!-- 브레드크럼 -->
         <div class="breadcrumb">
             <a href="/">홈</a>
@@ -53,14 +53,14 @@
                         </select>
                     </div>
 
-                    <div class="view-options">
+                    <!-- <div class="view-options">
                         <label for="size-select">페이지당:</label>
                         <select id="size-select" class="size-select">
                             <option value="30" th:selected="${size == 30}">30개</option>
                             <option value="50" th:selected="${size == 50}">50개</option>
                             <option value="100" th:selected="${size == 100}">100개</option>
                         </select>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 

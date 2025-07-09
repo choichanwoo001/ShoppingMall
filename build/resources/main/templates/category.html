@@ -17,49 +17,49 @@
         <div class="main-content">
             <!-- 필터 및 정렬 옵션 -->
             <div class="filter-section">
-                <div class="filter-left">
-                    <h2>카테고리별 도서</h2>
-                    <span class="result-count" th:text="${'총 ' + totalElements + '권의 도서'}">총 0권의 도서</span>
-                </div>
-                <div class="filter-right">
-                    <div class="sort-options">
-                        <label for="sort-select">정렬:</label>
-                        <select id="sort-select" class="sort-select">
-                            <option value="registration_date-desc"
-                                    th:selected="${currentSort == 'registration_date' && currentDirection == 'desc'}">
-                                최신순
-                            </option>
-                            <option value="registration_date-asc"
-                                    th:selected="${currentSort == 'registration_date' && currentDirection == 'asc'}">
-                                오래된순
-                            </option>
-                            <option value="name-asc"
-                                    th:selected="${currentSort == 'name' && currentDirection == 'asc'}">
-                                상품명 오름차순
-                            </option>
-                            <option value="name-desc"
-                                    th:selected="${currentSort == 'name' && currentDirection == 'desc'}">
-                                상품명 내림차순
-                            </option>
-                            <option value="price-asc"
-                                    th:selected="${currentSort == 'price' && currentDirection == 'asc'}">
-                                가격 낮은순
-                            </option>
-                            <option value="price-desc"
-                                    th:selected="${currentSort == 'price' && currentDirection == 'desc'}">
-                                가격 높은순
-                            </option>
-                        </select>
+                    <div class="filter-left">
+                        <h2>카테고리별 도서</h2>
+                        <span class="result-count" th:text="${'총 ' + totalElements + '권의 도서'}">총 0권의 도서</span>
                     </div>
+                    <div class="filter-right">
+                        <div class="sort-options">
+                            <label for="sort-select">정렬:</label>
+                            <select id="sort-select" class="sort-select">
+                                <option value="registration_date-desc"
+                                        th:selected="${currentSort == 'registration_date' && currentDirection == 'desc'}">
+                                    최신순
+                                </option>
+                                <option value="registration_date-asc"
+                                        th:selected="${currentSort == 'registration_date' && currentDirection == 'asc'}">
+                                    오래된순
+                                </option>
+                                <option value="name-asc"
+                                        th:selected="${currentSort == 'name' && currentDirection == 'asc'}">
+                                    상품명 오름차순
+                                </option>
+                                <option value="name-desc"
+                                        th:selected="${currentSort == 'name' && currentDirection == 'desc'}">
+                                    상품명 내림차순
+                                </option>
+                                <option value="price-asc"
+                                        th:selected="${currentSort == 'price' && currentDirection == 'asc'}">
+                                    가격 낮은순
+                                </option>
+                                <option value="price-desc"
+                                        th:selected="${currentSort == 'price' && currentDirection == 'desc'}">
+                                    가격 높은순
+                                </option>
+                            </select>
+                        </div>
 
-                    <div class="view-options">
+                    <!-- <div class="view-options">
                         <label for="size-select">페이지당:</label>
                         <select id="size-select" class="size-select">
                             <option value="30" th:selected="${size == 30}">30개</option>
                             <option value="50" th:selected="${size == 50}">50개</option>
                             <option value="100" th:selected="${size == 100}">100개</option>
                         </select>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 
@@ -111,7 +111,7 @@
             <div class="pagination" th:if="${totalPages > 1}">
                 <!-- 이전 페이지 -->
                 <a th:if="${hasPrevious}"
-                   th:href="@{'/category/' + ${currentCategoryId} + '?page=' + ${currentPage - 1} + '&size=' + ${size} + '&sort=' + ${currentSort} + '&direction=' + ${currentDirection} + (${currentKeyword != null} ? '&keyword=' + ${currentKeyword} : '')}"
+                   th:href="@{/category/{id}(id=${currentCategoryId}, page=${currentPage - 1}, size=${size}, sort=${currentSort}, direction=${currentDirection}, keyword=${currentKeyword})}"
                    class="page-btn prev">이전</a>
 
                 <!-- 페이지 번호들 -->
@@ -120,14 +120,14 @@
                        class="page-btn current"
                        th:text="${pageNum + 1}">1</a>
                     <a th:unless="${pageNum == currentPage}"
-                       th:href="@{'/category/' + ${currentCategoryId} + '?page=' + ${pageNum} + '&size=' + ${size} + '&sort=' + ${currentSort} + '&direction=' + ${currentDirection} + (${currentKeyword != null} ? '&keyword=' + ${currentKeyword} : '')}"
+                       th:href="@{/category/{id}(id=${currentCategoryId}, page=${pageNum}, size=${size}, sort=${currentSort}, direction=${currentDirection}, keyword=${currentKeyword})}"
                        class="page-btn"
                        th:text="${pageNum + 1}">1</a>
                 </th:block>
 
                 <!-- 다음 페이지 -->
                 <a th:if="${hasNext}"
-                   th:href="@{'/category/' + ${currentCategoryId} + '?page=' + ${currentPage + 1} + '&size=' + ${size} + '&sort=' + ${currentSort} + '&direction=' + ${currentDirection} + (${currentKeyword != null} ? '&keyword=' + ${currentKeyword} : '')}"
+                   th:href="@{/category/{id}(id=${currentCategoryId}, page=${currentPage + 1}, size=${size}, sort=${currentSort}, direction=${currentDirection}, keyword=${currentKeyword})}"
                    class="page-btn next">다음</a>
             </div>
         </div>

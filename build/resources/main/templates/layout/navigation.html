@@ -13,9 +13,10 @@
                      aria-haspopup="true"
                      aria-expanded="false">
 
-                    <a th:href="@{'/category/' + ${topCategory.categoryId}}"
+                    <a th:href="@{/category/{id}(id=${topCategory.categoryId})}"
                        th:text="${topCategory.categoryName}"
                        class="category-item"
+                       th:classappend="${#strings.toString(currentCategoryId) == #strings.toString(topCategory.categoryId)} ? ' selected' : ''"
                        th:aria-label="${topCategory.categoryName + ' 카테고리'}">대분류</a>
 
                     <!-- 중분류 드롭다운 -->
@@ -30,9 +31,10 @@
                                  aria-haspopup="true"
                                  aria-expanded="false">
 
-                                <a th:href="@{'/category/' + ${middleCategory.categoryId}}"
+                                <a th:href="@{/category/{id}(id=${middleCategory.categoryId})}"
                                    th:text="${middleCategory.categoryName}"
                                    class="middle-link"
+                                   th:classappend="${#strings.toString(currentCategoryId) == #strings.toString(middleCategory.categoryId)} ? ' selected' : ''"
                                    th:aria-label="${middleCategory.categoryName + ' 카테고리'}">중분류</a>
 
                                 <!-- 소분류 드롭다운 -->
@@ -42,9 +44,10 @@
                                      th:aria-label="${middleCategory.categoryName + ' 세부 카테고리'}">
 
                                     <th:block th:each="bottomCategory : ${middleCategory.subCategories}" th:if="${middleCategory.subCategories != null}">
-                                        <a th:href="@{'/category/' + ${bottomCategory.categoryId}}"
+                                        <a th:href="@{/category/{id}(id=${bottomCategory.categoryId})}"
                                            th:text="${bottomCategory.categoryName}"
                                            class="bottom-link"
+                                           th:classappend="${#strings.toString(currentCategoryId) == #strings.toString(bottomCategory.categoryId)} ? ' selected' : ''"
                                            th:aria-label="${bottomCategory.categoryName + ' 카테고리'}">소분류</a>
                                     </th:block>
                                 </div>
