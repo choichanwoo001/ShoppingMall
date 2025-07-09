@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Header</title>
+</head>
+<body>
+    <header class="header" th:fragment="header">
+        <div class="header-container">
+            <div class="logo logo-clickable" onclick="location.href='/'" style="cursor: pointer;">BookStore</div>
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="책제목, 저자, 출판사를 검색하세요">
+                <button class="search-btn">검색</button>
+            </div>
+            <div class="user-menu">
+                <!-- 로그인 상태에 따른 메뉴 표시 -->
+                <div th:if="${session.memberId == null}">
+                    <a th:href="@{/login}">로그인</a>
+                    <a th:href="@{/signup}">회원가입</a>
+                </div>
+                <div th:if="${session.memberId != null}">
+                    <span th:text="${'안녕하세요, ' + session.memberName + '님'}">사용자님</span>
+                    <a th:href="@{/logout}">로그아웃</a>
+                    <a th:href="@{/cart}">장바구니</a>
+                    <a th:href="@{/mypage}" th:if="${session.memberId != null}">마이페이지</a>
+                </div>
+            </div>
+        </div>
+    </header>
+</body>
+</html> 

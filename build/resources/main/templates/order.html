@@ -1,95 +1,47 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>주문서 작성 - BookStore</title>
-  <link rel="stylesheet" href="/css/common.css">
-  <link rel="stylesheet" href="/css/cart.css">
-  <style>
-    .order-page-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      background: #f7f8fa;
-    }
-    .order-form-wrapper {
-      background: var(--white);
-      border-radius: 0.5rem;
-      box-shadow: 0 0.125rem 0.625rem rgba(0,0,0,0.05);
-      padding: 2.5rem 2rem;
-      max-width: 480px;
-      width: 100%;
-      margin: 2rem auto;
-    }
-    .order-title {
-      font-size: 1.5rem;
-      font-weight: bold;
-      margin-bottom: 2rem;
-      text-align: center;
-    }
-    .order-items-summary {
-      margin-bottom: 1.5rem;
-    }
-    .order-total-row {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 1.1rem;
-      font-weight: bold;
-      margin-bottom: 1.5rem;
-    }
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
-    .form-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      margin-top: 2rem;
-    }
-  </style>
+    <title>주문서 작성</title>
 </head>
 <body>
-<div class="order-page-container">
-  <div class="order-form-wrapper">
-    <div class="order-title">주문서 작성</div>
-    <form id="orderForm">
-      <!-- 주문 상품 정보 -->
-      <div id="orderItems" class="order-items-summary"></div>
-      <!-- 총 결제금액 -->
-      <div class="order-total-row">
-        <span>총 결제금액:</span>
-        <span id="orderTotal">0원</span>
-      </div>
-      <div class="form-group">
-        <label>배송지 주소</label>
-        <input type="text" id="orderAddress" name="shippingAddress" required>
-      </div>
-      <div class="form-group">
-        <label>연락처</label>
-        <input type="text" id="orderPhone" name="shippingPhone" required>
-      </div>
-      <div class="form-group">
-        <label>주문 메모</label>
-        <input type="text" id="orderMemo" name="orderMemo" placeholder="요청사항이 있으면 입력하세요">
-      </div>
-      <div class="form-group">
-        <label>결제수단</label>
-        <select id="paymentMethod" name="paymentMethod" required>
-          <option value="KAKAO_PAY">카카오페이</option>
-        </select>
-      </div>
-      <div class="form-actions">
-        <button type="button" class="btn btn-secondary" onclick="window.location.href='/cart'">취소</button>
-        <button type="submit" class="btn btn-primary" id="kakaoPayBtn">카카오페이 결제</button>
-      </div>
-    </form>
-  </div>
-</div>
-<script src="/js/order.js"></script>
+    <div th:fragment="content">
+        <div class="order-page-container">
+            <div class="order-form-wrapper">
+                <div class="order-title">주문서 작성</div>
+                <form id="orderForm">
+                    <!-- 주문 상품 정보 -->
+                    <div id="orderItems" class="order-items-summary"></div>
+                    <!-- 총 결제금액 -->
+                    <div class="order-total-row">
+                        <span>총 결제금액:</span>
+                        <span id="orderTotal">0원</span>
+                    </div>
+                    <div class="form-group">
+                        <label>배송지 주소</label>
+                        <input type="text" id="orderAddress" name="shippingAddress" required>
+                    </div>
+                    <div class="form-group">
+                        <label>연락처</label>
+                        <input type="text" id="orderPhone" name="shippingPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>주문 메모</label>
+                        <input type="text" id="orderMemo" name="orderMemo" placeholder="요청사항이 있으면 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label>결제수단</label>
+                        <select id="paymentMethod" name="paymentMethod" required>
+                            <option value="KAKAO_PAY">카카오페이</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/cart'">취소</button>
+                        <button type="submit" class="btn btn-primary" id="kakaoPayBtn">카카오페이 결제</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 </html> 

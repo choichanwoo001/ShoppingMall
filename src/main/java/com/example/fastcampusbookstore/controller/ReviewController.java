@@ -114,6 +114,11 @@ class ReviewWriteController {
             : java.util.Collections.emptyList();
         model.addAttribute("bookId", bookId);
         model.addAttribute("orderDetailList", orderDetailList);
+        
+        // 레이아웃 관련 속성 추가
+        model.addAttribute("title", "리뷰 작성");
+        model.addAttribute("cssFiles", java.util.List.of("review-write.css"));
+        
         return "review-write";
     }
 

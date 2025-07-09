@@ -36,6 +36,12 @@ public class PageController {
     @GetMapping("/cart")
     public String cart(Model model) {
         addCategoryData(model); // 네비게이션용 카테고리 추가
+        
+        // 레이아웃 관련 속성 추가
+        model.addAttribute("title", "장바구니");
+        model.addAttribute("cssFiles", java.util.List.of("cart.css"));
+        model.addAttribute("jsFiles", java.util.List.of("cart.js"));
+        
         return "cart";
     }
 
@@ -65,6 +71,12 @@ public class PageController {
         if (loginMember != null) {
             model.addAttribute("member", loginMember);
         }
+        
+        // 레이아웃 관련 속성 추가
+        model.addAttribute("title", "마이페이지");
+        model.addAttribute("cssFiles", java.util.List.of("mypage.css"));
+        model.addAttribute("jsFiles", java.util.List.of("mypage.js"));
+        
         return "mypage";
     }
 
@@ -96,10 +108,51 @@ public class PageController {
         String bookDescriptionHtml = (book != null && book.getDescription() != null) ? book.getDescription().replace("\n", "<br>") : "";
         model.addAttribute("bookDescriptionHtml", bookDescriptionHtml);
 
-        // 리뷰 목록 (최신순 1페이지, 5개)
+        // // 리뷰 목록 (최신순 1페이지, 5개)
+        // Pageable pageable = PageRequest.of(0, 5);
+        // var reviewPage = reviewService.getBookReviews(bookId, pageable);
+        
+            // 리뷰 목록 (최신순 1페이지, 5개)
         Pageable pageable = PageRequest.of(0, 5);
         var reviewPage = reviewService.getBookReviews(bookId, pageable);
-        model.addAttribute("reviews", reviewPage.getContent());
+        
+        // 페이지네이션 정보 계산 추가
+        int startItem = reviewPage.getNumber() * reviewPage.getSize() + 1;
+        int endItem = Math.min((reviewPage.getNumber() + 1) * reviewPage.getSize(), 
+                            (int) reviewPage.getTotalElements());
+        
+        model.addAttribute("startItem", startItem);
+        model.addAttribute("endItem", endItem);
+    
+        // 각 리뷰의 별점을 별표 문자열로 변환
+        var reviews = reviewPage.getContent().stream()
+            .map(review -> {
+                // 별점을 별표로 변환
+                String ratingStars = "";
+                if (review.getRating() != null) {
+                    int fullStars = review.getRating();
+                    int emptyStars = 5 - fullStars;
+                    ratingStars = "★".repeat(fullStars) + "☆".repeat(emptyStars);
+                }
+                
+                // ReviewResponse에 ratingStars 필드 추가 (임시로 Map 사용)
+                java.util.Map<String, Object> reviewWithStars = new java.util.HashMap<>();
+                reviewWithStars.put("reviewId", review.getReviewId());
+                reviewWithStars.put("rating", review.getRating());
+                reviewWithStars.put("reviewTitle", review.getReviewTitle());
+                reviewWithStars.put("reviewContent", review.getReviewContent());
+                reviewWithStars.put("isRecommended", review.getIsRecommended());
+                reviewWithStars.put("createdAt", review.getCreatedAt());
+                reviewWithStars.put("updatedAt", review.getUpdatedAt());
+                reviewWithStars.put("reviewer", review.getReviewer());
+                reviewWithStars.put("book", review.getBook());
+                reviewWithStars.put("ratingStars", ratingStars);
+                
+                return reviewWithStars;
+            })
+            .collect(java.util.stream.Collectors.toList());
+        
+        model.addAttribute("reviews", reviews);
         model.addAttribute("reviewPage", reviewPage);
 
         // 리뷰 요약 (평균 평점, 총 리뷰 수)
@@ -136,6 +189,11 @@ public class PageController {
         }
         model.addAttribute("pageNumbers", pageNumbers);
 
+        // 레이아웃 관련 속성 추가
+        model.addAttribute("title", book != null ? book.getBookName() : "상품 상세");
+        model.addAttribute("cssFiles", java.util.List.of("product.css"));
+        model.addAttribute("jsFiles", java.util.List.of("product.js"));
+
         return "product";
     }
 
@@ -150,6 +208,12 @@ public class PageController {
         }
 
         addCategoryData(model); // 네비게이션용 카테고리 추가
+        
+        // 레이아웃 관련 속성 추가
+        model.addAttribute("title", "회원정보 수정");
+        model.addAttribute("cssFiles", java.util.List.of("member-edit.css"));
+        model.addAttribute("jsFiles", java.util.List.of("member-edit.js"));
+        
         return "member-edit";
     }
 
@@ -197,6 +261,11 @@ public class PageController {
             model.addAttribute("currentKeyword", keyword);
 
             log.info("카테고리 페이지 데이터 로드 완료 - 총 {}개 상품", booksResponse.getTotalElements());
+
+            // 레이아웃 관련 속성 추가
+            model.addAttribute("title", "카테고리별 도서");
+            model.addAttribute("cssFiles", java.util.List.of("category.css"));
+            model.addAttribute("jsFiles", java.util.List.of("category.js"));
 
             return "category";
 
@@ -250,6 +319,11 @@ public class PageController {
 
             log.info("검색 완료 - 키워드: {}, 결과: {}개", keyword, searchResults.getTotalElements());
 
+            // 레이아웃 관련 속성 추가
+            model.addAttribute("title", "\"" + keyword + "\" 검색결과");
+            model.addAttribute("cssFiles", java.util.List.of("category.css")); // 검색결과는 카테고리와 같은 스타일 사용
+            model.addAttribute("jsFiles", java.util.List.of("search.js"));
+
             return "search-results";
 
         } catch (Exception e) {
@@ -274,6 +348,12 @@ public class PageController {
     public String orderPage(Model model, HttpSession session) {
         addCategoryData(model);
         // 필요시 세션에서 회원정보 등 추가
+        
+        // 레이아웃 관련 속성 추가
+        model.addAttribute("title", "주문서 작성");
+        model.addAttribute("cssFiles", java.util.List.of("cart.css", "order.css"));
+        model.addAttribute("jsFiles", java.util.List.of("order.js"));
+        
         return "order";
     }
 }

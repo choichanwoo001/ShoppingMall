@@ -77,6 +77,11 @@ public class MainController {
             model.addAttribute("popularBooks", popularBooks);
             model.addAttribute("recentViews", recentViews);
             model.addAttribute("currentMonth", currentMonth);
+            
+            // 레이아웃 관련 속성 추가
+            model.addAttribute("title", "온라인 서점");
+            model.addAttribute("cssFiles", List.of("main.css"));
+            model.addAttribute("jsFiles", List.of("main.js"));
 
             log.info("메인 페이지 데이터 로드 완료 - 베스트셀러: {}개, 인기도서: {}개, 최근본상품: {}개",
                     bestsellers.size(),

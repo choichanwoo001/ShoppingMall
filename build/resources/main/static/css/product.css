@@ -299,12 +299,30 @@
     display: none;
 }
 
-.order-modal-content {
-    max-width: 480px;
+/* 모달 중앙 정렬 및 배경 처리 (cart와 동일) */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
 }
-
-.form-actions {
-    margin-top: 1.5rem;
+.modal.show {
+  display: flex;
+}
+.order-modal-content {
+  max-width: 480px;
+  margin: auto;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 2.5rem 2rem;
 }
 
 /* 주문서 모달 상품 정보/총 결제금액 UX 개선 */

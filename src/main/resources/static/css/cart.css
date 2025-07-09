@@ -276,7 +276,7 @@
   width: 100vw;
   height: 100vh;
   overflow: auto;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.5); /* 더 진한 배경 */
   justify-content: center;
   align-items: center;
 }
@@ -286,4 +286,8 @@
 .order-modal-content {
   max-width: 480px;
   margin: auto;
+  background: #fff; /* 흰색 배경 */
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 2.5rem 2rem;
 }

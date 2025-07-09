@@ -1,0 +1,74 @@
+body { 
+    background: #f7fafc; 
+    font-family: 'Noto Sans KR', sans-serif; 
+}
+
+.review-form-container { 
+    max-width: 480px; 
+    margin: 2rem auto; 
+    background: #fff; 
+    border-radius: 0.5rem; 
+    box-shadow: 0 0.125rem 0.625rem rgba(0,0,0,0.07); 
+    padding: 2rem; 
+}
+
+h2 { 
+    text-align: center; 
+    color: #2b6cb0; 
+    margin-bottom: 1.5rem; 
+}
+
+.form-group { 
+    margin-bottom: 1.25rem; 
+}
+
+label { 
+    display: block; 
+    margin-bottom: 0.5rem; 
+    color: #4a5568; 
+    font-weight: 500; 
+}
+
+input[type="text"], textarea, select { 
+    width: 100%; 
+    padding: 0.5rem; 
+    border: 1px solid #e2e8f0; 
+    border-radius: 0.25rem; 
+    font-size: 1rem; 
+}
+
+textarea { 
+    min-height: 100px; 
+}
+
+button[type="submit"] { 
+    background: #2b6cb0; 
+    color: #fff; 
+    border: none; 
+    padding: 0.75rem 1.5rem; 
+    border-radius: 0.25rem; 
+    font-size: 1.1rem; 
+    cursor: pointer; 
+    transition: background 0.2s; 
+}
+
+button[type="submit"]:hover { 
+    background: #3182ce; 
+}
+
+.cancel-link { 
+    margin-left: 1rem; 
+    color: #718096; 
+    text-decoration: underline; 
+    font-size: 1rem; 
+}
+
+.order-detail-select { 
+    margin-bottom: 1.25rem; 
+}
+
+.info-text { 
+    color: #718096; 
+    font-size: 0.95rem; 
+    margin-bottom: 1rem; 
+} 
