@@ -300,12 +300,12 @@ function displayOrderHistory(ordersData) {
                         <div class="product-row">
                             <div class="product-image">
                                 ${item.book?.bookImage ?
-            `<img src="${item.book.bookImage}" alt="${item.book.bookTitle}">` :
+            `<img src="${item.book.bookImage}" alt="${item.book.bookName}">` :
             '<span>이미지</span>'
         }
                             </div>
                             <div class="product-info">
-                                <div class="product-title">${item.book?.bookTitle || '상품명'}</div>
+                                <div class="product-title">${item.book?.bookName || '상품명'}</div>
                                 <div class="product-author">${item.book?.author || ''} ${item.book?.publisher ? '| ' + item.book.publisher : ''}</div>
                                 <div class="product-price">${formatPrice(item.price)}원</div>
                                 <div class="product-quantity">수량: ${item.quantity}개</div>
@@ -407,7 +407,7 @@ function displayMyReviews(reviewsData) {
         div.className = 'review-item';
         div.innerHTML = `
             <div class="review-book">
-                <span class="book-title">${review.bookName}</span>
+                <span class="book-bookName">${review.bookName}</span>
                 <span class="review-date">${formatDate(review.createdAt)}</span>
             </div>
             <div class="review-content">${review.reviewContent}</div>
@@ -497,83 +497,6 @@ async function handleReviewSubmit(event) {
     }
 }
 
-// 관심목록 로드
-async function loadWishlist(page = 0) {
-    try {
-        showLoading('wishlist-grid');
-        currentPage.wishlist = page;
-
-        const wishlistData = await apiRequest(`/wishlist?page=${page}&size=${PAGE_SIZE}`);
-        displayWishlist(wishlistData);
-
-    } catch (error) {
-        console.error('관심목록 로드 실패:', error);
-        showError('관심목록을 불러올 수 없습니다.');
-        document.getElementById('wishlist-grid').innerHTML = '<div class="empty-message"><p>관심목록을 불러올 수 없습니다.</p></div>';
-    }
-}
-
-// 관심목록 표시
-function displayWishlist(wishlistData) {
-    const wishlistContainer = document.getElementById('wishlist-grid');
-    const wishlistCountSpan = document.getElementById('wishlist-count');
-
-    // 관심목록 개수 업데이트
-    if (wishlistCountSpan) {
-        const totalCount = wishlistData?.totalElements || 0;
-        wishlistCountSpan.innerHTML = `총 <strong>${totalCount}</strong>개의 관심 도서`;
-    }
-
-    if (!wishlistData || !wishlistData.content || wishlistData.content.length === 0) {
-        wishlistContainer.innerHTML = `
-            <div class="empty-message">
-                <p>관심 도서가 없습니다.</p>
-                <button class="btn btn-primary" onclick="location.href='/'">도서 둘러보기</button>
-            </div>
-        `;
-        document.getElementById('wishlist-pagination').innerHTML = '';
-        return;
-    }
-
-    wishlistContainer.className = 'wishlist-grid';
-    let wishlistHtml = '';
-
-    wishlistData.content.forEach(item => {
-        const book = item.book || item; // API 응답 구조에 따라 조정
-        wishlistHtml += `
-            <div class="book-card">
-                <div class="book-image">
-                    ${book.bookImage ?
-            `<img src="${book.bookImage}" alt="${book.bookTitle}">` :
-            '<span>이미지</span>'
-        }
-                </div>
-                <div class="book-info">
-                    <div class="book-title">${book.bookTitle || book.title}</div>
-                    <div class="book-author">${book.author || ''}</div>
-                    <div class="book-publisher">${book.publisher || ''}</div>
-                    <div class="book-price">${formatPrice(book.price)}원</div>
-                    <div class="book-rating">
-                        <span class="rating-stars">
-                            ${generateStarRating(book.averageRating || 0)}
-                        </span>
-                        <span class="rating-text">(${book.averageRating || 0}점)</span>
-                    </div>
-                </div>
-                <div class="book-actions">
-                    <button class="btn btn-small btn-primary" onclick="addToCart(${book.bookId || book.id})">장바구니</button>
-                    <button class="btn btn-small btn-danger" onclick="removeFromWishlist(${book.bookId || book.id})">삭제</button>
-                </div>
-            </div>
-        `;
-    });
-
-    wishlistContainer.innerHTML = wishlistHtml;
-
-    // 페이지네이션 생성
-    generatePagination('wishlist-pagination', wishlistData, 'loadWishlist');
-}
-
 // 주문 필터링
 function filterOrders() {
     loadOrderHistory(0); // 첫 페이지부터 다시 로드
@@ -651,12 +574,12 @@ function displayOrderDetail(order) {
                     <div class="product-row">
                         <div class="product-image">
                             ${item.book?.bookImage ?
-        `<img src="${item.book.bookImage}" alt="${item.book.bookTitle}">` :
+        `<img src="${item.book.bookImage}" alt="${item.book.bookName}">` :
         '<span>이미지</span>'
     }
                         </div>
                         <div class="product-info">
-                            <div class="product-title">${item.book?.bookTitle || '상품명'}</div>
+                            <div class="product-title">${item.book?.bookName || '상품명'}</div>
                             <div class="product-author">${item.book?.author || ''} ${item.book?.publisher ? '| ' + item.book.publisher : ''}</div>
                             <div class="product-price">${formatPrice(item.price)}원</div>
                             <div class="product-quantity">수량: ${item.quantity}개</div>
@@ -738,9 +661,9 @@ async function writeReview(bookId, orderId) {
         // 도서 정보 표시
         const bookInfoDiv = document.getElementById('reviewBookInfo');
         bookInfoDiv.innerHTML = `
-            ${bookInfo.bookImage ? `<img src="${bookInfo.bookImage}" alt="${bookInfo.bookTitle}">` : ''}
+            ${bookInfo.bookImage ? `<img src="${bookInfo.bookImage}" alt="${bookInfo.bookName}">` : ''}
             <div class="book-info">
-                <h4>${bookInfo.bookTitle}</h4>
+                <h4>${bookInfo.bookName}</h4>
                 <p>${bookInfo.author} | ${bookInfo.publisher}</p>
             </div>
         `;
@@ -769,9 +692,9 @@ async function editReview(reviewId) {
         const bookInfoDiv = document.getElementById('reviewBookInfo');
         if (review.book) {
             bookInfoDiv.innerHTML = `
-                ${review.book.bookImage ? `<img src="${review.book.bookImage}" alt="${review.book.bookTitle}">` : ''}
+                ${review.book.bookImage ? `<img src="${review.book.bookImage}" alt="${review.book.bookName}">` : ''}
                 <div class="book-info">
-                    <h4>${review.book.bookTitle}</h4>
+                    <h4>${review.book.bookName}</h4>
                     <p>${review.book.author} | ${review.book.publisher}</p>
                 </div>
             `;
@@ -835,43 +758,6 @@ async function addToCart(bookId) {
     }
 }
 
-// 관심목록에서 제거
-async function removeFromWishlist(bookId) {
-    if (!confirm('관심목록에서 제거하시겠습니까?')) {
-        return;
-    }
-
-    try {
-        await apiRequest(`/wishlist/${bookId}`, {
-            method: 'DELETE'
-        });
-
-        alert('관심목록에서 제거되었습니다.');
-        loadWishlist(currentPage.wishlist); // 현재 페이지 새로고침
-    } catch (error) {
-        console.error('관심목록 제거 실패:', error);
-        alert('관심목록 제거에 실패했습니다.');
-    }
-}
-
-// 관심목록 전체 삭제
-async function clearWishlist() {
-    if (!confirm('관심목록을 모두 삭제하시겠습니까?')) {
-        return;
-    }
-
-    try {
-        await apiRequest('/wishlist/clear', {
-            method: 'DELETE'
-        });
-
-        alert('관심목록이 모두 삭제되었습니다.');
-        loadWishlist(0); // 첫 페이지로 이동
-    } catch (error) {
-        console.error('관심목록 삭제 실패:', error);
-        alert('관심목록 삭제에 실패했습니다.');
-    }
-}
 
 // 페이지네이션 생성
 function generatePagination(containerId, pageData, functionName) {
