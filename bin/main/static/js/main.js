@@ -32,7 +32,7 @@ function setupSearchFunctionality() {
 }
 
 function loadPopularKeywords() {
-    fetch('/api/popular-keywords/top?size=5')
+    fetch('/api/bookspopular-keywords/top?size=5')
         .then(res => res.json())
         .then(list => {
             const ul = document.getElementById('popular-keyword-list');

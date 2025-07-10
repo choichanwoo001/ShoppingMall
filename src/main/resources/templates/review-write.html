@@ -13,7 +13,7 @@
                 <div class="form-group order-detail-select">
                     <label>리뷰를 작성할 주문 선택 <span style="color:#e53e3e;">*</span></label>
                     <select name="orderDetailId" required>
-                        <option th:each="od : ${orderDetailList}" th:value="${od.orderDetailId}" th:text="${od.order.orderDate?.toLocalDate()} + ' | ' + od.book.bookName + ' | 수량: ' + od.quantity">주문 선택</option>
+                        <option th:each="od : ${orderDetailList}" th:value="${od.orderDetailId}" th:text="${#temporals.format(od.order.orderDate, 'yyyy-MM-dd')} + ' | ' + ${od.book.bookName} + ' | 수량: ' + ${od.quantity}">주문 선택</option>
                     </select>
                     <div class="info-text">* 실제로 구매한 내역이 있는 경우에만 리뷰 작성이 가능합니다.</div>
                 </div>

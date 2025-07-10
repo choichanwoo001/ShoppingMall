@@ -25,10 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// OrderService의 모든 메서드와 의존성 주입을 이 파일로 합친다.
+// 클래스명: OrderPaymentService
+// @Service, @Transactional 등은 그대로 유지
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class OrderService {
+public class OrderPaymentService {
 
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
@@ -183,10 +186,10 @@ public class OrderService {
             if (StringUtils.hasText(request.getOrdererName())) {
                 predicates.add(cb.like(root.get("member").get("memberName"), "%" + request.getOrdererName() + "%"));
             }
-            if (StringUtils.hasText(request.getBookTitle())) {
-                predicates.add(cb.like(root.join("orderDetails").get("book").get("title"), "%" + request.getBookTitle() + "%"));
+            if (StringUtils.hasText(request.getBookName())) {
+                predicates.add(cb.like(root.join("orderDetails").get("book").get("bookName"), "%" + request.getBookName() + "%"));
             }
-            if (StringUtils.hasText(request.getSalesStatus())) {
+            if (StringUtils.hasText(request.getSalesStatus()) && !request.getSalesStatus().equals("")) {
                 predicates.add(cb.equal(root.get("orderStatus"), Order.OrderStatus.valueOf(request.getSalesStatus())));
             }
             if (request.getStartDate() != null && request.getEndDate() != null) {
@@ -198,11 +201,28 @@ public class OrderService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
+        // 정렬 조건 적용
+        Sort sort = Sort.by(Sort.Direction.DESC, "orderDate"); // 기본값
+        if (StringUtils.hasText(request.getSortBy())) {
+            String sortField = switch (request.getSortBy()) {
+                case "orderDate" -> "orderDate";
+                case "ordererId" -> "member.memberId";
+                case "totalAmount" -> "totalAmount";
+                case "orderStatus" -> "orderStatus";
+                default -> "orderDate";
+            };
+            Sort.Direction direction = "asc".equalsIgnoreCase(request.getSortOrder()) ? 
+                Sort.Direction.ASC : Sort.Direction.DESC;
+            sort = Sort.by(direction, sortField);
+        }
+
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), sort);
         Page<Order> orderPage = orderRepository.findAll(spec, pageable);
+        
         List<OrderListResponse> content = orderPage.getContent().stream()
             .map(OrderListResponse::from)
             .collect(Collectors.toList());
+            
         return PageResponse.of(content, orderPage);
     }
 
@@ -235,5 +255,11 @@ public class OrderService {
             .collect(Collectors.toList());
             
         return PageResponse.of(content, orderPage);
+    }
+
+    public long countOrdersByDate(java.time.LocalDate date) {
+        java.time.LocalDateTime start = date.atStartOfDay();
+        java.time.LocalDateTime end = date.plusDays(1).atStartOfDay();
+        return orderRepository.countByOrderDateBetween(start, end);
     }
 }

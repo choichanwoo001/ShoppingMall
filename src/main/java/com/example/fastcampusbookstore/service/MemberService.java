@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -144,18 +145,11 @@ public class MemberService {
 
         return memberRepository.existsByEmail(request.getEmail());
     }
-    // === Private 헬퍼 메서드들 ===
 
-    private void validateWithdrawal(Member member) {
-        // 이미 탈퇴한 회원인지 확인
-        if (member.getMemberStatus() == Member.MemberStatus.탈퇴) {
-            throw new IllegalArgumentException("이미 탈퇴한 회원입니다");
-        }
-
-        // TODO: 추가 탈퇴 조건 검사
-        // - 진행 중인 주문이 있는지 확인
-        // - 미해결 문의사항이 있는지 확인 등
+    public long countMembers() {
+        return memberRepository.count();
     }
+    // === Private 헬퍼 메서드들 ===
 
     private void validateSignupRequest(MemberSignupRequest request) {
         // 아이디 중복 확인
@@ -240,17 +234,17 @@ public class MemberService {
             if (StringUtils.hasText(request.getMemberId())) {
                 predicates.add(cb.like(root.get("memberId"), "%" + request.getMemberId() + "%"));
             }
-            if (StringUtils.hasText(request.getMemberStatus())) {
-                predicates.add(cb.equal(root.get("memberStatus"), Member.MemberStatus.valueOf(request.getMemberStatus())));
+            if (StringUtils.hasText(request.getMemberName())) {
+                predicates.add(cb.like(root.get("memberName"), "%" + request.getMemberName() + "%"));
             }
             if (StringUtils.hasText(request.getEmail())) {
                 predicates.add(cb.like(root.get("email"), "%" + request.getEmail() + "%"));
             }
-            if (StringUtils.hasText(request.getMemberGrade())) {
-                predicates.add(cb.equal(root.get("memberGrade"), Member.MemberGrade.valueOf(request.getMemberGrade())));
+            if (StringUtils.hasText(request.getMemberStatus()) && !request.getMemberStatus().equals("")) {
+                predicates.add(cb.equal(root.get("memberStatus"), Member.MemberStatus.valueOf(request.getMemberStatus())));
             }
-            if (StringUtils.hasText(request.getMemberName())) {
-                predicates.add(cb.like(root.get("memberName"), "%" + request.getMemberName() + "%"));
+            if (StringUtils.hasText(request.getMemberGrade()) && !request.getMemberGrade().equals("")) {
+                predicates.add(cb.equal(root.get("memberGrade"), Member.MemberGrade.valueOf(request.getMemberGrade())));
             }
             if (request.getStartDate() != null && request.getEndDate() != null) {
                 predicates.add(cb.between(root.get("joinDate"), 
@@ -261,11 +255,27 @@ public class MemberService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
+        // 정렬 조건 적용
+        Sort sort = Sort.by(Sort.Direction.DESC, "joinDate"); // 기본값
+        if (StringUtils.hasText(request.getSortBy())) {
+            String sortField = switch (request.getSortBy()) {
+                case "joinDate" -> "joinDate";
+                case "memberId" -> "memberId";
+                case "memberName" -> "memberName";
+                default -> "joinDate";
+            };
+            Sort.Direction direction = "asc".equalsIgnoreCase(request.getSortOrder()) ? 
+                Sort.Direction.ASC : Sort.Direction.DESC;
+            sort = Sort.by(direction, sortField);
+        }
+
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), sort);
         Page<Member> memberPage = memberRepository.findAll(spec, pageable);
+        
         List<MemberResponse> content = memberPage.getContent().stream()
             .map(MemberResponse::from)
             .collect(Collectors.toList());
+            
         return PageResponse.of(content, memberPage);
     }
 

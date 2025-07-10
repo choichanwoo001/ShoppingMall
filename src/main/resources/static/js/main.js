@@ -17,7 +17,14 @@ function setupSearchFunctionality() {
         searchBtn.addEventListener('click', function() {
             const searchTerm = searchInput?.value.trim();
             if (searchTerm) {
-                window.location.href = `/search?keyword=${encodeURIComponent(searchTerm)}`;
+                // 인기 검색어 카운트 증가 요청
+                fetch('/api/books/popular-keywords/increase', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'keyword=' + encodeURIComponent(searchTerm)
+                }).then(() => {
+                    window.location.href = `/search?keyword=${encodeURIComponent(searchTerm)}`;
+                });
             }
         });
     }
@@ -32,7 +39,7 @@ function setupSearchFunctionality() {
 }
 
 function loadPopularKeywords() {
-    fetch('/api/popular-keywords/top?size=5')
+    fetch('/api/books/popular-keywords/top?size=5')
         .then(res => res.json())
         .then(list => {
             const ul = document.getElementById('popular-keyword-list');

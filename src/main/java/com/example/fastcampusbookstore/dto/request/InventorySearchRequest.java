@@ -5,11 +5,11 @@ import java.time.LocalDate;
 
 @Data
 public class InventorySearchRequest {
-    private String bookTitle;
+    private String bookName;
     private String publisher;
     private String author;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String sortBy; // bookTitle, price, registerDate
+    private String sortBy; // bookName, price, registerDate
     private String sortOrder; // asc, desc
 } 

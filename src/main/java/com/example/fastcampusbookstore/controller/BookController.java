@@ -6,7 +6,7 @@ import com.example.fastcampusbookstore.dto.request.BookSearchRequest;
 import com.example.fastcampusbookstore.dto.response.BookDetailResponse;
 import com.example.fastcampusbookstore.dto.response.BookListResponse;
 import com.example.fastcampusbookstore.dto.response.BestsellerResponse;
-import com.example.fastcampusbookstore.service.BookService;
+import com.example.fastcampusbookstore.service.BookCategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,12 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
+// BookController, CategoryController, PopularKeywordController의 모든 메서드와 의존성 주입을 이 파일로 합친다.
+// 클래스명: BookCategoryController
+// @RestController, @RequestMapping 등은 그대로 유지
+// CategoryController, PopularKeywordController의 메서드와 의존성 주입을 이 클래스에 추가
 @RestController
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
@@ -23,7 +28,7 @@ import java.util.List;
 @Slf4j
 public class BookController {
 
-    private final BookService bookService;
+    private final BookCategoryService bookCategoryService;
 
     // 1. 상품 목록 조회 (검색 포함)
     @GetMapping
@@ -34,7 +39,7 @@ public class BookController {
                 request.getKeyword(), request.getPage(), request.getSize());
 
         try {
-            PageResponse<BookListResponse> response = bookService.searchBooks(request);
+            PageResponse<BookListResponse> response = bookCategoryService.searchBooks(request);
             return ResponseEntity.ok(ApiResponse.success(response));
 
         } catch (Exception e) {
@@ -52,7 +57,7 @@ public class BookController {
         log.info("상품 상세 조회 요청: bookId={}", bookId);
 
         try {
-            BookDetailResponse response = bookService.getBookDetail(bookId);
+            BookDetailResponse response = bookCategoryService.getBookDetail(bookId);
             return ResponseEntity.ok(ApiResponse.success(response));
 
         } catch (IllegalArgumentException e) {
@@ -75,7 +80,7 @@ public class BookController {
         log.info("베스트셀러 조회 요청: targetMonth={}", targetMonth);
 
         try {
-            List<BestsellerResponse> response = bookService.getBestsellers(targetMonth);
+            List<BestsellerResponse> response = bookCategoryService.getBestsellers(targetMonth);
             return ResponseEntity.ok(ApiResponse.success(response));
 
         } catch (Exception e) {
@@ -103,7 +108,7 @@ public class BookController {
             request.setSort(sort);
             request.setDirection(direction);
 
-            PageResponse<BookListResponse> response = bookService.getBooksByCategory(request);
+            PageResponse<BookListResponse> response = bookCategoryService.getBooksByCategory(request);
             return ResponseEntity.ok(ApiResponse.success(response));
 
         } catch (Exception e) {
@@ -111,5 +116,23 @@ public class BookController {
             return ResponseEntity.internalServerError()
                     .body(ApiResponse.error("카테고리별 상품 조회 중 오류가 발생했습니다."));
         }
+    }
+
+    // 인기 검색어 카운트 증가
+    @RequestMapping(value = "/popular-keywords/increase", method = RequestMethod.POST)
+    public void increaseKeyword(@RequestParam String keyword) {
+        bookCategoryService.increaseCount(keyword);
+    }
+
+    // 인기 검색어 Top N 반환
+    @RequestMapping(value = "/popular-keywords/top", method = RequestMethod.GET)
+    public List<String> getTopKeywords(@RequestParam(defaultValue = "5") int size) {
+        return bookCategoryService.getTopKeywords(size);
+    }
+
+    // 전체 인기 검색어 카운트 반환
+    @RequestMapping(value = "/popular-keywords/all", method = RequestMethod.GET)
+    public Map<String, Integer> getAllKeywordCounts() {
+        return bookCategoryService.getAllKeywordCounts();
     }
 }

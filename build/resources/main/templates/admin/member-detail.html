@@ -98,7 +98,7 @@
                                 </div>
                                 <div class="stat-info">
                                     <h4>총 주문 수</h4>
-                                    <p class="stat-number" th:text="${memberStats.totalOrders}">0</p>
+                                    <p class="stat-number" th:text="${memberStats != null ? memberStats.totalOrders : 0}">0</p>
                                 </div>
                             </div>
                             <div class="stat-card">
@@ -107,7 +107,7 @@
                                 </div>
                                 <div class="stat-info">
                                     <h4>총 구매액</h4>
-                                    <p class="stat-number" th:text="${memberStats.totalAmount + '원'}">0원</p>
+                                    <p class="stat-number" th:text="${memberStats != null ? memberStats.totalAmount + '원' : '0원'}">0원</p>
                                 </div>
                             </div>
                             <div class="stat-card">
@@ -116,7 +116,7 @@
                                 </div>
                                 <div class="stat-info">
                                     <h4>작성 리뷰</h4>
-                                    <p class="stat-number" th:text="${memberStats.totalReviews}">0</p>
+                                    <p class="stat-number" th:text="${memberStats != null ? memberStats.totalReviews : 0}">0</p>
                                 </div>
                             </div>
                             <div class="stat-card">
@@ -125,7 +125,7 @@
                                 </div>
                                 <div class="stat-info">
                                     <h4>가입일수</h4>
-                                    <p class="stat-number" th:text="${memberStats.daysSinceJoin}">0일</p>
+                                    <p class="stat-number" th:text="${memberStats != null ? memberStats.daysSinceJoin : 0}">0일</p>
                                 </div>
                             </div>
                         </div>
@@ -143,12 +143,12 @@
                                 </div>
                                 <div class="order-items">
                                     <div class="order-item-detail" th:each="item : ${order.orderDetails}">
-                                        <img th:if="${item.book.imageUrl}" th:src="${item.book.imageUrl}" alt="책 이미지" class="book-thumbnail">
+                                        <img th:if="${item.book.bookImage}" th:src="${item.book.bookImage}" alt="책 이미지" class="book-thumbnail">
                                         <div class="item-info">
-                                            <span class="book-title" th:text="${item.book.title}"></span>
+                                            <span class="book-title" th:text="${item.book.bookName}"></span>
                                             <span class="item-quantity" th:text="${item.quantity} + '개'"></span>
                                         </div>
-                                        <span class="item-price" th:text="${item.price * item.quantity + '원'}"></span>
+                                        <span class="item-price" th:text="${item.totalPrice + '원'}"></span>
                                     </div>
                                 </div>
                                 <div class="order-footer">
@@ -171,13 +171,12 @@
                         <h3>회원 관리</h3>
                         <div class="member-actions">
                             <div class="action-buttons">
-                                <button class="btn btn-warning" th:onclick="'updateMemberStatus(\'' + ${member.memberId} + '\')'">
-                                    <i class="fas fa-edit"></i> 회원 상태 변경
-                                </button>
-                                <button class="btn btn-info" th:onclick="'sendEmail(\'' + ${member.email} + '\')'">
+                                <button class="btn btn-info"
+                                    th:attr="data-member-email=${member.email}">
                                     <i class="fas fa-envelope"></i> 이메일 발송
                                 </button>
-                                <button class="btn btn-danger" th:onclick="'deleteMember(\'' + ${member.memberId} + '\')'">
+                                <button class="btn btn-danger"
+                                    th:attr="data-member-id=${member.memberId}">
                                     <i class="fas fa-trash"></i> 회원 삭제
                                 </button>
                             </div>
@@ -188,38 +187,6 @@
         </main>
     </div>
 
-    <!-- 회원 상태 변경 모달 -->
-    <div id="memberStatusModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>회원 상태 변경</h3>
-                <span class="close">&times;</span>
-            </div>
-            <div class="modal-body">
-                <form id="memberStatusForm">
-                    <input type="hidden" id="memberId" name="memberId">
-                    <div class="form-group">
-                        <label for="newMemberStatus">새로운 상태</label>
-                        <select id="newMemberStatus" name="memberStatus" required>
-                            <option value="">선택하세요</option>
-                            <option value="활성">활성</option>
-                            <option value="비활성">비활성</option>
-                            <option value="휴면">휴면</option>
-                            <option value="탈퇴">탈퇴</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="statusReason">변경 사유</label>
-                        <textarea id="statusReason" name="statusReason" rows="3" placeholder="상태 변경 사유를 입력하세요"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="confirmMemberStatusUpdate()">변경</button>
-                <button type="button" class="btn btn-secondary" onclick="closeModal()">취소</button>
-            </div>
-        </div>
-    </div>
 
     <script th:src="@{/js/admin.js}"></script>
 </body>

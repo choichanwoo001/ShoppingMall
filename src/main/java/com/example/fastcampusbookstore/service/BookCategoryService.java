@@ -4,7 +4,6 @@ import com.example.fastcampusbookstore.dto.common.PageRequest;
 import com.example.fastcampusbookstore.dto.common.PageResponse;
 import com.example.fastcampusbookstore.dto.request.BookSearchRequest;
 import com.example.fastcampusbookstore.dto.request.BookRegisterRequest;
-import com.example.fastcampusbookstore.dto.request.BookUpdateRequest;
 import com.example.fastcampusbookstore.dto.request.InventorySearchRequest;
 import com.example.fastcampusbookstore.dto.response.BookDetailResponse;
 import com.example.fastcampusbookstore.dto.response.BookListResponse;
@@ -39,10 +38,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// BookService, CategoryService, PopularKeywordService의 모든 메서드와 의존성 주입을 이 파일로 합친다.
+// 클래스명: BookCategoryService
+// @Service, @Transactional 등은 그대로 유지
+// CategoryService, PopularKeywordService의 메서드와 의존성 주입을 이 클래스에 추가
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class BookService {
+public class BookCategoryService {
 
     private final BookRepository bookRepository;
     private final BestsellerRepository bestsellerRepository;
@@ -137,8 +140,8 @@ public class BookService {
         Specification<Book> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             
-            if (StringUtils.hasText(request.getTitle())) {
-                predicates.add(cb.like(root.get("title"), "%" + request.getTitle() + "%"));
+            if (StringUtils.hasText(request.getBookName())) {
+                predicates.add(cb.like(root.get("bookName"), "%" + request.getBookName() + "%"));
             }
             if (StringUtils.hasText(request.getPublisher())) {
                 predicates.add(cb.like(root.get("publisher"), "%" + request.getPublisher() + "%"));
@@ -146,8 +149,8 @@ public class BookService {
             if (StringUtils.hasText(request.getAuthor())) {
                 predicates.add(cb.like(root.get("author"), "%" + request.getAuthor() + "%"));
             }
-            if (StringUtils.hasText(request.getSalesStatus())) {
-                predicates.add(cb.equal(root.get("salesStatus"), request.getSalesStatus()));
+            if (StringUtils.hasText(request.getSalesStatus()) && !request.getSalesStatus().equals("")) {
+                predicates.add(cb.equal(root.get("salesStatus"), Book.SalesStatus.valueOf(request.getSalesStatus())));
             }
             if (request.getStartDate() != null && request.getEndDate() != null) {
                 predicates.add(cb.between(root.get("registerDate"), 
@@ -158,7 +161,21 @@ public class BookService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
+        // 정렬 조건 적용
+        Sort sort = Sort.by(Sort.Direction.DESC, "registerDate"); // 기본값
+        if (StringUtils.hasText(request.getSortBy())) {
+            String sortField = switch (request.getSortBy()) {
+                case "bookName" -> "bookName";
+                case "price" -> "price";
+                case "registerDate" -> "registerDate";
+                default -> "registerDate";
+            };
+            Sort.Direction direction = "asc".equalsIgnoreCase(request.getSortOrder()) ? 
+                Sort.Direction.ASC : Sort.Direction.DESC;
+            sort = Sort.by(direction, sortField);
+        }
+
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), sort);
         Page<Book> bookPage = bookRepository.findAll(spec, pageable);
         
         List<BookListResponse> content = bookPage.getContent().stream()
@@ -173,14 +190,14 @@ public class BookService {
     public void registerBook(BookRegisterRequest request) {
         Book book = new Book();
         book.setIsbn(request.getIsbn());
-        book.setTitle(request.getTitle());
+        book.setBookName(request.getBookName());
         book.setAuthor(request.getAuthor());
         book.setPublisher(request.getPublisher());
         book.setDescription(request.getDescription());
         book.setPrice(BigDecimal.valueOf(request.getPrice()));
-        book.setImageUrl(request.getImageUrl());
-        book.setPdfUrl(request.getPdfUrl());
-        book.setSize(request.getSize());
+        book.setBookImage(request.getBookImage());
+        book.setPreviewPdf(request.getPreviewPdf());
+        book.setBookSize(request.getBookSize());
         book.setRating(request.getRating() != null ? BigDecimal.valueOf(request.getRating()) : null);
         book.setSalesIndex(request.getSalesIndex());
         book.setSalesStatus(Book.SalesStatus.valueOf(request.getSalesStatus()));
@@ -210,47 +227,8 @@ public class BookService {
         // 재고 정보 생성
         Inventory inventory = new Inventory();
         inventory.setBook(book);
-        inventory.setQuantity(request.getStockQuantity());
+        inventory.setStockQuantity(request.getStockQuantity());
         inventoryRepository.save(inventory);
-    }
-
-    // 상품 수정
-    @Transactional
-    public void updateBook(Long bookId, BookUpdateRequest request) {
-        Book book = bookRepository.findById(bookId.intValue())
-            .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
-        
-        book.setIsbn(request.getIsbn());
-        book.setTitle(request.getTitle());
-        book.setAuthor(request.getAuthor());
-        book.setPublisher(request.getPublisher());
-        book.setDescription(request.getDescription());
-        book.setPrice(BigDecimal.valueOf(request.getPrice()));
-        book.setImageUrl(request.getImageUrl());
-        book.setPdfUrl(request.getPdfUrl());
-        book.setSize(request.getSize());
-        book.setRating(request.getRating() != null ? BigDecimal.valueOf(request.getRating()) : null);
-        book.setSalesIndex(request.getSalesIndex());
-        book.setSalesStatus(Book.SalesStatus.valueOf(request.getSalesStatus()));
-        
-        // 카테고리 설정
-        if (StringUtils.hasText(request.getCategoryTop())) {
-            CategoryTop categoryTop = categoryTopRepository.findByCategoryName(request.getCategoryTop())
-                .orElseThrow(() -> new RuntimeException("상위 카테고리를 찾을 수 없습니다."));
-            book.setCategoryTop(categoryTop);
-        }
-        
-        if (StringUtils.hasText(request.getCategoryMiddle())) {
-            CategoryMiddle categoryMiddle = categoryMiddleRepository.findByCategoryName(request.getCategoryMiddle())
-                .orElseThrow(() -> new RuntimeException("중위 카테고리를 찾을 수 없습니다."));
-            book.setCategoryMiddle(categoryMiddle);
-        }
-        
-        if (StringUtils.hasText(request.getCategoryBottom())) {
-            CategoryBottom categoryBottom = categoryBottomRepository.findByCategoryName(request.getCategoryBottom())
-                .orElseThrow(() -> new RuntimeException("하위 카테고리를 찾을 수 없습니다."));
-            book.setCategoryBottom(categoryBottom);
-        }
     }
 
     // 재고 목록 조회
@@ -258,8 +236,8 @@ public class BookService {
         Specification<Inventory> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             
-            if (StringUtils.hasText(request.getBookTitle())) {
-                predicates.add(cb.like(root.get("book").get("title"), "%" + request.getBookTitle() + "%"));
+            if (StringUtils.hasText(request.getBookName())) {
+                predicates.add(cb.like(root.get("book").get("bookName"), "%" + request.getBookName() + "%"));
             }
             if (StringUtils.hasText(request.getPublisher())) {
                 predicates.add(cb.like(root.get("book").get("publisher"), "%" + request.getPublisher() + "%"));
@@ -276,7 +254,21 @@ public class BookService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
+        // 정렬 조건 적용 - Inventory 엔티티 기준으로 정렬
+        Sort sort = Sort.by(Sort.Direction.DESC, "book.registerDate"); // 기본값
+        if (StringUtils.hasText(request.getSortBy())) {
+            String sortField = switch (request.getSortBy()) {
+                case "bookName" -> "book.bookName";
+                case "price" -> "book.price";
+                case "registerDate" -> "book.registerDate";
+                default -> "book.registerDate";
+            };
+            Sort.Direction direction = "asc".equalsIgnoreCase(request.getSortOrder()) ? 
+                Sort.Direction.ASC : Sort.Direction.DESC;
+            sort = Sort.by(direction, sortField);
+        }
+
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), sort);
         Page<Inventory> inventoryPage = inventoryRepository.findAll(spec, pageable);
         
         List<InventoryResponse> content = inventoryPage.getContent().stream()
@@ -291,7 +283,7 @@ public class BookService {
     public void updateInventory(Long bookId, Integer quantity) {
         Inventory inventory = inventoryRepository.findByBookBookId(bookId.intValue())
             .orElseThrow(() -> new RuntimeException("재고 정보를 찾을 수 없습니다."));
-        inventory.setQuantity(quantity);
+        inventory.setStockQuantity(quantity);
     }
 
     // 재고 응답 변환
@@ -299,15 +291,79 @@ public class BookService {
         InventoryResponse response = new InventoryResponse();
         response.setBookId(Long.valueOf(inventory.getBook().getBookId()));
         response.setIsbn(inventory.getBook().getIsbn());
-        response.setTitle(inventory.getBook().getTitle());
+        response.setBookName(inventory.getBook().getBookName());
         response.setAuthor(inventory.getBook().getAuthor());
         response.setPublisher(inventory.getBook().getPublisher());
         response.setPrice(inventory.getBook().getPrice().intValue());
-        response.setStockQuantity(inventory.getQuantity());
+        response.setStockQuantity(inventory.getStockQuantity());
         response.setSalesStatus(inventory.getBook().getSalesStatus().toString());
         response.setRegisterDate(inventory.getBook().getRegisterDate());
-        response.setImageUrl(inventory.getBook().getImageUrl());
+        response.setBookImage(inventory.getBook().getBookImage());
         return response;
+    }
+
+    // CategoryService에서 제공하던 메서드 추가
+    public com.example.fastcampusbookstore.dto.response.CategoryTreeResponse getAllCategoriesTree() {
+        java.util.List<com.example.fastcampusbookstore.entity.CategoryTop> topCategories = categoryTopRepository.findByIsActiveTrueOrderBySortOrder();
+        java.util.List<com.example.fastcampusbookstore.dto.response.CategoryResponse> categoryResponses = topCategories.stream()
+                .map(com.example.fastcampusbookstore.dto.response.CategoryResponse::fromTop)
+                .collect(java.util.stream.Collectors.toList());
+        return new com.example.fastcampusbookstore.dto.response.CategoryTreeResponse(categoryResponses);
+    }
+    public java.util.List<com.example.fastcampusbookstore.dto.response.CategoryResponse> getTopCategories() {
+        java.util.List<com.example.fastcampusbookstore.entity.CategoryTop> topCategories = categoryTopRepository.findByIsActiveTrueOrderBySortOrder();
+        return topCategories.stream()
+                .map(com.example.fastcampusbookstore.dto.response.CategoryResponse::fromTop)
+                .collect(java.util.stream.Collectors.toList());
+    }
+    public java.util.List<com.example.fastcampusbookstore.dto.response.CategoryResponse> getMiddleCategories(Integer topCategoryId) {
+        com.example.fastcampusbookstore.entity.CategoryTop topCategory = categoryTopRepository.findById(topCategoryId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 대분류 카테고리입니다"));
+        java.util.List<com.example.fastcampusbookstore.entity.CategoryMiddle> middleCategories = categoryMiddleRepository
+                .findByTopCategoryAndIsActiveTrueOrderBySortOrder(topCategory);
+        return middleCategories.stream()
+                .map(com.example.fastcampusbookstore.dto.response.CategoryResponse::fromMiddle)
+                .collect(java.util.stream.Collectors.toList());
+    }
+    public java.util.List<com.example.fastcampusbookstore.dto.response.CategoryResponse> getBottomCategories(Integer middleCategoryId) {
+        com.example.fastcampusbookstore.entity.CategoryMiddle middleCategory = categoryMiddleRepository.findById(middleCategoryId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 중분류 카테고리입니다"));
+        java.util.List<com.example.fastcampusbookstore.entity.CategoryBottom> bottomCategories = categoryBottomRepository
+                .findByMiddleCategoryAndIsActiveTrueOrderBySortOrder(middleCategory);
+        return bottomCategories.stream()
+                .map(com.example.fastcampusbookstore.dto.response.CategoryResponse::fromBottom)
+                .collect(java.util.stream.Collectors.toList());
+    }
+    public java.util.List<com.example.fastcampusbookstore.dto.response.CategoryResponse> getAllCategories() {
+        java.util.List<com.example.fastcampusbookstore.entity.CategoryTop> topCategories = categoryTopRepository.findByIsActiveTrueOrderBySortOrder();
+        return topCategories.stream()
+                .map(com.example.fastcampusbookstore.dto.response.CategoryResponse::fromTop)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    // 인기 검색어 관련 메서드 추가
+    private final java.util.concurrent.ConcurrentHashMap<String, java.util.concurrent.atomic.AtomicInteger> keywordCount = new java.util.concurrent.ConcurrentHashMap<>();
+    public void increaseCount(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) return;
+        keywordCount.computeIfAbsent(keyword.trim(), k -> new java.util.concurrent.atomic.AtomicInteger(0)).incrementAndGet();
+    }
+    public java.util.List<String> getTopKeywords(int n) {
+        return keywordCount.entrySet().stream()
+                .sorted((a, b) -> Integer.compare(b.getValue().get(), a.getValue().get()))
+                .limit(n)
+                .map(java.util.Map.Entry::getKey)
+                .collect(java.util.stream.Collectors.toList());
+    }
+    public java.util.Map<String, Integer> getAllKeywordCounts() {
+        return keywordCount.entrySet().stream()
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, e -> e.getValue().get()));
+    }
+
+    public long countBooks() {
+        return bookRepository.count();
+    }
+    public long countOutOfStockBooks() {
+        return inventoryRepository.countByStockQuantity(0);
     }
 
     // === Private 헬퍼 메서드들 ===

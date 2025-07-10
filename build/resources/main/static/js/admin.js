@@ -19,6 +19,12 @@ function initializeAdminPage() {
     }
     
     // 페이지 크기 변경 이벤트
+    const sizeSelect = document.getElementById('size');
+    if (sizeSelect) {
+        sizeSelect.addEventListener('change', handlePageSizeChange);
+    }
+    
+    // 페이지 크기 변경 이벤트 (모든 페이지에서 동작)
     const pageSizeSelect = document.getElementById('pageSize');
     if (pageSizeSelect) {
         pageSizeSelect.addEventListener('change', handlePageSizeChange);
@@ -59,25 +65,41 @@ function updateDashboardStats(stats) {
 
 // 검색 처리
 function handleSearch(event) {
-    // 검색 폼 제출 시 페이지를 1페이지로 리셋
-    const pageInput = document.createElement('input');
-    pageInput.type = 'hidden';
-    pageInput.name = 'page';
-    pageInput.value = '0';
-    event.target.appendChild(pageInput);
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    // 페이지를 1페이지로 리셋
+    formData.set('page', '0');
+    
+    // URL 파라미터로 변환
+    const params = new URLSearchParams(formData);
+    
+    // 현재 URL의 기본 경로 가져오기
+    const currentPath = window.location.pathname;
+    
+    // 검색 파라미터와 함께 페이지 이동
+    window.location.href = currentPath + '?' + params.toString();
 }
 
 // 페이지 크기 변경 처리
 function handlePageSizeChange(event) {
     const form = document.getElementById('searchForm');
     if (form) {
+        const formData = new FormData(form);
+        
         // 페이지를 1페이지로 리셋
-        const pageInput = document.createElement('input');
-        pageInput.type = 'hidden';
-        pageInput.name = 'page';
-        pageInput.value = '0';
-        form.appendChild(pageInput);
-        form.submit();
+        formData.set('page', '0');
+        
+        // URL 파라미터로 변환
+        const params = new URLSearchParams(formData);
+        
+        // 현재 URL의 기본 경로 가져오기
+        const currentPath = window.location.pathname;
+        
+        // 페이지 크기 변경과 함께 페이지 이동
+        window.location.href = currentPath + '?' + params.toString();
     }
 }
 
@@ -85,16 +107,17 @@ function handlePageSizeChange(event) {
 function resetForm() {
     const form = document.getElementById('searchForm');
     if (form) {
+        // 모든 입력값 비우기
         form.reset();
-        // 페이지를 1페이지로 리셋
-        const pageInput = document.createElement('input');
-        pageInput.type = 'hidden';
-        pageInput.name = 'page';
-        pageInput.value = '0';
-        form.appendChild(pageInput);
-        form.submit();
+        
+        // 현재 URL의 기본 경로로 이동 (검색 파라미터 제거)
+        const currentPath = window.location.pathname;
+        window.location.href = currentPath;
     }
 }
+
+// resetForm을 window에 등록 (HTML onclick에서 정상 호출되도록)
+window.resetForm = resetForm;
 
 // 모달 이벤트 설정
 function setupModalEvents() {
@@ -143,6 +166,17 @@ function setupFormEvents() {
     if (inventoryForm) {
         inventoryForm.addEventListener('submit', handleInventoryUpdate);
     }
+    
+    // 재고 수정 버튼 이벤트 리스너
+    document.addEventListener('click', function(event) {
+        if (event.target.closest('.update-inventory-btn')) {
+            const button = event.target.closest('.update-inventory-btn');
+            const bookId = button.getAttribute('data-book-id');
+            const bookName = button.getAttribute('data-book-name');
+            const stockQuantity = button.getAttribute('data-stock-quantity');
+            updateInventory(bookId, bookName, stockQuantity);
+        }
+    });
 }
 
 // 상품 등록 처리
@@ -175,29 +209,7 @@ async function handleBookRegister(event) {
     }
 }
 
-// 상품 삭제
-async function deleteBook(bookId) {
-    if (!confirm('정말로 이 상품을 삭제하시겠습니까?')) {
-        return;
-    }
-    
-    try {
-        const response = await fetch(`/admin/books/${bookId}`, {
-            method: 'DELETE'
-        });
-        
-        if (response.ok) {
-            alert('상품이 성공적으로 삭제되었습니다.');
-            location.reload();
-        } else {
-            const error = await response.json();
-            alert(error.message || '상품 삭제에 실패했습니다.');
-        }
-    } catch (error) {
-        console.error('상품 삭제 실패:', error);
-        alert('상품 삭제 중 오류가 발생했습니다.');
-    }
-}
+// 상품 삭제 기능 제거됨
 
 // 주문 상태 변경 모달 열기
 function updateOrderStatus(orderId) {
@@ -300,15 +312,27 @@ async function confirmMemberStatusUpdate() {
 }
 
 // 재고 수정 모달 열기
-function updateInventory(bookId, bookTitle, currentQuantity) {
+function updateInventory(bookId, bookName, currentQuantity) {
     const modal = document.getElementById('inventoryModal');
     const bookIdInput = document.getElementById('bookId');
-    const bookTitleInput = document.getElementById('bookTitle');
+    const bookNameInput = document.getElementById('bookName');
     const currentQuantityInput = document.getElementById('currentQuantity');
     
-    if (modal && bookIdInput && bookTitleInput && currentQuantityInput) {
+    // bookName이 undefined/null이면 테이블에서 찾아서 할당 (예외 방지)
+    if ((!bookName || bookName === 'undefined') && bookId) {
+        // 테이블에서 해당 bookId의 책 이름을 찾아서 할당
+        const row = document.querySelector(`button[data-book-id='${bookId}']`)?.closest('tr');
+        if (row) {
+            const nameCell = row.querySelector('td:nth-child(3)'); // 3번째 컬럼: 책 이름
+            if (nameCell) {
+                bookName = nameCell.textContent.trim();
+            }
+        }
+    }
+    
+    if (modal && bookIdInput && bookNameInput && currentQuantityInput) {
         bookIdInput.value = bookId;
-        bookTitleInput.value = bookTitle;
+        bookNameInput.value = bookName || '';
         currentQuantityInput.value = currentQuantity;
         modal.style.display = 'block';
     }
@@ -354,7 +378,7 @@ async function handleInventoryUpdate(event) {
     await confirmInventoryUpdate();
 }
 
-// 카테고리 연동 (상품 등록/수정 페이지용)
+// 카테고리 연동 (상품 등록 페이지용)
 function setupCategoryCascading() {
     const categoryTop = document.getElementById('categoryTop');
     const categoryMiddle = document.getElementById('categoryMiddle');

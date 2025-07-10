@@ -44,8 +44,8 @@
                                 <input type="text" id="ordererName" name="ordererName" th:value="${searchRequest?.ordererName}" placeholder="주문자 이름을 입력하세요">
                             </div>
                             <div class="filter-group">
-                                <label for="bookTitle">책 이름</label>
-                                <input type="text" id="bookTitle" name="bookTitle" th:value="${searchRequest?.bookTitle}" placeholder="책 이름을 입력하세요">
+                                <label for="bookName">책 이름</label>
+                                <input type="text" id="bookName" name="bookName" th:value="${searchRequest?.bookName}" placeholder="책 이름을 입력하세요">
                             </div>
                             <div class="filter-group">
                                 <label for="salesStatus">주문 상태</label>
@@ -86,11 +86,11 @@
                                 </select>
                             </div>
                             <div class="filter-group">
-                                <label for="pageSize">페이지 크기</label>
-                                <select id="pageSize" name="pageSize">
-                                                                    <option value="30" th:selected="${pageInfo?.size == 30}">30개</option>
-                                <option value="50" th:selected="${pageInfo?.size == 50}">50개</option>
-                                <option value="100" th:selected="${pageInfo?.size == 100}">100개</option>
+                                <label for="size">페이지 크기</label>
+                                <select id="size" name="size">
+                                    <option value="30" th:selected="${pageInfo?.size == 30}">30개</option>
+                                    <option value="50" th:selected="${pageInfo?.size == 50}">50개</option>
+                                    <option value="100" th:selected="${pageInfo?.size == 100}">100개</option>
                                 </select>
                             </div>
                         </div>
@@ -156,14 +156,14 @@
                         <span th:text="'총 ' + ${pageInfo.totalElements} + '개 주문'"></span>
                     </div>
                     <div class="pagination-controls">
-                        <a th:if="${pageInfo.hasPrevious}" th:href="@{/admin/orders(page=${pageInfo.currentPage - 1}, size=${pageInfo.size})}" class="btn btn-sm">
+                        <a th:if="${pageInfo.hasPrevious}" th:href="@{/admin/orders(page=${pageInfo.currentPage - 1}, size=${pageInfo.size}, ordererName=${searchRequest?.ordererName}, bookName=${searchRequest?.bookName}, salesStatus=${searchRequest?.salesStatus}, startDate=${searchRequest?.startDate}, endDate=${searchRequest?.endDate}, sortBy=${searchRequest?.sortBy}, sortOrder=${searchRequest?.sortOrder})}" class="btn btn-sm">
                             <i class="fas fa-chevron-left"></i> 이전
                         </a>
                         <span th:each="pageNum : ${#numbers.sequence(0, pageInfo.totalPages - 1)}">
-                            <a th:if="${pageNum != pageInfo.currentPage}" th:href="@{/admin/orders(page=${pageNum}, size=${pageInfo.size})}" class="btn btn-sm" th:text="${pageNum + 1}"></a>
+                            <a th:if="${pageNum != pageInfo.currentPage}" th:href="@{/admin/orders(page=${pageNum}, size=${pageInfo.size}, ordererName=${searchRequest?.ordererName}, bookName=${searchRequest?.bookName}, salesStatus=${searchRequest?.salesStatus}, startDate=${searchRequest?.startDate}, endDate=${searchRequest?.endDate}, sortBy=${searchRequest?.sortBy}, sortOrder=${searchRequest?.sortOrder})}" class="btn btn-sm" th:text="${pageNum + 1}"></a>
                             <span th:if="${pageNum == pageInfo.currentPage}" class="btn btn-sm btn-primary" th:text="${pageNum + 1}"></span>
                         </span>
-                        <a th:if="${pageInfo.hasNext}" th:href="@{/admin/orders(page=${pageInfo.currentPage + 1}, size=${pageInfo.size})}" class="btn btn-sm">
+                        <a th:if="${pageInfo.hasNext}" th:href="@{/admin/orders(page=${pageInfo.currentPage + 1}, size=${pageInfo.size}, ordererName=${searchRequest?.ordererName}, bookName=${searchRequest?.bookName}, salesStatus=${searchRequest?.salesStatus}, startDate=${searchRequest?.startDate}, endDate=${searchRequest?.endDate}, sortBy=${searchRequest?.sortBy}, sortOrder=${searchRequest?.sortOrder})}" class="btn btn-sm">
                             다음 <i class="fas fa-chevron-right"></i>
                         </a>
                     </div>

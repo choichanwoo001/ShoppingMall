@@ -35,7 +35,7 @@ async function loadCart() {
                         ${item.book.bookImage ? `<img src="${item.book.bookImage}" alt="${item.book.bookName}" style="width: 100px; height: 100px; object-fit: cover;">` : '책 이미지'}
                     </div>
                     <div class="item-info">
-                        <div class="item-title">${item.book.bookName}</div>
+                        <div class="item-title" data-book-id="${item.book.bookId}">${item.book.bookName}</div>
                         <div class="item-author">${item.book.author} | ${item.book.publisher}</div>
                     </div>
                     <div class="quantity-control">
@@ -221,10 +221,6 @@ async function proceedToCheckout() {
         const quantity = parseInt(cartItem.querySelector('input[type="number"]').value);
         return { cartId, quantity };
     });
-
-    // 주문 페이지로 이동하거나 주문 API 호출
-    // 여기서는 간단히 alert 처리
-    alert('주문 기능은 추후 구현 예정입니다.');
 }
 
 // 주문서 모달에 장바구니 선택 상품 정보 채우고 모달 열기
@@ -273,7 +269,7 @@ function openCartOrderModal() {
     openOrderModal();
 }
 
-// 주문서 제출(카카오페이 결제)
+// 주문서 제출
 document.getElementById('orderForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const address = document.getElementById('orderAddress').value.trim();
@@ -319,24 +315,26 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
         paymentMethod
     };
 
-    // TODO: 카카오페이 결제 준비 API 호출(다음 단계)
+    // 주문 생성 API 호출
     try {
-        const res = await fetch('/api/pay/kakao/ready', {
+        const res = await fetch('/api/orders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
             body: JSON.stringify(orderData)
         });
         const result = await res.json();
-        if (res.ok && result.success && result.data && result.data.next_redirect_pc_url) {
-            window.location.href = result.data.next_redirect_pc_url; // 카카오페이 결제창 이동
+        if (res.ok && result.success) {
+            alert(result.message || '주문이 성공적으로 완료되었습니다.');
+            closeOrderModal();
+            loadCart(); // 장바구니 새로고침
+            // 또는 window.location.href = '/mypage/orders';
         } else {
-            alert(result.message || '카카오페이 결제 준비 중 오류가 발생했습니다.');
+            alert(result.message || '주문 생성에 실패했습니다.');
         }
     } catch (e) {
-        alert('카카오페이 결제 준비 중 오류가 발생했습니다.');
+        alert('주문 생성 중 오류가 발생했습니다.');
     }
-    closeOrderModal();
 });
 
 // 페이지 로드 시 장바구니 로드

@@ -99,11 +99,11 @@
                                 </select>
                             </div>
                             <div class="filter-group">
-                                <label for="pageSize">페이지 크기</label>
-                                <select id="pageSize" name="pageSize">
-                                                                    <option value="30" th:selected="${pageInfo?.size == 30}">30개</option>
-                                <option value="50" th:selected="${pageInfo?.size == 50}">50개</option>
-                                <option value="100" th:selected="${pageInfo?.size == 100}">100개</option>
+                                <label for="size">페이지 크기</label>
+                                <select id="size" name="size">
+                                    <option value="30" th:selected="${pageInfo?.size == 30}">30개</option>
+                                    <option value="50" th:selected="${pageInfo?.size == 50}">50개</option>
+                                    <option value="100" th:selected="${pageInfo?.size == 100}">100개</option>
                                 </select>
                             </div>
                         </div>
@@ -156,9 +156,6 @@
                                         <a th:href="@{/admin/members/{id}/orders(id=${member.memberId})}" class="btn btn-sm btn-info">
                                             <i class="fas fa-shopping-cart"></i> 주문내역
                                         </a>
-                                        <button class="btn btn-sm btn-warning" th:onclick="'updateMemberStatus(\'' + ${member.memberId} + '\')'">
-                                            <i class="fas fa-edit"></i> 상태변경
-                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -173,49 +170,20 @@
                         <span th:text="'총 ' + ${pageInfo.totalElements} + '명 회원'"></span>
                     </div>
                     <div class="pagination-controls">
-                        <a th:if="${pageInfo.hasPrevious}" th:href="@{/admin/members(page=${pageInfo.currentPage - 1}, size=${pageInfo.size})}" class="btn btn-sm">
+                        <a th:if="${pageInfo.hasPrevious}" th:href="@{/admin/members(page=${pageInfo.currentPage - 1}, size=${pageInfo.size}, memberId=${searchRequest?.memberId}, memberName=${searchRequest?.memberName}, email=${searchRequest?.email}, memberStatus=${searchRequest?.memberStatus}, memberGrade=${searchRequest?.memberGrade}, startDate=${searchRequest?.startDate}, endDate=${searchRequest?.endDate}, sortBy=${searchRequest?.sortBy}, sortOrder=${searchRequest?.sortOrder})}" class="btn btn-sm">
                             <i class="fas fa-chevron-left"></i> 이전
                         </a>
                         <span th:each="pageNum : ${#numbers.sequence(0, pageInfo.totalPages - 1)}">
-                            <a th:if="${pageNum != pageInfo.currentPage}" th:href="@{/admin/members(page=${pageNum}, size=${pageInfo.size})}" class="btn btn-sm" th:text="${pageNum + 1}"></a>
+                            <a th:if="${pageNum != pageInfo.currentPage}" th:href="@{/admin/members(page=${pageNum}, size=${pageInfo.size}, memberId=${searchRequest?.memberId}, memberName=${searchRequest?.memberName}, email=${searchRequest?.email}, memberStatus=${searchRequest?.memberStatus}, memberGrade=${searchRequest?.memberGrade}, startDate=${searchRequest?.startDate}, endDate=${searchRequest?.endDate}, sortBy=${searchRequest?.sortBy}, sortOrder=${searchRequest?.sortOrder})}" class="btn btn-sm" th:text="${pageNum + 1}"></a>
                             <span th:if="${pageNum == pageInfo.currentPage}" class="btn btn-sm btn-primary" th:text="${pageNum + 1}"></span>
                         </span>
-                        <a th:if="${pageInfo.hasNext}" th:href="@{/admin/members(page=${pageInfo.currentPage + 1}, size=${pageInfo.size})}" class="btn btn-sm">
+                        <a th:if="${pageInfo.hasNext}" th:href="@{/admin/members(page=${pageInfo.currentPage + 1}, size=${pageInfo.size}, memberId=${searchRequest?.memberId}, memberName=${searchRequest?.memberName}, email=${searchRequest?.email}, memberStatus=${searchRequest?.memberStatus}, memberGrade=${searchRequest?.memberGrade}, startDate=${searchRequest?.startDate}, endDate=${searchRequest?.endDate}, sortBy=${searchRequest?.sortBy}, sortOrder=${searchRequest?.sortOrder})}" class="btn btn-sm">
                             다음 <i class="fas fa-chevron-right"></i>
                         </a>
                     </div>
                 </div>
             </div>
         </main>
-    </div>
-
-    <!-- 회원 상태 변경 모달 -->
-    <div id="memberStatusModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>회원 상태 변경</h3>
-                <span class="close">&times;</span>
-            </div>
-            <div class="modal-body">
-                <form id="memberStatusForm">
-                    <input type="hidden" id="memberId" name="memberId">
-                    <div class="form-group">
-                        <label for="newMemberStatus">새로운 상태</label>
-                        <select id="newMemberStatus" name="memberStatus" required>
-                            <option value="">선택하세요</option>
-                            <option value="활성">활성</option>
-                            <option value="비활성">비활성</option>
-                            <option value="휴면">휴면</option>
-                            <option value="탈퇴">탈퇴</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="confirmMemberStatusUpdate()">변경</button>
-                <button type="button" class="btn btn-secondary" onclick="closeModal()">취소</button>
-            </div>
-        </div>
     </div>
 
     <script th:src="@{/js/admin.js}"></script>
