@@ -4,7 +4,6 @@ import com.example.fastcampusbookstore.dto.common.PageRequest;
 import com.example.fastcampusbookstore.dto.common.PageResponse;
 import com.example.fastcampusbookstore.dto.request.BookSearchRequest;
 import com.example.fastcampusbookstore.dto.request.BookRegisterRequest;
-import com.example.fastcampusbookstore.dto.request.BookUpdateRequest;
 import com.example.fastcampusbookstore.dto.request.InventorySearchRequest;
 import com.example.fastcampusbookstore.dto.response.BookDetailResponse;
 import com.example.fastcampusbookstore.dto.response.BookListResponse;

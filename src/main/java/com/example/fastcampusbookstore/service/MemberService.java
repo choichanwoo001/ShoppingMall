@@ -151,17 +151,6 @@ public class MemberService {
     }
     // === Private 헬퍼 메서드들 ===
 
-    private void validateWithdrawal(Member member) {
-        // 이미 탈퇴한 회원인지 확인
-        if (member.getMemberStatus() == Member.MemberStatus.탈퇴) {
-            throw new IllegalArgumentException("이미 탈퇴한 회원입니다");
-        }
-
-        // TODO: 추가 탈퇴 조건 검사
-        // - 진행 중인 주문이 있는지 확인
-        // - 미해결 문의사항이 있는지 확인 등
-    }
-
     private void validateSignupRequest(MemberSignupRequest request) {
         // 아이디 중복 확인
         if (memberRepository.existsByMemberId(request.getMemberId())) {

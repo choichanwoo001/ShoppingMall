@@ -287,20 +287,6 @@ public class AdminService {
         return adminRepository.findByAdminId(adminId);
     }
 
-    // 변환 메서드들
-    private BookListResponse convertToBookListResponse(Book book) {
-        BookListResponse response = new BookListResponse();
-        response.setBookId(book.getBookId());
-        response.setBookName(book.getBookName());
-        response.setAuthor(book.getAuthor());
-        response.setPublisher(book.getPublisher());
-        response.setPrice(book.getPrice());
-        response.setBookImage(book.getBookImage());
-        response.setRating(book.getRating());
-        response.setSalesStatus(book.getSalesStatus().toString());
-        response.setRegisterDate(book.getRegisterDate());
-        return response;
-    }
 
     private OrderListResponse convertToOrderListResponse(Order order) {
         OrderListResponse response = new OrderListResponse();
