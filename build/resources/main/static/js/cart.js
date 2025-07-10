@@ -319,24 +319,26 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
         paymentMethod
     };
 
-    // TODO: 카카오페이 결제 준비 API 호출(다음 단계)
+    // 주문 생성 API 호출
     try {
-        const res = await fetch('/api/pay/kakao/ready', {
+        const res = await fetch('/api/orders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
             body: JSON.stringify(orderData)
         });
         const result = await res.json();
-        if (res.ok && result.success && result.data && result.data.next_redirect_pc_url) {
-            window.location.href = result.data.next_redirect_pc_url; // 카카오페이 결제창 이동
+        if (res.ok && result.success) {
+            alert(result.message || '주문이 성공적으로 완료되었습니다.');
+            closeOrderModal();
+            loadCart(); // 장바구니 새로고침
+            // 또는 window.location.href = '/mypage/orders';
         } else {
-            alert(result.message || '카카오페이 결제 준비 중 오류가 발생했습니다.');
+            alert(result.message || '주문 생성에 실패했습니다.');
         }
     } catch (e) {
-        alert('카카오페이 결제 준비 중 오류가 발생했습니다.');
+        alert('주문 생성 중 오류가 발생했습니다.');
     }
-    closeOrderModal();
 });
 
 // 페이지 로드 시 장바구니 로드

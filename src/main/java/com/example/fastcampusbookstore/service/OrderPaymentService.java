@@ -4,6 +4,8 @@ import com.example.fastcampusbookstore.dto.common.PageRequest;
 import com.example.fastcampusbookstore.dto.common.PageResponse;
 import com.example.fastcampusbookstore.dto.request.OrderCreateRequest;
 import com.example.fastcampusbookstore.dto.request.OrderSearchRequest;
+import com.example.fastcampusbookstore.dto.request.KakaoPayReadyRequest;
+import com.example.fastcampusbookstore.dto.response.KakaoPayReadyResponse;
 import com.example.fastcampusbookstore.dto.response.OrderListResponse;
 import com.example.fastcampusbookstore.dto.response.OrderResponse;
 import com.example.fastcampusbookstore.entity.*;
@@ -138,6 +140,16 @@ public class OrderPaymentService {
         order.setOrderStatus(Order.OrderStatus.주문취소);
         order.setOrderMemo(reason != null ? reason : "고객 요청에 의한 취소");
         orderRepository.save(order);
+    }
+
+    // 카카오페이 결제 준비
+    public KakaoPayReadyResponse kakaoPayReady(String memberId, KakaoPayReadyRequest request) {
+        // TODO: 실제 카카오페이 결제 준비 API 연동 로직 구현
+        // 예시: 카카오페이 API 호출 후 tid, next_redirect_pc_url 등 반환
+        KakaoPayReadyResponse response = new KakaoPayReadyResponse();
+        response.setTid("dummy-tid");
+        response.setNextRedirectPcUrl("https://kakao.com/pay/redirect");
+        return response;
     }
 
     // === Private 헬퍼 메서드들 ===

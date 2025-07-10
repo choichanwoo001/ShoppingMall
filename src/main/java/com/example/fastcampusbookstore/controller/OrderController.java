@@ -2,7 +2,9 @@ package com.example.fastcampusbookstore.controller;
 
 import com.example.fastcampusbookstore.dto.common.ApiResponse;
 import com.example.fastcampusbookstore.dto.common.PageResponse;
+import com.example.fastcampusbookstore.dto.request.KakaoPayReadyRequest;
 import com.example.fastcampusbookstore.dto.request.OrderCreateRequest;
+import com.example.fastcampusbookstore.dto.response.KakaoPayReadyResponse;
 import com.example.fastcampusbookstore.dto.response.OrderListResponse;
 import com.example.fastcampusbookstore.dto.response.OrderResponse;
 import com.example.fastcampusbookstore.service.OrderPaymentService;
@@ -153,6 +155,26 @@ public class OrderController {
             log.error("주문 취소 중 오류 발생", e);
             return ResponseEntity.internalServerError()
                     .body(ApiResponse.error("주문 취소 중 오류가 발생했습니다."));
+        }
+    }
+
+    // 카카오페이 결제 준비
+    @PostMapping("/api/pay/kakao/ready")
+    public ResponseEntity<ApiResponse<KakaoPayReadyResponse>> kakaoPayReady(
+            @RequestBody KakaoPayReadyRequest request,
+            HttpSession session) {
+        String memberId = (String) session.getAttribute("memberId");
+        if (memberId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("로그인이 필요합니다."));
+        }
+        try {
+            KakaoPayReadyResponse response = orderPaymentService.kakaoPayReady(memberId, request);
+            return ResponseEntity.ok(ApiResponse.success(response));
+        } catch (Exception e) {
+            log.error("카카오페이 결제 준비 중 오류", e);
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.error("카카오페이 결제 준비 중 오류가 발생했습니다."));
         }
     }
 }
