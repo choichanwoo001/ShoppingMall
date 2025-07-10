@@ -8,7 +8,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class BookSearchRequest extends PageRequest {
     private String keyword;        // 통합 검색어 (책이름, 저자, 출판사)
-    private String title;          // 책이름 (관리자용)
     private String bookName;       // 책이름
     private String author;         // 저자
     private String publisher;      // 출판사

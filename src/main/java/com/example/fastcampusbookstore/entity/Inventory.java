@@ -24,9 +24,6 @@ public class Inventory {
     @Column(name = "stock_quantity")
     private Integer stockQuantity;
 
-    @Column(name = "quantity")
-    private Integer quantity;
-
     @Column(name = "min_stock_level")
     private Integer minStockLevel;
 

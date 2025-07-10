@@ -6,7 +6,7 @@ import java.time.LocalDate;
 @Data
 public class OrderSearchRequest {
     private String ordererName;
-    private String bookTitle;
+    private String bookName;
     private String publisher;
     private String author;
     private String salesStatus;

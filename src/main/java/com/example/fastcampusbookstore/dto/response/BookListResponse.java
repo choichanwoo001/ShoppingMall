@@ -10,12 +10,10 @@ import java.util.stream.Collectors;
 public class BookListResponse {
     private Integer bookId;
     private String bookName;
-    private String title;
     private String author;
     private String publisher;
     private BigDecimal price;
     private String bookImage;
-    private String imageUrl;
     private BigDecimal rating;
     private String salesStatus;
     private String categoryName;
@@ -25,12 +23,10 @@ public class BookListResponse {
         BookListResponse response = new BookListResponse();
         response.bookId = book.getBookId();
         response.bookName = book.getBookName();
-        response.title = book.getTitle();
         response.author = book.getAuthor();
         response.publisher = book.getPublisher();
         response.price = book.getPrice();
         response.bookImage = book.getBookImage();
-        response.imageUrl = book.getImageUrl();
         response.rating = book.getRating();
         response.salesStatus = book.getSalesStatus() != null ? book.getSalesStatus().toString() : null;
         response.categoryName = book.getCategory() != null ? book.getCategory().getCategoryName() : null;

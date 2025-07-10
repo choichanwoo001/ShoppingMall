@@ -45,23 +45,14 @@ public class Book {
     @Column(name = "book_size", length = 50)
     private String bookSize;
 
-    @Column(name = "size", length = 50)
-    private String size;
-
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "book_image", length = 255)
     private String bookImage;
 
-    @Column(name = "image_url", length = 255)
-    private String imageUrl;
-
     @Column(name = "preview_pdf", length = 255)
     private String previewPdf;
-
-    @Column(name = "pdf_url", length = 255)
-    private String pdfUrl;
 
     @Column(name = "rating", precision = 3, scale = 2)
     private BigDecimal rating;
@@ -126,4 +117,11 @@ public class Book {
     public enum SalesStatus {
         판매중, 절판, 일시품절, 입고예정
     }
+
+    public String getBookImage() { return bookImage; }
+    public void setBookImage(String bookImage) { this.bookImage = bookImage; }
+    public String getBookSize() { return bookSize; }
+    public void setBookSize(String bookSize) { this.bookSize = bookSize; }
+    public String getPreviewPdf() { return previewPdf; }
+    public void setPreviewPdf(String previewPdf) { this.previewPdf = previewPdf; }
 }
