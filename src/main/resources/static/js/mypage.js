@@ -407,7 +407,8 @@ function displayMyReviews(reviewsData) {
         div.className = 'review-item';
         div.innerHTML = `
             <div class="review-book">
-                <span class="book-bookName">${review.bookName}</span>
+                ${review.book && review.book.bookImage ? `<img src="${review.book.bookImage}" alt="${review.book.bookName}" class="review-book-img" style="width:60px;height:60px;object-fit:cover;margin-right:8px;vertical-align:middle;">` : ''}
+                <span class="book-bookName">${review.book ? review.book.bookName : ''}</span>
                 <span class="review-date">${formatDate(review.createdAt)}</span>
             </div>
             <div class="review-content">${review.reviewContent}</div>

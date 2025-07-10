@@ -323,6 +323,53 @@ function setupEventListeners() {
 
     // 검색 기능
     setupSearchFunctionality();
+
+    // 주문서 제출(상품 상세 - 바로구매)
+    document.getElementById('orderForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const address = document.getElementById('orderAddress').value.trim();
+        const phone = document.getElementById('orderPhone').value.trim();
+        const memo = document.getElementById('orderMemo').value.trim();
+        const paymentMethod = document.getElementById('paymentMethod').value;
+
+        // 상품 상세(바로구매)에서는 currentBook과 수량만으로 주문 아이템 생성
+        const quantity = parseInt(document.querySelector('.quantity-input')?.value || '1');
+        if (!currentBook || !currentBook.bookId || quantity < 1) {
+            alert('상품 정보가 올바르지 않습니다.');
+            return;
+        }
+        const orderItems = [{
+            bookId: currentBook.bookId,
+            quantity: quantity
+        }];
+        const orderData = {
+            orderItems,
+            shippingAddress: address,
+            shippingPhone: phone,
+            orderMemo: memo,
+            paymentMethod
+        };
+
+        // 주문 생성 API 호출
+        try {
+            const res = await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(orderData)
+            });
+            const result = await res.json();
+            if (res.ok && result.success) {
+                alert(result.message || '주문이 성공적으로 완료되었습니다.');
+                closeOrderModal();
+                // 주문 내역 페이지로 이동하거나, 새로고침 등 추가 UX 처리 가능
+            } else {
+                alert(result.message || '주문 생성에 실패했습니다.');
+            }
+        } catch (e) {
+            alert('주문 생성 중 오류가 발생했습니다.');
+        }
+    });
 }
 
 // 수량 조절 기능 설정
