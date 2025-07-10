@@ -8,10 +8,16 @@ import com.example.fastcampusbookstore.dto.response.*;
 import com.example.fastcampusbookstore.service.BookCategoryService;
 import com.example.fastcampusbookstore.service.OrderPaymentService;
 import com.example.fastcampusbookstore.service.MemberService;
+import com.example.fastcampusbookstore.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import jakarta.servlet.http.HttpSession;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
@@ -21,10 +27,15 @@ public class AdminController {
     private final BookCategoryService bookCategoryService;
     private final OrderPaymentService orderPaymentService;
     private final MemberService memberService;
+    private final AdminService adminService;
 
     // 관리자 메인 페이지
     @GetMapping("")
-    public String adminMain() {
+    public String adminMain(HttpSession session) {
+        Object adminSession = session.getAttribute("adminId");
+        if (adminSession == null || !adminService.existsAdmin(adminSession.toString())) {
+            return "redirect:/admin/login";
+        }
         return "admin/main";
     }
 
@@ -164,5 +175,37 @@ public class AdminController {
             @RequestBody InventoryUpdateRequest request) {
         bookCategoryService.updateInventory(bookId, request.getQuantity());
         return ApiResponse.success("재고가 성공적으로 수정되었습니다.");
+    }
+
+    @GetMapping("/api/stats")
+    @ResponseBody
+    public Map<String, Object> getDashboardStats() {
+        Map<String, Object> stats = new HashMap<>();
+        // 총 상품 수
+        stats.put("totalBooks", bookCategoryService.countBooks());
+        // 오늘 주문 수
+        stats.put("todayOrders", orderPaymentService.countOrdersByDate(LocalDate.now()));
+        // 총 회원 수
+        stats.put("totalMembers", memberService.countMembers());
+        // 품절 상품 수
+        stats.put("outOfStock", bookCategoryService.countOutOfStockBooks());
+        return stats;
+    }
+
+    @GetMapping("/login")
+    public String adminLoginForm() {
+        return "admin-login";
+    }
+
+    @PostMapping("/login")
+    public String adminLogin(@RequestParam String adminId, @RequestParam String password, HttpSession session, Model model) {
+        Optional<com.example.fastcampusbookstore.entity.Admin> adminOpt = adminService.findByAdminId(adminId);
+        if (adminOpt.isPresent() && adminOpt.get().getPassword().equals(password)) {
+            session.setAttribute("adminId", adminId);
+            return "redirect:/admin";
+        } else {
+            model.addAttribute("error", "관리자 정보가 일치하지 않습니다.");
+            return "admin-login";
+        }
     }
 } 

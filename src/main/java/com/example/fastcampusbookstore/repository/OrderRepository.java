@@ -35,4 +35,6 @@ public interface OrderRepository extends JpaRepository<Order, Integer>, JpaSpeci
 
     // 특정 회원의 특정 상태 주문 조회
     List<Order> findByMemberAndOrderStatus(Member member, Order.OrderStatus orderStatus);
+
+    long countByOrderDateBetween(java.time.LocalDateTime start, java.time.LocalDateTime end);
 }

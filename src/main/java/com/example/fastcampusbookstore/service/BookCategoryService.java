@@ -141,8 +141,8 @@ public class BookCategoryService {
         Specification<Book> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             
-            if (StringUtils.hasText(request.getTitle())) {
-                predicates.add(cb.like(root.get("title"), "%" + request.getTitle() + "%"));
+            if (StringUtils.hasText(request.getBookName())) {
+                predicates.add(cb.like(root.get("bookName"), "%" + request.getBookName() + "%"));
             }
             if (StringUtils.hasText(request.getPublisher())) {
                 predicates.add(cb.like(root.get("publisher"), "%" + request.getPublisher() + "%"));
@@ -150,8 +150,8 @@ public class BookCategoryService {
             if (StringUtils.hasText(request.getAuthor())) {
                 predicates.add(cb.like(root.get("author"), "%" + request.getAuthor() + "%"));
             }
-            if (StringUtils.hasText(request.getSalesStatus())) {
-                predicates.add(cb.equal(root.get("salesStatus"), request.getSalesStatus()));
+            if (StringUtils.hasText(request.getSalesStatus()) && !request.getSalesStatus().equals("")) {
+                predicates.add(cb.equal(root.get("salesStatus"), Book.SalesStatus.valueOf(request.getSalesStatus())));
             }
             if (request.getStartDate() != null && request.getEndDate() != null) {
                 predicates.add(cb.between(root.get("registerDate"), 
@@ -162,7 +162,21 @@ public class BookCategoryService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
+        // 정렬 조건 적용
+        Sort sort = Sort.by(Sort.Direction.DESC, "registerDate"); // 기본값
+        if (StringUtils.hasText(request.getSortBy())) {
+            String sortField = switch (request.getSortBy()) {
+                case "bookName" -> "bookName";
+                case "price" -> "price";
+                case "registerDate" -> "registerDate";
+                default -> "registerDate";
+            };
+            Sort.Direction direction = "asc".equalsIgnoreCase(request.getSortOrder()) ? 
+                Sort.Direction.ASC : Sort.Direction.DESC;
+            sort = Sort.by(direction, sortField);
+        }
+
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), sort);
         Page<Book> bookPage = bookRepository.findAll(spec, pageable);
         
         List<BookListResponse> content = bookPage.getContent().stream()
@@ -177,14 +191,14 @@ public class BookCategoryService {
     public void registerBook(BookRegisterRequest request) {
         Book book = new Book();
         book.setIsbn(request.getIsbn());
-        book.setTitle(request.getTitle());
+        book.setBookName(request.getBookName());
         book.setAuthor(request.getAuthor());
         book.setPublisher(request.getPublisher());
         book.setDescription(request.getDescription());
         book.setPrice(BigDecimal.valueOf(request.getPrice()));
-        book.setImageUrl(request.getImageUrl());
-        book.setPdfUrl(request.getPdfUrl());
-        book.setSize(request.getSize());
+        book.setBookImage(request.getBookImage());
+        book.setPreviewPdf(request.getPreviewPdf());
+        book.setBookSize(request.getBookSize());
         book.setRating(request.getRating() != null ? BigDecimal.valueOf(request.getRating()) : null);
         book.setSalesIndex(request.getSalesIndex());
         book.setSalesStatus(Book.SalesStatus.valueOf(request.getSalesStatus()));
@@ -214,7 +228,7 @@ public class BookCategoryService {
         // 재고 정보 생성
         Inventory inventory = new Inventory();
         inventory.setBook(book);
-        inventory.setQuantity(request.getStockQuantity());
+        inventory.setStockQuantity(request.getStockQuantity());
         inventoryRepository.save(inventory);
     }
 
@@ -225,14 +239,14 @@ public class BookCategoryService {
             .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
         
         book.setIsbn(request.getIsbn());
-        book.setTitle(request.getTitle());
+        book.setBookName(request.getBookName());
         book.setAuthor(request.getAuthor());
         book.setPublisher(request.getPublisher());
         book.setDescription(request.getDescription());
         book.setPrice(BigDecimal.valueOf(request.getPrice()));
-        book.setImageUrl(request.getImageUrl());
-        book.setPdfUrl(request.getPdfUrl());
-        book.setSize(request.getSize());
+        book.setBookImage(request.getBookImage());
+        book.setPreviewPdf(request.getPreviewPdf());
+        book.setBookSize(request.getBookSize());
         book.setRating(request.getRating() != null ? BigDecimal.valueOf(request.getRating()) : null);
         book.setSalesIndex(request.getSalesIndex());
         book.setSalesStatus(Book.SalesStatus.valueOf(request.getSalesStatus()));
@@ -262,8 +276,8 @@ public class BookCategoryService {
         Specification<Inventory> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             
-            if (StringUtils.hasText(request.getBookTitle())) {
-                predicates.add(cb.like(root.get("book").get("title"), "%" + request.getBookTitle() + "%"));
+            if (StringUtils.hasText(request.getBookName())) {
+                predicates.add(cb.like(root.get("book").get("bookName"), "%" + request.getBookName() + "%"));
             }
             if (StringUtils.hasText(request.getPublisher())) {
                 predicates.add(cb.like(root.get("book").get("publisher"), "%" + request.getPublisher() + "%"));
@@ -280,7 +294,21 @@ public class BookCategoryService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
+        // 정렬 조건 적용 - Inventory 엔티티 기준으로 정렬
+        Sort sort = Sort.by(Sort.Direction.DESC, "book.registerDate"); // 기본값
+        if (StringUtils.hasText(request.getSortBy())) {
+            String sortField = switch (request.getSortBy()) {
+                case "bookName" -> "book.bookName";
+                case "price" -> "book.price";
+                case "registerDate" -> "book.registerDate";
+                default -> "book.registerDate";
+            };
+            Sort.Direction direction = "asc".equalsIgnoreCase(request.getSortOrder()) ? 
+                Sort.Direction.ASC : Sort.Direction.DESC;
+            sort = Sort.by(direction, sortField);
+        }
+
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), sort);
         Page<Inventory> inventoryPage = inventoryRepository.findAll(spec, pageable);
         
         List<InventoryResponse> content = inventoryPage.getContent().stream()
@@ -295,7 +323,7 @@ public class BookCategoryService {
     public void updateInventory(Long bookId, Integer quantity) {
         Inventory inventory = inventoryRepository.findByBookBookId(bookId.intValue())
             .orElseThrow(() -> new RuntimeException("재고 정보를 찾을 수 없습니다."));
-        inventory.setQuantity(quantity);
+        inventory.setStockQuantity(quantity);
     }
 
     // 재고 응답 변환
@@ -303,14 +331,14 @@ public class BookCategoryService {
         InventoryResponse response = new InventoryResponse();
         response.setBookId(Long.valueOf(inventory.getBook().getBookId()));
         response.setIsbn(inventory.getBook().getIsbn());
-        response.setTitle(inventory.getBook().getTitle());
+        response.setBookName(inventory.getBook().getBookName());
         response.setAuthor(inventory.getBook().getAuthor());
         response.setPublisher(inventory.getBook().getPublisher());
         response.setPrice(inventory.getBook().getPrice().intValue());
-        response.setStockQuantity(inventory.getQuantity());
+        response.setStockQuantity(inventory.getStockQuantity());
         response.setSalesStatus(inventory.getBook().getSalesStatus().toString());
         response.setRegisterDate(inventory.getBook().getRegisterDate());
-        response.setImageUrl(inventory.getBook().getImageUrl());
+        response.setBookImage(inventory.getBook().getBookImage());
         return response;
     }
 
@@ -369,6 +397,13 @@ public class BookCategoryService {
     public java.util.Map<String, Integer> getAllKeywordCounts() {
         return keywordCount.entrySet().stream()
                 .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, e -> e.getValue().get()));
+    }
+
+    public long countBooks() {
+        return bookRepository.count();
+    }
+    public long countOutOfStockBooks() {
+        return inventoryRepository.countByStockQuantity(0);
     }
 
     // === Private 헬퍼 메서드들 ===

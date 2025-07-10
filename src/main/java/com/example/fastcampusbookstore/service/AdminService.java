@@ -9,6 +9,7 @@ import com.example.fastcampusbookstore.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.example.fastcampusbookstore.repository.AdminRepository;
+import java.util.Optional;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -31,23 +35,24 @@ public class AdminService {
     private final CategoryTopRepository categoryTopRepository;
     private final CategoryMiddleRepository categoryMiddleRepository;
     private final CategoryBottomRepository categoryBottomRepository;
+    private final AdminRepository adminRepository;
 
     // 상품 목록 조회 (관리자용)
     public PageResponse<BookListResponse> getBookListForAdmin(BookSearchRequest request, PageRequest pageRequest) {
         Specification<Book> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             
-            if (request.getTitle() != null && !request.getTitle().isEmpty()) {
-                predicates.add(cb.like(root.get("title"), "%" + request.getTitle() + "%"));
+            if (StringUtils.hasText(request.getBookName())) {
+                predicates.add(cb.like(root.get("bookName"), "%" + request.getBookName() + "%"));
             }
-            if (request.getPublisher() != null && !request.getPublisher().isEmpty()) {
+            if (StringUtils.hasText(request.getPublisher())) {
                 predicates.add(cb.like(root.get("publisher"), "%" + request.getPublisher() + "%"));
             }
-            if (request.getAuthor() != null && !request.getAuthor().isEmpty()) {
+            if (StringUtils.hasText(request.getAuthor())) {
                 predicates.add(cb.like(root.get("author"), "%" + request.getAuthor() + "%"));
             }
-            if (request.getSalesStatus() != null && !request.getSalesStatus().isEmpty()) {
-                predicates.add(cb.equal(root.get("salesStatus"), request.getSalesStatus()));
+            if (StringUtils.hasText(request.getSalesStatus()) && !request.getSalesStatus().equals("")) {
+                predicates.add(cb.equal(root.get("salesStatus"), Book.SalesStatus.valueOf(request.getSalesStatus())));
             }
             if (request.getStartDate() != null && request.getEndDate() != null) {
                 predicates.add(cb.between(root.get("registerDate"), 
@@ -58,11 +63,27 @@ public class AdminService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
+        // 정렬 조건 적용
+        Sort sort = Sort.by(Sort.Direction.DESC, "registerDate"); // 기본값
+        if (StringUtils.hasText(request.getSortBy())) {
+            String sortField = switch (request.getSortBy()) {
+                case "bookName" -> "bookName";
+                case "price" -> "price";
+                case "registerDate" -> "registerDate";
+                default -> "registerDate";
+            };
+            Sort.Direction direction = "asc".equalsIgnoreCase(request.getSortOrder()) ? 
+                Sort.Direction.ASC : Sort.Direction.DESC;
+            sort = Sort.by(direction, sortField);
+        }
+
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), sort);
         Page<Book> bookPage = bookRepository.findAll(spec, pageable);
+        
         List<BookListResponse> content = bookPage.getContent().stream()
-            .map(this::convertToBookListResponse)
+            .map(BookListResponse::from)
             .collect(Collectors.toList());
+            
         return PageResponse.of(content, bookPage);
     }
 
@@ -71,14 +92,14 @@ public class AdminService {
     public void registerBook(BookRegisterRequest request) {
         Book book = new Book();
         book.setIsbn(request.getIsbn());
-        book.setTitle(request.getTitle());
+        book.setBookName(request.getBookName());
         book.setAuthor(request.getAuthor());
         book.setPublisher(request.getPublisher());
         book.setDescription(request.getDescription());
         book.setPrice(java.math.BigDecimal.valueOf(request.getPrice()));
-        book.setImageUrl(request.getImageUrl());
-        book.setPdfUrl(request.getPdfUrl());
-        book.setSize(request.getSize());
+        book.setBookImage(request.getBookImage());
+        book.setPreviewPdf(request.getPreviewPdf());
+        book.setBookSize(request.getBookSize());
         book.setRating(request.getRating() != null ? java.math.BigDecimal.valueOf(request.getRating()) : null);
         book.setSalesIndex(request.getSalesIndex());
         book.setSalesStatus(Book.SalesStatus.valueOf(request.getSalesStatus()));
@@ -108,7 +129,7 @@ public class AdminService {
         // 재고 정보 생성
         Inventory inventory = new Inventory();
         inventory.setBook(book);
-        inventory.setQuantity(request.getStockQuantity());
+        inventory.setStockQuantity(request.getStockQuantity());
         inventoryRepository.save(inventory);
     }
 
@@ -119,14 +140,14 @@ public class AdminService {
             .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
         
         book.setIsbn(request.getIsbn());
-        book.setTitle(request.getTitle());
+        book.setBookName(request.getBookName());
         book.setAuthor(request.getAuthor());
         book.setPublisher(request.getPublisher());
         book.setDescription(request.getDescription());
         book.setPrice(java.math.BigDecimal.valueOf(request.getPrice()));
-        book.setImageUrl(request.getImageUrl());
-        book.setPdfUrl(request.getPdfUrl());
-        book.setSize(request.getSize());
+        book.setBookImage(request.getBookImage());
+        book.setPreviewPdf(request.getPreviewPdf());
+        book.setBookSize(request.getBookSize());
         book.setRating(request.getRating() != null ? java.math.BigDecimal.valueOf(request.getRating()) : null);
         book.setSalesIndex(request.getSalesIndex());
         book.setSalesStatus(Book.SalesStatus.valueOf(request.getSalesStatus()));
@@ -159,8 +180,8 @@ public class AdminService {
             if (request.getOrdererName() != null && !request.getOrdererName().isEmpty()) {
                 predicates.add(cb.like(root.get("member").get("memberName"), "%" + request.getOrdererName() + "%"));
             }
-            if (request.getBookTitle() != null && !request.getBookTitle().isEmpty()) {
-                predicates.add(cb.like(root.join("orderDetails").get("book").get("title"), "%" + request.getBookTitle() + "%"));
+            if (request.getBookName() != null && !request.getBookName().isEmpty()) {
+                predicates.add(cb.like(root.join("orderDetails").get("book").get("bookName"), "%" + request.getBookName() + "%"));
             }
             if (request.getSalesStatus() != null && !request.getSalesStatus().isEmpty()) {
                 predicates.add(cb.equal(root.get("orderStatus"), request.getSalesStatus()));
@@ -224,8 +245,8 @@ public class AdminService {
         Specification<Inventory> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             
-            if (request.getBookTitle() != null && !request.getBookTitle().isEmpty()) {
-                predicates.add(cb.like(root.get("book").get("title"), "%" + request.getBookTitle() + "%"));
+            if (request.getBookName() != null && !request.getBookName().isEmpty()) {
+                predicates.add(cb.like(root.get("book").get("bookName"), "%" + request.getBookName() + "%"));
             }
             if (request.getPublisher() != null && !request.getPublisher().isEmpty()) {
                 predicates.add(cb.like(root.get("book").get("publisher"), "%" + request.getPublisher() + "%"));
@@ -255,18 +276,26 @@ public class AdminService {
     public void updateInventory(Long bookId, Integer quantity) {
         Inventory inventory = inventoryRepository.findByBookBookId(bookId.intValue())
             .orElseThrow(() -> new RuntimeException("재고 정보를 찾을 수 없습니다."));
-        inventory.setQuantity(quantity);
+        inventory.setStockQuantity(quantity);
+    }
+
+    public boolean existsAdmin(String adminId) {
+        return adminRepository.findByAdminId(adminId).isPresent();
+    }
+
+    public Optional<Admin> findByAdminId(String adminId) {
+        return adminRepository.findByAdminId(adminId);
     }
 
     // 변환 메서드들
     private BookListResponse convertToBookListResponse(Book book) {
         BookListResponse response = new BookListResponse();
         response.setBookId(book.getBookId());
-        response.setTitle(book.getTitle());
+        response.setBookName(book.getBookName());
         response.setAuthor(book.getAuthor());
         response.setPublisher(book.getPublisher());
         response.setPrice(book.getPrice());
-        response.setImageUrl(book.getImageUrl());
+        response.setBookImage(book.getBookImage());
         response.setRating(book.getRating());
         response.setSalesStatus(book.getSalesStatus().toString());
         response.setRegisterDate(book.getRegisterDate());
@@ -302,14 +331,14 @@ public class AdminService {
         InventoryResponse response = new InventoryResponse();
         response.setBookId(Long.valueOf(inventory.getBook().getBookId()));
         response.setIsbn(inventory.getBook().getIsbn());
-        response.setTitle(inventory.getBook().getTitle());
+        response.setBookName(inventory.getBook().getBookName());
         response.setAuthor(inventory.getBook().getAuthor());
         response.setPublisher(inventory.getBook().getPublisher());
         response.setPrice(inventory.getBook().getPrice().intValue());
-        response.setStockQuantity(inventory.getQuantity());
+        response.setStockQuantity(inventory.getStockQuantity());
         response.setSalesStatus(inventory.getBook().getSalesStatus().toString());
         response.setRegisterDate(inventory.getBook().getRegisterDate());
-        response.setImageUrl(inventory.getBook().getImageUrl());
+        response.setBookImage(inventory.getBook().getBookImage());
         return response;
     }
 } 
