@@ -40,8 +40,8 @@
                     <form id="searchForm" method="get">
                         <div class="filter-row">
                             <div class="filter-group">
-                                <label for="bookTitle">책 이름</label>
-                                <input type="text" id="bookTitle" name="bookTitle" th:value="${searchRequest?.bookTitle}" placeholder="책 이름을 입력하세요">
+                                <label for="bookName">책 이름</label>
+                                <input type="text" id="bookName" name="bookName" th:value="${searchRequest?.bookName}" placeholder="책 이름을 입력하세요">
                             </div>
                             <div class="filter-group">
                                 <label for="publisher">출판사</label>
@@ -65,7 +65,7 @@
                                 <label for="sortBy">정렬 기준</label>
                                 <select id="sortBy" name="sortBy">
                                     <option value="registerDate" th:selected="${searchRequest?.sortBy == 'registerDate'}">등록일</option>
-                                    <option value="bookTitle" th:selected="${searchRequest?.sortBy == 'bookTitle'}">책 이름</option>
+                                    <option value="bookName" th:selected="${searchRequest?.sortBy == 'bookName'}">책 이름</option>
                                     <option value="price" th:selected="${searchRequest?.sortBy == 'price'}">가격</option>
                                 </select>
                             </div>
@@ -77,11 +77,11 @@
                                 </select>
                             </div>
                             <div class="filter-group">
-                                <label for="pageSize">페이지 크기</label>
-                                <select id="pageSize" name="pageSize">
-                                                                    <option value="30" th:selected="${pageInfo?.size == 30}">30개</option>
-                                <option value="50" th:selected="${pageInfo?.size == 50}">50개</option>
-                                <option value="100" th:selected="${pageInfo?.size == 100}">100개</option>
+                                <label for="size">페이지 크기</label>
+                                <select id="size" name="size">
+                                    <option value="30" th:selected="${pageInfo?.size == 30}">30개</option>
+                                    <option value="50" th:selected="${pageInfo?.size == 50}">50개</option>
+                                    <option value="100" th:selected="${pageInfo?.size == 100}">100개</option>
                                 </select>
                             </div>
                         </div>
@@ -157,10 +157,10 @@
                             <tr th:each="item : ${inventory}">
                                 <td th:text="${item.bookId}"></td>
                                 <td>
-                                    <img th:if="${item.imageUrl}" th:src="${item.imageUrl}" alt="책 이미지" class="book-thumbnail">
-                                    <span th:unless="${item.imageUrl}" class="no-image">이미지 없음</span>
+                                    <img th:if="${item.bookImage}" th:src="${item.bookImage}" alt="책 이미지" class="book-thumbnail">
+                                    <span th:unless="${item.bookImage}" class="no-image">이미지 없음</span>
                                 </td>
-                                <td th:text="${item.title}"></td>
+                                <td th:text="${item.bookName}"></td>
                                 <td th:text="${item.author}"></td>
                                 <td th:text="${item.publisher}"></td>
                                 <td th:text="${item.price + '원'}"></td>
@@ -174,7 +174,10 @@
                                 <td th:text="${#temporals.format(item.registerDate, 'yyyy-MM-dd')}"></td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="btn btn-sm btn-primary" th:onclick="'updateInventory(' + ${item.bookId} + ', \'' + ${item.title} + '\', ' + ${item.stockQuantity} + ')'">
+                                        <button class="btn btn-sm btn-primary update-inventory-btn" 
+                                                th:data-book-id="${item.bookId}"
+                                                th:data-book-name="${item.bookName}"
+                                                th:data-stock-quantity="${item.stockQuantity}">
                                             <i class="fas fa-edit"></i> 재고수정
                                         </button>
                                         <a th:href="@{/admin/books/{id}/edit(id=${item.bookId})}" class="btn btn-sm btn-info">
@@ -194,14 +197,14 @@
                         <span th:text="'총 ' + ${pageInfo.totalElements} + '개 상품'"></span>
                     </div>
                     <div class="pagination-controls">
-                        <a th:if="${pageInfo.hasPrevious}" th:href="@{/admin/inventory(page=${pageInfo.currentPage - 1}, size=${pageInfo.size})}" class="btn btn-sm">
+                        <a th:if="${pageInfo.hasPrevious}" th:href="@{/admin/inventory(page=${pageInfo.currentPage - 1}, size=${pageInfo.size}, bookName=${searchRequest?.bookName}, publisher=${searchRequest?.publisher}, author=${searchRequest?.author}, startDate=${searchRequest?.startDate}, endDate=${searchRequest?.endDate}, sortBy=${searchRequest?.sortBy}, sortOrder=${searchRequest?.sortOrder})}" class="btn btn-sm">
                             <i class="fas fa-chevron-left"></i> 이전
                         </a>
                         <span th:each="pageNum : ${#numbers.sequence(0, pageInfo.totalPages - 1)}">
-                            <a th:if="${pageNum != pageInfo.currentPage}" th:href="@{/admin/inventory(page=${pageNum}, size=${pageInfo.size})}" class="btn btn-sm" th:text="${pageNum + 1}"></a>
+                            <a th:if="${pageNum != pageInfo.currentPage}" th:href="@{/admin/inventory(page=${pageNum}, size=${pageInfo.size}, bookName=${searchRequest?.bookName}, publisher=${searchRequest?.publisher}, author=${searchRequest?.author}, startDate=${searchRequest?.startDate}, endDate=${searchRequest?.endDate}, sortBy=${searchRequest?.sortBy}, sortOrder=${searchRequest?.sortOrder})}" class="btn btn-sm" th:text="${pageNum + 1}"></a>
                             <span th:if="${pageNum == pageInfo.currentPage}" class="btn btn-sm btn-primary" th:text="${pageNum + 1}"></span>
                         </span>
-                        <a th:if="${pageInfo.hasNext}" th:href="@{/admin/inventory(page=${pageInfo.currentPage + 1}, size=${pageInfo.size})}" class="btn btn-sm">
+                        <a th:if="${pageInfo.hasNext}" th:href="@{/admin/inventory(page=${pageInfo.currentPage + 1}, size=${pageInfo.size}, bookName=${searchRequest?.bookName}, publisher=${searchRequest?.publisher}, author=${searchRequest?.author}, startDate=${searchRequest?.startDate}, endDate=${searchRequest?.endDate}, sortBy=${searchRequest?.sortBy}, sortOrder=${searchRequest?.sortOrder})}" class="btn btn-sm">
                             다음 <i class="fas fa-chevron-right"></i>
                         </a>
                     </div>
@@ -221,8 +224,8 @@
                 <form id="inventoryForm">
                     <input type="hidden" id="bookId" name="bookId">
                     <div class="form-group">
-                        <label for="bookTitle">책 이름</label>
-                        <input type="text" id="bookTitle" name="bookTitle" readonly>
+                        <label for="bookName">책 이름</label>
+                        <input type="text" id="bookName" name="bookName" readonly>
                     </div>
                     <div class="form-group">
                         <label for="currentQuantity">현재 재고</label>

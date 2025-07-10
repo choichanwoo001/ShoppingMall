@@ -143,7 +143,7 @@
                                 </div>
                                 <div class="order-items">
                                     <div class="order-item-detail" th:each="item : ${order.orderDetails}">
-                                        <img th:if="${item.book.imageUrl}" th:src="${item.book.imageUrl}" alt="책 이미지" class="book-thumbnail">
+                                        <img th:if="${item.book.bookImage}" th:src="${item.book.bookImage}" alt="책 이미지" class="book-thumbnail">
                                         <div class="item-info">
                                             <span class="book-title" th:text="${item.book.title}"></span>
                                             <span class="item-quantity" th:text="${item.quantity} + '개'"></span>
