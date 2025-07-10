@@ -71,23 +71,23 @@
                         <div class="info-grid">
                             <div class="info-item">
                                 <label>회원 ID</label>
-                                <span th:text="${order.member.memberId}"></span>
+                                <span th:text="${order.member != null ? order.member.memberId : '-'}"></span>
                             </div>
                             <div class="info-item">
                                 <label>이름</label>
-                                <span th:text="${order.member.memberName}"></span>
+                                <span th:text="${order.member != null ? order.member.memberName : '-'}"></span>
                             </div>
                             <div class="info-item">
                                 <label>이메일</label>
-                                <span th:text="${order.member.email}"></span>
+                                <span th:text="${order.member != null ? order.member.email : '-'}"></span>
                             </div>
                             <div class="info-item">
                                 <label>연락처</label>
-                                <span th:text="${order.member.phone}"></span>
+                                <span th:text="${order.member != null ? order.member.phone : '-'}"></span>
                             </div>
                             <div class="info-item">
                                 <label>주소</label>
-                                <span th:text="${order.member.address}"></span>
+                                <span th:text="${order.member != null ? order.member.address : '-'}"></span>
                             </div>
                         </div>
                     </div>
@@ -134,14 +134,14 @@
                                             <div class="item-info">
                                                 <img th:if="${item.book.bookImage}" th:src="${item.book.bookImage}" alt="책 이미지" class="book-thumbnail">
                                                 <div class="item-details">
-                                                    <span class="book-title" th:text="${item.book.title}"></span>
+                                                    <span class="book-bookName" th:text="${item.book.bookName}"></span>
                                                     <span class="book-author" th:text="${item.book.author}"></span>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td th:text="${item.price + '원'}"></td>
+                                        <td th:text="${item.unitPrice + '원'}"></td>
                                         <td th:text="${item.quantity}"></td>
-                                        <td th:text="${item.price * item.quantity + '원'}"></td>
+                                        <td th:text="${item.totalPrice + '원'}"></td>
                                     </tr>
                                 </tbody>
                             </table>

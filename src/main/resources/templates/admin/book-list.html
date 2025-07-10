@@ -123,7 +123,6 @@
                                 <th>가격</th>
                                 <th>판매 상태</th>
                                 <th>등록일</th>
-                                <th>관리</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -143,12 +142,7 @@
                                 <td th:text="${#temporals.format(book.registerDate, 'yyyy-MM-dd')}"></td>
                                 <td>
                                     <div class="action-buttons">
-                                        <a th:href="@{/admin/books/{id}/edit(id=${book.bookId})}" class="btn btn-sm btn-primary">
-                                            <i class="fas fa-edit"></i> 수정
-                                        </a>
-                                        <button class="btn btn-sm btn-danger" th:onclick="'deleteBook(' + ${book.bookId} + ')'">
-                                            <i class="fas fa-trash"></i> 삭제
-                                        </button>
+                                        <!-- 상품 수정, 삭제 기능 제거 -->
                                     </div>
                                 </td>
                             </tr>

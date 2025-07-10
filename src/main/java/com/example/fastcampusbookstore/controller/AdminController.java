@@ -68,23 +68,6 @@ public class AdminController {
         return ApiResponse.success("상품이 성공적으로 등록되었습니다.");
     }
 
-    // 상품 수정 화면
-    @GetMapping("/books/{bookId}/edit")
-    public String bookEditForm(@PathVariable Long bookId, Model model) {
-        BookDetailResponse book = bookCategoryService.getBookDetail(bookId.intValue());
-        model.addAttribute("book", book);
-        model.addAttribute("categories", bookCategoryService.getAllCategories());
-        return "admin/book-edit";
-    }
-
-    // 상품 수정 처리
-    @PutMapping("/books/{bookId}")
-    @ResponseBody
-    public ApiResponse<String> bookEdit(@PathVariable Long bookId, @RequestBody BookUpdateRequest request) {
-        bookCategoryService.updateBook(bookId, request);
-        return ApiResponse.success("상품이 성공적으로 수정되었습니다.");
-    }
-
     // 주문 목록 조회
     @GetMapping("/orders")
     public String orderList(
@@ -145,11 +128,12 @@ public class AdminController {
             @PathVariable String memberId,
             @ModelAttribute PageRequest pageRequest,
             Model model) {
-        
         PageResponse<OrderListResponse> orderPage = orderPaymentService.getOrderListByMember(memberId, pageRequest);
+        MemberResponse member = memberService.getMemberDetail(memberId);
         model.addAttribute("orders", orderPage.getContent());
         model.addAttribute("pageInfo", orderPage);
         model.addAttribute("memberId", memberId);
+        model.addAttribute("memberName", member.getMemberName());
         return "admin/member-orders";
     }
 

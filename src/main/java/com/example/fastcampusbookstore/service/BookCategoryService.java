@@ -232,45 +232,6 @@ public class BookCategoryService {
         inventoryRepository.save(inventory);
     }
 
-    // 상품 수정
-    @Transactional
-    public void updateBook(Long bookId, BookUpdateRequest request) {
-        Book book = bookRepository.findById(bookId.intValue())
-            .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
-        
-        book.setIsbn(request.getIsbn());
-        book.setBookName(request.getBookName());
-        book.setAuthor(request.getAuthor());
-        book.setPublisher(request.getPublisher());
-        book.setDescription(request.getDescription());
-        book.setPrice(BigDecimal.valueOf(request.getPrice()));
-        book.setBookImage(request.getBookImage());
-        book.setPreviewPdf(request.getPreviewPdf());
-        book.setBookSize(request.getBookSize());
-        book.setRating(request.getRating() != null ? BigDecimal.valueOf(request.getRating()) : null);
-        book.setSalesIndex(request.getSalesIndex());
-        book.setSalesStatus(Book.SalesStatus.valueOf(request.getSalesStatus()));
-        
-        // 카테고리 설정
-        if (StringUtils.hasText(request.getCategoryTop())) {
-            CategoryTop categoryTop = categoryTopRepository.findByCategoryName(request.getCategoryTop())
-                .orElseThrow(() -> new RuntimeException("상위 카테고리를 찾을 수 없습니다."));
-            book.setCategoryTop(categoryTop);
-        }
-        
-        if (StringUtils.hasText(request.getCategoryMiddle())) {
-            CategoryMiddle categoryMiddle = categoryMiddleRepository.findByCategoryName(request.getCategoryMiddle())
-                .orElseThrow(() -> new RuntimeException("중위 카테고리를 찾을 수 없습니다."));
-            book.setCategoryMiddle(categoryMiddle);
-        }
-        
-        if (StringUtils.hasText(request.getCategoryBottom())) {
-            CategoryBottom categoryBottom = categoryBottomRepository.findByCategoryName(request.getCategoryBottom())
-                .orElseThrow(() -> new RuntimeException("하위 카테고리를 찾을 수 없습니다."));
-            book.setCategoryBottom(categoryBottom);
-        }
-    }
-
     // 재고 목록 조회
     public PageResponse<InventoryResponse> getInventoryList(InventorySearchRequest request, PageRequest pageRequest) {
         Specification<Inventory> spec = (root, query, cb) -> {

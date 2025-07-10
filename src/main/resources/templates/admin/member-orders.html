@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 주문 내역 - FastCampus BookStore</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="admin-container">
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-book"></i> 관리자</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="/admin"><i class="fas fa-home"></i> 대시보드</a></li>
+                <li><a href="/admin/books"><i class="fas fa-book"></i> 상품 관리</a></li>
+                <li><a href="/admin/orders"><i class="fas fa-shopping-cart"></i> 주문 관리</a></li>
+                <li><a href="/admin/members" class="active"><i class="fas fa-users"></i> 회원 관리</a></li>
+                <li><a href="/admin/inventory"><i class="fas fa-boxes"></i> 재고 관리</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1>회원 주문 내역</h1>
+            <div class="admin-info">
+                <a th:href="@{/admin/members/{id}(id=${memberId})}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> 회원 상세로
+                </a>
+            </div>
+        </header>
+        <div class="content-wrapper">
+            <div class="detail-section">
+                <h3>회원 정보</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>회원 ID</label>
+                        <span th:text="${memberId}"></span>
+                    </div>
+                    <div class="info-item">
+                        <label>이름</label>
+                        <span th:text="${memberName}"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-section">
+                <h3>주문 내역</h3>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                        <tr>
+                            <th>주문번호</th>
+                            <th>주문일시</th>
+                            <th>총금액</th>
+                            <th>주문상태</th>
+                            <th>결제상태</th>
+                            <th>결제수단</th>
+                            <th>대표도서명</th>
+                            <th>총상품수</th>
+                            <th>상세</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="order : ${orders}">
+                            <td th:text="${order.orderId}"></td>
+                            <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
+                            <td th:text="${order.totalAmount + '원'}"></td>
+                            <td th:text="${order.orderStatus}"></td>
+                            <td th:text="${order.paymentStatus}"></td>
+                            <td th:text="${order.paymentMethod}"></td>
+                            <td th:text="${order.representativeBookName}"></td>
+                            <td th:text="${order.totalItemCount}"></td>
+                            <td>
+                                <a th:href="@{/admin/orders/{id}(id=${order.orderId})}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i> 상세보기
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(orders)}">
+                            <td colspan="9" style="text-align:center;">주문 내역이 없습니다.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script th:src="@{/js/admin.js}"></script>
+</body>
+</html> 
